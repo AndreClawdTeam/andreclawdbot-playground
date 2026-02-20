@@ -1354,7 +1354,7 @@
               <span class="tool-chip">git/gh CLI</span>
               <span class="tool-chip">exec shell</span>
               <span class="tool-chip">read/write files</span>
-              <span class="tool-chip">npm/pip/etc</span>
+              <span class="tool-chip">npm/npx/tsx</span>
             </div>
           </div>
         </div>
@@ -1423,9 +1423,9 @@
           <div class="agent-row">
             <label>Ferramentas</label>
             <div class="agent-tools">
-              <span class="tool-chip">pytest/jest/vitest</span>
+              <span class="tool-chip">jest/vitest</span>
               <span class="tool-chip">Playwright</span>
-              <span class="tool-chip">coverage.py/nyc</span>
+              <span class="tool-chip">nyc/c8</span>
               <span class="tool-chip">GitHub Actions</span>
             </div>
           </div>
@@ -1869,7 +1869,7 @@
 <span class="head">CLAUDE.md (contexto do agente):</span>
 <span class="key">project:</span>     <span class="val">Projeto X</span>
 <span class="key">client:</span>      <span class="val">Nome do Cliente</span>
-<span class="key">stack:</span>       <span class="val">Next.js + FastAPI + PostgreSQL</span>
+<span class="key">stack:</span>       <span class="val">Next.js + Node.js/Express (TS) + PostgreSQL</span>
 <span class="key">stage:</span>       <span class="val">MVP / Beta / Production</span>
 <span class="key">conventions:</span> <span class="val">...</span>
 <span class="key">do_not:</span>      <span class="val">nunca usar src/ sem lint</span>
@@ -1980,11 +1980,11 @@
         <h4>🔍 SAST e Dependency Scanning</h4>
         <ul class="checklist">
           <li>Semgrep em todo PR (regras: owasp-top-10, security-audit)</li>
-          <li>Bandit para projetos Python</li>
-          <li>npm audit / pip audit na CI</li>
+          <li>njsscan / ESLint security plugin para projetos Node.js</li>
+          <li>npm audit na CI</li>
           <li>Dependabot habilitado em todos os repos</li>
           <li>Snyk CLI para CVEs críticos (bloqueia deploy)</li>
-          <li>Lock files commitados (package-lock.json, poetry.lock)</li>
+          <li>Lock files commitados (package-lock.json)</li>
           <li>Renovate bot para atualização automática de deps</li>
         </ul>
       </div>
@@ -2169,8 +2169,8 @@
           <div class="stack-item-desc">Frontend padrão. TypeScript obrigatório. App Router.</div>
         </div>
         <div class="stack-item">
-          <div class="stack-item-name">FastAPI / Python</div>
-          <div class="stack-item-desc">Backend padrão para APIs. Rápido, tipado, ótimo ecossistema de IA.</div>
+          <div class="stack-item-name">Node.js / TypeScript / Express</div>
+          <div class="stack-item-desc">Backend padrão para APIs. TypeScript obrigatório, Drizzle ORM para banco, tsx/ts-node para execução.</div>
         </div>
         <div class="stack-item">
           <div class="stack-item-name">Conventional Commits</div>
