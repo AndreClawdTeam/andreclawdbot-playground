@@ -1652,5 +1652,165 @@ balance = exchange.<span class="fn">fetch_balance</span>()
   document.querySelectorAll('.strategy-card').forEach(card => riskObserver.observe(card));
 </script>
 
+<!-- ══════════════════════════════════════════════════════════════════════════
+     Multi-Coin Trading Bot — Documentação
+     Adicionado em: 2026-02-20
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section id="multi-coin" style="
+  max-width: 900px;
+  margin: 48px auto;
+  padding: 0 20px;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #fafafa;
+">
+  <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px;">
+    🤖 Multi-Coin Grid Trading Bot
+  </h2>
+  <p style="color:#71717a;font-size:.9rem;margin-bottom:32px;">
+    Implementado em 2026-02-20 · Paper Mode · Exchange: OKX (primária), KuCoin (fallback), Gate.io (terciária)
+  </p>
+
+  <!-- Coins escolhidas -->
+  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
+    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
+      📊 Coins Ativas (6)
+    </h3>
+    <table style="width:100%;border-collapse:collapse;font-size:.875rem;">
+      <thead>
+        <tr style="border-bottom:1px solid #27272a;">
+          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Coin</th>
+          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Par</th>
+          <th style="text-align:right;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Vol 24h (OKX, USDT)</th>
+          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Justificativa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #27272a;">
+          <td style="padding:10px 12px;font-weight:600;">PEPE</td>
+          <td style="padding:10px 12px;color:#71717a;">PEPE/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$5.33M</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Coin original do bot; liquidez confirmada OKX</td>
+        </tr>
+        <tr style="border-bottom:1px solid #27272a;">
+          <td style="padding:10px 12px;font-weight:600;">DOGE</td>
+          <td style="padding:10px 12px;color:#71717a;">DOGE/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$33.8M</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Maior volume entre memecoins; amplamente líquido</td>
+        </tr>
+        <tr style="border-bottom:1px solid #27272a;">
+          <td style="padding:10px 12px;font-weight:600;">SHIB</td>
+          <td style="padding:10px 12px;color:#71717a;">SHIB/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$6.7M (KuCoin)</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Grande market cap; segundo memecoin mais conhecido</td>
+        </tr>
+        <tr style="border-bottom:1px solid #27272a;">
+          <td style="padding:10px 12px;font-weight:600;">BONK</td>
+          <td style="padding:10px 12px;color:#71717a;">BONK/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$977K</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Popular no ecossistema Solana; disponível OKX + KuCoin</td>
+        </tr>
+        <tr style="border-bottom:1px solid #27272a;">
+          <td style="padding:10px 12px;font-weight:600;">WIF</td>
+          <td style="padding:10px 12px;color:#71717a;">WIF/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$1.34M</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Top Solana memecoin; preço baixo ideal para grid</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 12px;font-weight:600;">FLOKI</td>
+          <td style="padding:10px 12px;color:#71717a;">FLOKI/USDT</td>
+          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$302K</td>
+          <td style="padding:10px 12px;color:#a1a1aa;">Memecoin estabelecida; volatilidade favorável para grid</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Auto-disable -->
+  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
+    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
+      🛡️ Critérios de Auto-Disable
+    </h3>
+    <p style="color:#a1a1aa;margin-bottom:16px;font-size:.875rem;">
+      Cada coin é monitorada independentemente. Quando uma delas ultrapassa os limites de perda,
+      é automaticamente desabilitada e André recebe uma notificação no Telegram.
+      As demais coins continuam operando normalmente.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:#1c1c1f;border:1px solid #ef4444;border-radius:8px;padding:16px;">
+        <div style="color:#ef4444;font-weight:700;font-size:.875rem;margin-bottom:8px;">⚠️ Perda Diária &gt; 20%</div>
+        <p style="color:#a1a1aa;font-size:.82rem;line-height:1.5;">
+          Se a perda acumulada no dia para uma coin ultrapassar 20% do capital alocado,
+          a coin é desabilitada até intervenção manual.
+        </p>
+      </div>
+      <div style="background:#1c1c1f;border:1px solid #ef4444;border-radius:8px;padding:16px;">
+        <div style="color:#ef4444;font-weight:700;font-size:.875rem;margin-bottom:8px;">🚨 Perda Total &gt; 30%</div>
+        <p style="color:#a1a1aa;font-size:.82rem;line-height:1.5;">
+          Se a perda total acumulada (all-time) ultrapassar 30% do capital alocado,
+          a coin é desabilitada permanentemente até reativação manual.
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:16px;background:#1c1c1f;border-radius:8px;padding:16px;">
+      <div style="color:#71717a;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
+        Capital alocado por coin
+      </div>
+      <code style="color:#3b82f6;font-size:.82rem;">
+        capital = order_size_usdt × grid_levels × 2 = 5 × 10 × 2 = <strong>$100 USDT</strong> por coin
+      </code>
+    </div>
+  </div>
+
+  <!-- Como habilitar/desabilitar manualmente -->
+  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
+    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
+      🔧 Habilitar / Desabilitar Manualmente via DB
+    </h3>
+
+    <p style="color:#a1a1aa;font-size:.875rem;margin-bottom:16px;">
+      Para reativar uma coin desabilitada, basta remover o registro da tabela
+      <code style="color:#3b82f6;">disabled_symbols</code> e reiniciar o bot:
+    </p>
+
+    <pre style="background:#0d0d0f;border:1px solid #27272a;border-radius:8px;padding:16px;font-size:.8rem;color:#22c55e;overflow-x:auto;margin-bottom:16px;">-- Verificar coins desabilitadas
+SELECT * FROM disabled_symbols ORDER BY disabled_at DESC;
+
+-- Reativar uma coin (remove o registro de disable)
+DELETE FROM disabled_symbols WHERE symbol = 'PEPE/USDT';
+
+-- Reiniciar o bot após a mudança
+-- (executar na VPS:)
+systemctl --user restart trading-bot</pre>
+
+    <p style="color:#a1a1aa;font-size:.875rem;margin-bottom:12px;">
+      Para desabilitar manualmente uma coin sem esperar o auto-disable:
+    </p>
+
+    <pre style="background:#0d0d0f;border:1px solid #27272a;border-radius:8px;padding:16px;font-size:.8rem;color:#eab308;overflow-x:auto;">-- Desabilitar manualmente
+INSERT INTO disabled_symbols (symbol, reason)
+VALUES ('FLOKI/USDT', 'manual_disable');
+
+-- A mudança entra em vigor no próximo tick do bot (a cada 10s)</pre>
+
+    <p style="color:#a1a1aa;font-size:.875rem;margin-top:16px;">
+      Para adicionar ou remover uma coin permanentemente, edite <code style="color:#3b82f6;">SYMBOLS</code>
+      em <code style="color:#3b82f6;">/home/clawdbot/workspace/coding/trading-bot/config.py</code>
+      e reinicie o bot.
+    </p>
+  </div>
+
+  <!-- Links -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="http://138.197.19.184:8766" target="_blank"
+       style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#3b82f6;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.875rem;">
+      📊 Dashboard ao Vivo
+    </a>
+    <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank"
+       style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#27272a;color:#fafafa;border-radius:8px;text-decoration:none;font-weight:600;font-size:.875rem;">
+      💻 Código no GitHub
+    </a>
+  </div>
+</section>
+
 </body>
 </html>
