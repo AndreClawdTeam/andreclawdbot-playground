@@ -1085,6 +1085,7 @@ last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<spa
             <th>Taker Fee</th>
             <th>Mín. Trade</th>
             <th>Testnet</th>
+            <th>VPS (DO/US) ✅</th>
             <th>Adequação</th>
           </tr>
         </thead>
@@ -1095,7 +1096,8 @@ last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<spa
             <td class="text-yellow">0.10%</td>
             <td>~$5 USDT</td>
             <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-green">Ótimo</span></td>
+            <td><span class="tag tag-red">❌ Bloqueado</span></td>
+            <td><span class="tag tag-red">Geo-block VPS</span></td>
           </tr>
           <tr>
             <td><strong>Bybit</strong></td>
@@ -1103,23 +1105,26 @@ last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<spa
             <td class="text-yellow">0.06%</td>
             <td>~$1 USDT</td>
             <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-green">Ótimo</span></td>
+            <td><span class="tag tag-red">❌ Bloqueado</span></td>
+            <td><span class="tag tag-red">Geo-block VPS</span></td>
           </tr>
           <tr>
-            <td><strong>Pionex</strong></td>
-            <td class="text-green">0.05%</td>
-            <td class="text-green">0.05%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-yellow">~ Paper</span></td>
-            <td><span class="tag tag-green">Grid nativo</span></td>
-          </tr>
-          <tr>
-            <td><strong>OKX</strong></td>
+            <td><strong>OKX</strong> ⭐</td>
             <td class="text-green">0.08%</td>
             <td class="text-yellow">0.10%</td>
             <td>~$1 USDT</td>
             <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-yellow">Bom</span></td>
+            <td><span class="tag tag-green">✅ Confirmado</span></td>
+            <td><span class="tag tag-green">Primária ✅</span></td>
+          </tr>
+          <tr>
+            <td><strong>KuCoin</strong> ⭐</td>
+            <td class="text-green">0.08%</td>
+            <td class="text-yellow">0.10%</td>
+            <td>~$1 USDT</td>
+            <td><span class="tag tag-green">✓ Sim</span></td>
+            <td><span class="tag tag-green">✅ Confirmado</span></td>
+            <td><span class="tag tag-green">Fallback ✅</span></td>
           </tr>
           <tr>
             <td><strong>Gate.io</strong></td>
@@ -1127,7 +1132,17 @@ last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<spa
             <td class="text-yellow">0.10%</td>
             <td>~$1 USDT</td>
             <td><span class="tag tag-yellow">Parcial</span></td>
-            <td><span class="tag tag-yellow">Bom</span></td>
+            <td><span class="tag tag-green">✅ Confirmado</span></td>
+            <td><span class="tag tag-yellow">Terciária</span></td>
+          </tr>
+          <tr>
+            <td><strong>Pionex</strong></td>
+            <td class="text-green">0.05%</td>
+            <td class="text-green">0.05%</td>
+            <td>~$1 USDT</td>
+            <td><span class="tag tag-yellow">~ Paper</span></td>
+            <td><span class="tag tag-yellow">Não testado</span></td>
+            <td><span class="tag tag-yellow">Grid nativo</span></td>
           </tr>
           <tr>
             <td><strong>Kraken</strong></td>
@@ -1135,15 +1150,55 @@ last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<spa
             <td class="text-red">0.40%</td>
             <td>~$10 USD</td>
             <td><span class="tag tag-red">✗ Não</span></td>
+            <td><span class="tag tag-yellow">Não testado</span></td>
             <td><span class="tag tag-red">Caro p/ HFT</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="info-box" style="margin-top:20px;">
-      <h3>🏆 Recomendação: Binance + Bybit</h3>
-      <p>Para começar: <strong>Binance Testnet</strong> para paper trading (API bem documentada, suporte CCXT excelente). Para produção: <strong>Bybit</strong> tem as menores taxas maker (0.01%) — essencial para alta frequência onde as taxas acumulam rapidamente. Manter sempre menos de 20% do capital por exchange para não concentrar risco de custódia.</p>
+    <div class="warning-box" style="margin-top:20px;">
+      <h3>⚠️ Binance e Bybit: Geo-bloqueadas nesta VPS</h3>
+      <p>Testado em 2026-02-20: a VPS (DigitalOcean, IP <code>138.197.19.184</code>, ASN AS14061, EUA) recebe recusa de conexão tanto da Binance quanto da Bybit. Ambas bloqueiam ranges de IP de data centers americanos. <strong>OKX e KuCoin respondem normalmente</strong> — preços ao vivo de PEPE/USDT obtidos com sucesso.</p>
+    </div>
+
+    <div class="info-box" style="margin-top:16px;">
+      <h3>✅ Validação da VPS — 2026-02-20</h3>
+      <p style="margin-bottom:12px;">Teste ao vivo da VPS (<code>138.197.19.184</code>):</p>
+      <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
+        <thead><tr style="border-bottom:1px solid rgba(255,255,255,0.15)">
+          <th style="text-align:left;padding:6px 8px">Exchange</th>
+          <th style="text-align:left;padding:6px 8px">Público</th>
+          <th style="text-align:left;padding:6px 8px">Privado (s/ auth)</th>
+          <th style="text-align:left;padding:6px 8px">PEPE/USDT</th>
+          <th style="text-align:left;padding:6px 8px">Rate Limit Spot</th>
+          <th style="text-align:left;padding:6px 8px">Rate Limit Ordens</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.07)">
+            <td style="padding:6px 8px"><strong>OKX</strong></td>
+            <td style="padding:6px 8px" class="text-green">✅ OK</td>
+            <td style="padding:6px 8px" class="text-green">✅ 50103 (sem key)</td>
+            <td style="padding:6px 8px" class="text-green">✅ $0.000004097</td>
+            <td style="padding:6px 8px">20 req / 2s (por instrumento)</td>
+            <td style="padding:6px 8px">60 ordens / 2s</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px"><strong>KuCoin</strong></td>
+            <td style="padding:6px 8px" class="text-green">✅ OK</td>
+            <td style="padding:6px 8px" class="text-green">✅ 400001 (sem key)</td>
+            <td style="padding:6px 8px" class="text-green">✅ $0.000004098</td>
+            <td style="padding:6px 8px">4.000 req / 30s (VIP0)</td>
+            <td style="padding:6px 8px">200 req / 3s (VIP0)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:12px;font-size:0.85rem;opacity:0.8">Nossa demanda estimada: ~1 price check / 3s + &lt;10 ordens/min → <strong>&lt;1% do rate limit mesmo no VIP0</strong>. Totalmente viável para grid trading em paper e produção.</p>
+    </div>
+
+    <div class="info-box" style="margin-top:16px;border-color:rgba(99,255,132,0.3)">
+      <h3>🏆 Recomendação Atualizada: OKX (primária) + KuCoin (fallback)</h3>
+      <p>Binance e Bybit estão geo-bloqueadas nesta VPS — testado ao vivo. <strong>OKX</strong> foi configurada como exchange primária para preços e ordens. <strong>KuCoin</strong> é o fallback automático caso a OKX falhe. <strong>Gate.io</strong> é a terceira opção. Quando André criar conta na OKX + KuCoin e gerar API keys, basta preencher <code>config.py</code> e mudar <code>PAPER_MODE = False</code>.</p>
     </div>
   </section>
 
