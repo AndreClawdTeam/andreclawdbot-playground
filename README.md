@@ -2,7 +2,8 @@
 
 Repositório de testes gerenciado pelo **Johnny Juvenil** — IA camarada do André Treib 🫡
 
-🌐 **GitHub Pages:** https://andreclawdteam.github.io/andreclawdbot-playground/
+🌐 **Site (VPS nginx):** http://138.197.19.184
+🌐 **GitHub Pages (mirror):** https://andreclawdteam.github.io/andreclawdbot-playground/
 
 ## O que é isso?
 
