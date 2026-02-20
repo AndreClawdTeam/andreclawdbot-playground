@@ -1,0 +1,2624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏭 Software Factory — Planta da Fábrica Autônoma de IA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080c10;
+      --bg2:      #0d1117;
+      --bg3:      #161b22;
+      --bg4:      #21262d;
+      --border:   #30363d;
+      --border2:  #3d444d;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --dim:      #656d76;
+
+      /* Brand colors */
+      --violet:   #7c3aed;
+      --violet2:  #a78bfa;
+      --violet3:  #ede9fe;
+      --indigo:   #4f46e5;
+      --cyan:     #06b6d4;
+      --cyan2:    #67e8f9;
+      --emerald:  #10b981;
+      --emerald2: #6ee7b7;
+      --amber:    #f59e0b;
+      --amber2:   #fcd34d;
+      --rose:     #f43f5e;
+      --rose2:    #fda4af;
+      --orange:   #ea580c;
+      --orange2:  #fdba74;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 3px; }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 80px 24px 64px;
+      text-align: center;
+      background: linear-gradient(160deg, #0a0512 0%, #0d0f1f 40%, #080c10 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.2) 0%, rgba(6,182,212,0.05) 50%, transparent 70%);
+      animation: pulse-glow 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.08); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 16px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.4);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--violet2);
+      margin-bottom: 20px;
+    }
+
+    .header-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--violet2);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    header h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--violet2) 50%, var(--cyan2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p.subtitle {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 28px;
+    }
+
+    .header-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .header-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .header-stat strong {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--violet2);
+    }
+
+    .header-stat span {
+      font-size: 0.72rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,12,16,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      white-space: nowrap;
+    }
+
+    nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 16px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      border-bottom-color: var(--violet);
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 64px 24px 120px;
+    }
+
+    /* ── SECTION ── */
+    section {
+      margin-bottom: 96px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--violet2);
+      margin-bottom: 10px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background: var(--violet);
+    }
+
+    section h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 8px;
+    }
+
+    section > p.lead {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 760px;
+      margin-bottom: 40px;
+    }
+
+    /* ── MANIFESTO ── */
+    .manifesto-block {
+      position: relative;
+      background: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(6,182,212,0.04) 100%);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 20px;
+      padding: 56px 48px;
+      overflow: hidden;
+    }
+
+    .manifesto-block::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      right: -1px; bottom: -1px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.3), transparent 40%, rgba(6,182,212,0.15));
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      padding: 1px;
+      pointer-events: none;
+    }
+
+    .manifesto-quote {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 28px;
+      color: #fff;
+    }
+
+    .manifesto-quote em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--violet2), var(--cyan2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .manifesto-pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .manifesto-pillar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .manifesto-pillar .icon { font-size: 1.8rem; }
+    .manifesto-pillar strong {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .manifesto-pillar p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TEAM GRID ── */
+    .team-section-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 36px 0 16px;
+    }
+
+    .team-section-label.original { color: var(--emerald2); }
+    .team-section-label.added { color: var(--amber2); }
+
+    .team-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .agent-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .agent-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border2);
+    }
+
+    .agent-card.original { border-left: 3px solid var(--emerald); }
+    .agent-card.added    { border-left: 3px solid var(--amber); }
+    .agent-card.critical { border-left: 3px solid var(--rose); }
+
+    .agent-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .agent-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .agent-icon.pm      { background: rgba(79,70,229,0.15); }
+    .agent-icon.design  { background: rgba(236,72,153,0.15); }
+    .agent-icon.dev     { background: rgba(16,185,129,0.15); }
+    .agent-icon.mkt     { background: rgba(245,158,11,0.15); }
+    .agent-icon.qa      { background: rgba(234,88,12,0.15); }
+    .agent-icon.devops  { background: rgba(6,182,212,0.15); }
+    .agent-icon.tl      { background: rgba(124,58,237,0.15); }
+    .agent-icon.sec     { background: rgba(244,63,94,0.15); }
+    .agent-icon.docs    { background: rgba(139,92,246,0.15); }
+    .agent-icon.cs      { background: rgba(34,197,94,0.15); }
+
+    .agent-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .agent-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .badge-original { background: rgba(16,185,129,0.15); color: var(--emerald2); }
+    .badge-added    { background: rgba(245,158,11,0.15);  color: var(--amber2); }
+    .badge-critical { background: rgba(244,63,94,0.15);   color: var(--rose2); }
+
+    .agent-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .agent-row label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--dim);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .agent-row p { color: var(--muted); line-height: 1.45; }
+
+    .agent-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 3px;
+    }
+
+    .tool-chip {
+      padding: 2px 8px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow-container {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      overflow-x: auto;
+    }
+
+    .flow-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      margin-bottom: 28px;
+    }
+
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+    }
+
+    .flow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 42px;
+      bottom: -20px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--violet), transparent);
+    }
+
+    .flow-step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--violet), var(--indigo));
+      color: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .flow-step-body {
+      padding: 0 0 32px 0;
+      flex: 1;
+    }
+
+    .flow-step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .flow-agent-tag {
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .tag-pm      { background: rgba(79,70,229,0.2);   color: #a5b4fc; }
+    .tag-design  { background: rgba(236,72,153,0.2);  color: #f9a8d4; }
+    .tag-dev     { background: rgba(16,185,129,0.2);  color: var(--emerald2); }
+    .tag-qa      { background: rgba(234,88,12,0.2);   color: var(--orange2); }
+    .tag-tl      { background: rgba(124,58,237,0.2);  color: var(--violet2); }
+    .tag-devops  { background: rgba(6,182,212,0.2);   color: var(--cyan2); }
+    .tag-mkt     { background: rgba(245,158,11,0.2);  color: var(--amber2); }
+    .tag-sec     { background: rgba(244,63,94,0.2);   color: var(--rose2); }
+    .tag-docs    { background: rgba(139,92,246,0.2);  color: var(--violet2); }
+
+    .flow-step-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .flow-step-body p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .flow-step-body ul {
+      margin: 8px 0 0 16px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .flow-step-body ul li { margin-bottom: 3px; }
+
+    .flow-triggers {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .trigger-chip {
+      padding: 3px 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.73rem;
+      color: var(--dim);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── COMMS DIAGRAM ── */
+    .comms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .comms-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .comms-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comms-card ul {
+      margin: 0 0 0 16px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── MULTI-CLIENT ── */
+    .client-arch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 700px) {
+      .client-arch { grid-template-columns: 1fr; }
+    }
+
+    .arch-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .arch-block h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .code-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .code-block .key   { color: var(--cyan2); }
+    .code-block .val   { color: var(--emerald2); }
+    .code-block .com   { color: var(--dim); font-style: italic; }
+    .code-block .head  { color: var(--violet2); font-weight: 700; }
+
+    /* ── SECURITY CHECKLIST ── */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .security-category {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .security-category h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .checklist li::before {
+      content: '✓';
+      color: var(--emerald);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .checklist li.critical::before { content: '!'; color: var(--rose); }
+    .checklist li strong { color: var(--text); }
+
+    /* ── STACK TABLE ── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .stack-layer {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .stack-layer h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .stack-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+
+    .stack-item:last-child { border-bottom: none; }
+
+    .stack-item-name {
+      font-weight: 700;
+      color: var(--text);
+      min-width: 110px;
+    }
+
+    .stack-item-desc { color: var(--muted); line-height: 1.4; }
+
+    /* ── PHASES ── */
+    .phases-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .phase-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-num {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--violet), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      min-width: 50px;
+    }
+
+    .phase-meta h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .phase-meta p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .phase-status {
+      margin-left: auto;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .phase-status.mvp     { background: rgba(16,185,129,0.15);  color: var(--emerald2); border: 1px solid rgba(16,185,129,0.3); }
+    .phase-status.q2      { background: rgba(245,158,11,0.15);  color: var(--amber2);   border: 1px solid rgba(245,158,11,0.3); }
+    .phase-status.q3      { background: rgba(79,70,229,0.15);   color: #a5b4fc;         border: 1px solid rgba(79,70,229,0.3); }
+    .phase-status.q4      { background: rgba(6,182,212,0.15);   color: var(--cyan2);    border: 1px solid rgba(6,182,212,0.3); }
+    .phase-status.future  { background: rgba(124,58,237,0.15);  color: var(--violet2);  border: 1px solid rgba(124,58,237,0.3); }
+
+    .phase-body {
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .phase-body { grid-template-columns: 1fr; }
+    }
+
+    .phase-col h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--dim);
+      margin-bottom: 10px;
+    }
+
+    .phase-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .phase-col ul li {
+      font-size: 0.83rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.45;
+    }
+
+    .phase-col ul li::before {
+      content: '→';
+      color: var(--violet2);
+      flex-shrink: 0;
+    }
+
+    .phase-kpi {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0 28px 24px;
+    }
+
+    .kpi-chip {
+      padding: 4px 12px;
+      background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 6px;
+      font-size: 0.73rem;
+      color: var(--violet2);
+    }
+
+    /* ── CRITICAL 10 ── */
+    .critical-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .critical-item {
+      display: flex;
+      gap: 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      align-items: flex-start;
+    }
+
+    .critical-num {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--border2);
+      line-height: 1;
+      min-width: 40px;
+    }
+
+    .critical-body h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .critical-body p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── METRICS ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .metric-card.velocity::before  { background: linear-gradient(90deg, var(--violet), var(--indigo)); }
+    .metric-card.quality::before   { background: linear-gradient(90deg, var(--emerald), var(--cyan)); }
+    .metric-card.ops::before       { background: linear-gradient(90deg, var(--cyan), var(--indigo)); }
+    .metric-card.business::before  { background: linear-gradient(90deg, var(--amber), var(--orange)); }
+    .metric-card.autonomy::before  { background: linear-gradient(90deg, var(--rose), var(--violet)); }
+
+    .metric-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--dim);
+      margin-bottom: 6px;
+    }
+
+    .metric-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .metric-target {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .metric-target strong {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--violet2);
+    }
+
+    .metric-target span {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .metric-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      color: var(--dim);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--violet2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .team-grid { grid-template-columns: 1fr; }
+      .manifesto-block { padding: 32px 24px; }
+      .phase-header { flex-wrap: wrap; }
+      .flow-container { padding: 24px 20px; }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 40px 0;
+    }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: rgba(124,58,237,0.06);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .highlight-box strong { color: var(--violet2); }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; margin: 24px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--bg3);
+      color: var(--dim);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    td:first-child { font-weight: 600; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── BACK LINK ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.83rem;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── ORGANOGRAM ── */
+    .org-chart {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+
+    .org-level {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .org-level:not(:last-child) {
+      padding-bottom: 32px;
+    }
+
+    .org-connector {
+      text-align: center;
+      color: var(--border2);
+      font-size: 1.3rem;
+      margin: -4px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .org-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .org-node .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+    }
+
+    .org-node .name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      max-width: 70px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-glow"></div>
+  <div class="header-grid"></div>
+  <div class="header-content">
+    <div class="header-badge">🏭 Software Factory Blueprint v1.0</div>
+    <h1>A Fábrica que Dorme<br>e Ainda Assim Entrega</h1>
+    <p class="subtitle">Planta arquitetural completa de uma fábrica de software 100% autônoma com IA — do manifesto à implementação em 5 fases.</p>
+    <div class="header-meta">
+      <div class="header-stat"><strong>10</strong><span>Agentes</span></div>
+      <div class="header-stat"><strong>9</strong><span>Seções</span></div>
+      <div class="header-stat"><strong>5</strong><span>Fases de Deploy</span></div>
+      <div class="header-stat"><strong>∞</strong><span>Loop de Melhoria</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#manifesto">📜 Manifesto</a>
+    <a href="#team">🤖 Time</a>
+    <a href="#architecture">⚙️ Arquitetura</a>
+    <a href="#multi-client">🏢 Multi-Cliente</a>
+    <a href="#security">🔒 Segurança</a>
+    <a href="#stack">🛠️ Stack</a>
+    <a href="#phases">🚀 Fases</a>
+    <a href="#critical">⚠️ Não Esquecer</a>
+    <a href="#metrics">📊 Métricas</a>
+  </div>
+</nav>
+
+<main>
+  <a href="../" class="back-link">← Voltar ao Playground</a>
+
+  <!-- ══════════════════════════════════════════
+       1. MANIFESTO
+  ══════════════════════════════════════════ -->
+  <section id="manifesto">
+    <div class="section-label">01 — Manifesto</div>
+    <h2>A Visão</h2>
+    <p class="lead">O que estamos construindo não é um chatbot com superpoderes. É uma organização viva, que lê, pensa, constrói, testa, deploia, aprende e melhora — enquanto você dorme.</p>
+
+    <div class="manifesto-block">
+      <div class="manifesto-quote">
+        Uma fábrica que <em>dorme e ainda assim entrega</em>.<br>
+        Não um assistente. Uma <em>empresa</em>.
+      </div>
+      <p style="color: var(--muted); font-size: 0.95rem; max-width: 720px; line-height: 1.7;">
+        Software factories humanas têm um problema: dependem de humanos. Humanos dormem, tiram férias, ficam doentes, ficam entediados. Uma fábrica de software com IA não tem nenhum desses problemas. Tem outros — mas esses podemos resolver com engenharia cuidadosa.
+        <br><br>
+        A missão: construir um sistema onde um cliente descreve um produto, e a fábrica o entrega — com código, testes, documentação, deploy e métricas — sem nenhuma intervenção humana no processo core.
+      </p>
+
+      <div class="manifesto-pillars">
+        <div class="manifesto-pillar">
+          <div class="icon">🔁</div>
+          <strong>Loop Contínuo</strong>
+          <p>PM → Design → Dev → QA → Deploy → Métricas → novas issues. O loop nunca para.</p>
+        </div>
+        <div class="manifesto-pillar">
+          <div class="icon">🏢</div>
+          <strong>Multi-Tenant</strong>
+          <p>Múltiplos clientes, múltiplos projetos, isolamento completo de contexto e dados.</p>
+        </div>
+        <div class="manifesto-pillar">
+          <div class="icon">🔒</div>
+          <strong>Security-First</strong>
+          <p>Secrets nunca em git, SAST em todo PR, audit log de cada ação de agente.</p>
+        </div>
+        <div class="manifesto-pillar">
+          <div class="icon">📈</div>
+          <strong>Measurable</strong>
+          <p>Velocity, cobertura de testes, time-to-merge, uptime — tudo medido, tudo no dashboard.</p>
+        </div>
+        <div class="manifesto-pillar">
+          <div class="icon">🧠</div>
+          <strong>Self-Improving</strong>
+          <p>Retrospectivas automáticas identificam gargalos. A fábrica melhora seus próprios processos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2. TIME COMPLETO
+  ══════════════════════════════════════════ -->
+  <section id="team">
+    <div class="section-label">02 — Time Completo</div>
+    <h2>Os 10 Agentes</h2>
+    <p class="lead">André definiu 4 personas. Uma fábrica profissional precisa de 10. As 6 adições não são luxo — são o que separa um MVP de um produto que vai pra produção sem quebrar.</p>
+
+    <!-- Organograma -->
+    <div class="org-chart">
+      <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin-bottom: 20px; text-align: center;">Organograma da Fábrica</div>
+
+      <!-- Linha 1: Estratégia -->
+      <div class="org-level">
+        <div class="org-node">
+          <div class="icon">🎯</div>
+          <div class="name">PM Agent</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">👑</div>
+          <div class="name">Tech Lead</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">🔐</div>
+          <div class="name">Security Agent</div>
+        </div>
+      </div>
+
+      <div class="org-connector">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+
+      <!-- Linha 2: Execução -->
+      <div class="org-level" style="margin-top: 12px;">
+        <div class="org-node">
+          <div class="icon">🎨</div>
+          <div class="name">Designer</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">💻</div>
+          <div class="name">Dev Agent</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">🧪</div>
+          <div class="name">QA Agent</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">⚙️</div>
+          <div class="name">DevOps Agent</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">📝</div>
+          <div class="name">Docs Agent</div>
+        </div>
+      </div>
+
+      <div class="org-connector">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+
+      <!-- Linha 3: Feedback -->
+      <div class="org-level" style="margin-top: 12px;">
+        <div class="org-node">
+          <div class="icon">📣</div>
+          <div class="name">Marketeiro</div>
+        </div>
+        <div class="org-node">
+          <div class="icon">💬</div>
+          <div class="name">Customer Success</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-section-label original">✦ Personas Originais (André)</div>
+    <div class="team-grid">
+
+      <!-- PM -->
+      <div class="agent-card original">
+        <div class="agent-card-header">
+          <div class="agent-icon pm">🎯</div>
+          <div>
+            <div class="agent-name">Product Manager Agent</div>
+            <span class="agent-badge badge-original">Original</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Traduz a visão do cliente em roadmap ágil. Cria milestones, issues, labels, prioriza backlog. É o cervão estratégico da fábrica.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>Briefing do cliente, pesquisa de mercado web, feedback de Marketeiro e Customer Success</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>GitHub Milestones, Issues com labels (<code>pm</code>, <code>design-needed</code>, <code>ready-for-dev</code>), Roadmap doc, Sprint plan</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">GitHub Issues API</span>
+              <span class="tool-chip">web_search</span>
+              <span class="tool-chip">PostgreSQL</span>
+              <span class="tool-chip">Telegram notify</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Designer -->
+      <div class="agent-card original">
+        <div class="agent-card-header">
+          <div class="agent-icon design">🎨</div>
+          <div>
+            <div class="agent-name">Designer Agent</div>
+            <span class="agent-badge badge-original">Original</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Pesquisa referências UI/UX, produz especificações visuais, alimenta issues com wireframes textuais, paletas, componentes.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>Issues com label <code>design-needed</code>, pesquisa de produtos concorrentes, briefing de marca</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Specs de UI em markdown, referências visuais, system design tokens, atualização de issues com label <code>ready-for-dev</code></p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">web_search</span>
+              <span class="tool-chip">browser screenshots</span>
+              <span class="tool-chip">GitHub Issues API</span>
+              <span class="tool-chip">Dribbble/Awwwards</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dev -->
+      <div class="agent-card original">
+        <div class="agent-card-header">
+          <div class="agent-icon dev">💻</div>
+          <div>
+            <div class="agent-name">Dev Agent</div>
+            <span class="agent-badge badge-original">Original</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Pega a issue de maior prioridade com label <code>ready-for-dev</code>, cria branch, implementa, abre PR. Motor principal da fábrica.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>Issues priorizadas, specs do Designer, CLAUDE.md do projeto, testes existentes</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Branch com código, PR no GitHub, conventional commit messages, cobertura de testes básica</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">git/gh CLI</span>
+              <span class="tool-chip">exec shell</span>
+              <span class="tool-chip">read/write files</span>
+              <span class="tool-chip">npm/pip/etc</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marketeiro -->
+      <div class="agent-card original">
+        <div class="agent-card-header">
+          <div class="agent-icon mkt">📣</div>
+          <div>
+            <div class="agent-name">Marketeiro Agent</div>
+            <span class="agent-badge badge-original">Original</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Analisa UX/copy atual pós-deploy, pesquisa público-alvo, acompanha métricas de conversão, abre issues de melhoria.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>URL em produção, analytics (GA/Plausible), pesquisa de concorrentes, persona do usuário</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Issues de UX/copy, relatório de análise, sugestões de A/B test, benchmarks competitivos</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">web_search</span>
+              <span class="tool-chip">browser snapshot</span>
+              <span class="tool-chip">Analytics API</span>
+              <span class="tool-chip">GitHub Issues</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team-section-label added">✦ Adições Críticas (Faltavam)</div>
+    <div class="team-grid">
+
+      <!-- QA -->
+      <div class="agent-card added critical">
+        <div class="agent-card-header">
+          <div class="agent-icon qa">🧪</div>
+          <div>
+            <div class="agent-name">QA / Tester Agent</div>
+            <span class="agent-badge badge-critical">Crítico</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Por que é crítico</label>
+            <p>Sem QA, o Dev Agent vai eventualmente quebrar produção. É a porta de saída de todo PR. Nenhum merge acontece sem QA aprovar.</p>
+          </div>
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Valida PRs com testes automatizados (unit, integration, e2e), verifica cobertura mínima (≥80%), gera relatório, bloqueia merge se falhar.</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Relatório de cobertura, lista de falhas com linha exata, aprovação ou bloqueio de PR</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">pytest/jest/vitest</span>
+              <span class="tool-chip">Playwright</span>
+              <span class="tool-chip">coverage.py/nyc</span>
+              <span class="tool-chip">GitHub Actions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DevOps -->
+      <div class="agent-card added critical">
+        <div class="agent-card-header">
+          <div class="agent-icon devops">⚙️</div>
+          <div>
+            <div class="agent-name">DevOps / Infra Agent</div>
+            <span class="agent-badge badge-critical">Crítico</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Por que é crítico</label>
+            <p>Quem deploia? Sem DevOps Agent, código aprovado fica preso no PR. É o agente que transforma código em produto vivo.</p>
+          </div>
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Gerencia Docker Compose, CI/CD pipelines, deploys em staging e produção, monitora uptime, dispara alertas de downtime.</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Deploy em staging → produção, relatório de health check, alertas no Telegram, rollback automático se falhar</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">docker compose</span>
+              <span class="tool-chip">GitHub Actions</span>
+              <span class="tool-chip">SSH/exec</span>
+              <span class="tool-chip">UptimeRobot API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Lead -->
+      <div class="agent-card added critical">
+        <div class="agent-card-header">
+          <div class="agent-icon tl">👑</div>
+          <div>
+            <div class="agent-name">Tech Lead Agent</div>
+            <span class="agent-badge badge-critical">Crítico</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Por que é crítico</label>
+            <p>Sem revisão técnica, a dívida técnica cresce exponencialmente. O Dev Agent otimiza para "funciona", não para "é sustentável".</p>
+          </div>
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Revisa PRs tecnicamente: arquitetura, padrões de código, performance, segurança, violação de princípios SOLID/DRY. Bloqueia PRs ruins.</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Comentários de revisão no PR, aprovação ou request changes, documentação de decisões de arquitetura (ADRs)</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">GitHub PR API</span>
+              <span class="tool-chip">AST analysis</span>
+              <span class="tool-chip">complexity tools</span>
+              <span class="tool-chip">read/diff</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div class="agent-card added critical">
+        <div class="agent-card-header">
+          <div class="agent-icon sec">🔐</div>
+          <div>
+            <div class="agent-name">Security Agent</div>
+            <span class="agent-badge badge-critical">Crítico</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Por que é crítico</label>
+            <p>Agentes de IA são vetores de ataque. Podem ser manipulados a vazarem secrets via prompt injection ou a introduzirem vulns no código.</p>
+          </div>
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Roda SAST em todo PR (Semgrep), escaneia dependências (Dependabot/Snyk), detecta secrets no código, bloqueia deploy se vulnerabilidades críticas.</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Relatório de vulnerabilidades, CVEs encontrados, PRs bloqueados, tickets de remediação automáticos</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">Semgrep</span>
+              <span class="tool-chip">Bandit</span>
+              <span class="tool-chip">gitleaks</span>
+              <span class="tool-chip">Snyk CLI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Docs -->
+      <div class="agent-card added">
+        <div class="agent-card-header">
+          <div class="agent-icon docs">📝</div>
+          <div>
+            <div class="agent-name">Documentation Agent</div>
+            <span class="agent-badge badge-added">Adicionado</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Mantém README, CHANGELOG, docs de API (OpenAPI/Swagger) e wiki atualizados após cada merge. Nenhum PR mergeia sem docs.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>Commits mergeados, diff de código, issues fechadas, specs do Designer</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>CHANGELOG.md atualizado, README revisado, OpenAPI spec, wiki de decisões de produto</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">git log/diff</span>
+              <span class="tool-chip">conventional-changelog</span>
+              <span class="tool-chip">GitHub Wiki API</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Success -->
+      <div class="agent-card added">
+        <div class="agent-card-header">
+          <div class="agent-icon cs">💬</div>
+          <div>
+            <div class="agent-name">Customer Success Agent</div>
+            <span class="agent-badge badge-added">Adicionado</span>
+          </div>
+        </div>
+        <div class="agent-rows">
+          <div class="agent-row">
+            <label>Papel</label>
+            <p>Coleta e classifica feedback de usuários (Telegram, email, formulários). Abre issues de bug/melhoria priorizadas por volume e impacto.</p>
+          </div>
+          <div class="agent-row">
+            <label>Inputs</label>
+            <p>Mensagens de usuários, reviews de app store, tickets de suporte, NPS responses</p>
+          </div>
+          <div class="agent-row">
+            <label>Outputs</label>
+            <p>Issues classificadas (bug/feature/ux), resumo semanal de feedback para PM, alertas de feedback crítico</p>
+          </div>
+          <div class="agent-row">
+            <label>Ferramentas</label>
+            <div class="agent-tools">
+              <span class="tool-chip">Telegram API</span>
+              <span class="tool-chip">email IMAP</span>
+              <span class="tool-chip">GitHub Issues</span>
+              <span class="tool-chip">NLP classify</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       3. ARQUITETURA
+  ══════════════════════════════════════════ -->
+  <section id="architecture">
+    <div class="section-label">03 — Arquitetura</div>
+    <h2>Como a Fábrica Funciona</h2>
+    <p class="lead">Do briefing do cliente ao produto em produção — cada passo orquestrado, cada transição automatizada, cada gargalo monitorado.</p>
+
+    <div class="comms-grid">
+      <div class="comms-card">
+        <h4>🔌 Como Agentes se Comunicam</h4>
+        <ul>
+          <li><strong>GitHub Issues:</strong> canal primário de trabalho. Labels = estado da issue. Comments = handoff entre agentes.</li>
+          <li><strong>PostgreSQL:</strong> estado global da fábrica. Qual agente está em qual task, locks, audit log.</li>
+          <li><strong>Telegram:</strong> alertas críticos, aprovações humanas, relatórios de sprint.</li>
+          <li><strong>Arquivos (CLAUDE.md):</strong> contexto persistente por projeto, lido por todo agente antes de agir.</li>
+        </ul>
+      </div>
+      <div class="comms-card">
+        <h4>🔒 Prevenção de Conflitos</h4>
+        <ul>
+          <li><strong>Row-level locking no PostgreSQL:</strong> agente faz <code>SELECT FOR UPDATE</code> na issue antes de trabalhar.</li>
+          <li><strong>Branch por issue:</strong> cada issue = 1 branch = 1 agente. Nunca dois agentes no mesmo branch.</li>
+          <li><strong>Sem edição direta em main:</strong> todo código passa por PR. Main é sagrada.</li>
+          <li><strong>Idempotência:</strong> agentes verificam estado atual antes de agir. Se issue já foi pega, skip.</li>
+        </ul>
+      </div>
+      <div class="comms-card">
+        <h4>🌐 Estado Global da Fábrica</h4>
+        <ul>
+          <li><strong>PostgreSQL:</strong> tabela <code>agent_tasks</code> com issue_id, agent_id, status, started_at, context_json.</li>
+          <li><strong>GitHub Projects:</strong> Kanban visual. Colunas: Backlog → Design → Dev → QA → Review → Done.</li>
+          <li><strong>Heartbeat table:</strong> cada agente pulsa a cada 5min. Se parar = alerta.</li>
+          <li><strong>Audit log:</strong> toda ação de agente logada com timestamp, contexto, resultado.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 24px; font-size: 1.2rem; font-weight: 700;">O Flow Completo — Um Produto do Zero</h3>
+
+    <div class="flow-container">
+      <div class="flow-title">PRODUTO → PRODUÇÃO (9 ETAPAS)</div>
+      <div class="flow-steps">
+
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-pm">PM Agent</span>
+              <div class="flow-step-title">Kickoff e Roadmap</div>
+            </div>
+            <p>Cliente descreve produto via Telegram. PM Agent pesquisa mercado, concorrentes, melhores práticas. Cria milestone no GitHub, escreve PRD (Product Requirements Doc), abre issues iniciais com labels <code>pm</code>, <code>design-needed</code>, <code>p0/p1/p2</code>. Grava contexto no CLAUDE.md do repo.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: mensagem do cliente</span>
+              <span class="trigger-chip">output: milestone + ≥5 issues</span>
+              <span class="trigger-chip">notify: Telegram</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-design">Designer Agent</span>
+              <div class="flow-step-title">Especificação Visual</div>
+            </div>
+            <p>Detecta issues com label <code>design-needed</code>. Pesquisa referências no Dribbble/Awwwards, analisa concorrentes com browser, produz spec em markdown: cores, tipografia, componentes, wireframes ASCII, estados de UI (empty, loading, error, success). Atualiza issue, remove label <code>design-needed</code>, adiciona <code>ready-for-dev</code>.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: label design-needed</span>
+              <span class="trigger-chip">output: spec em issue comment</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-dev">Dev Agent</span>
+              <div class="flow-step-title">Implementação</div>
+            </div>
+            <p>Pega issue de maior prioridade com label <code>ready-for-dev</code>, faz <code>SELECT FOR UPDATE</code> no PostgreSQL para lock, cria branch <code>feat/issue-{id}</code>, lê CLAUDE.md, implementa. Conventional commits. Roda linter/formatter antes de PR. Abre PR com checklist de QA.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: label ready-for-dev</span>
+              <span class="trigger-chip">lock: PostgreSQL row</span>
+              <span class="trigger-chip">output: PR + branch</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-sec">Security Agent</span>
+              <div class="flow-step-title">Security Scan</div>
+            </div>
+            <p>Disparado pelo webhook do PR. Roda Semgrep (SAST), gitleaks (secret scan), Snyk (dependências). Se crítico → bloqueia PR e comenta issue. Se warnings → comenta mas não bloqueia. Log completo no audit trail.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: PR aberto</span>
+              <span class="trigger-chip">tools: Semgrep + gitleaks + Snyk</span>
+              <span class="trigger-chip">crítico: bloqueia merge</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">5</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-qa">QA Agent</span>
+              <div class="flow-step-title">Testes Automatizados</div>
+            </div>
+            <p>Executa suite de testes: unit tests, integration tests, testes e2e com Playwright se frontend. Valida cobertura ≥ 80%. Se falhar → comenta com stack trace linha a linha, remove label de revisão, volta para Dev. Se passar → adiciona label <code>qa-approved</code>.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: security-passed</span>
+              <span class="trigger-chip">cobertura mínima: 80%</span>
+              <span class="trigger-chip">output: qa-approved ou bloqueio</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">6</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-tl">Tech Lead Agent</span>
+              <div class="flow-step-title">Code Review</div>
+            </div>
+            <p>Revisa diff completo do PR. Verifica: complexidade ciclomática, DRY, SRP, performance óbvia, patterns do projeto, coerência com CLAUDE.md. Comenta inline. Aprova ou solicita changes. Se aprovar → label <code>ready-to-merge</code>.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: qa-approved</span>
+              <span class="trigger-chip">foco: arquitetura + padrões</span>
+              <span class="trigger-chip">output: approved ou changes-requested</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">7</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-devops">DevOps Agent</span>
+              <div class="flow-step-title">Deploy Staging → Produção</div>
+            </div>
+            <p>Detecta label <code>ready-to-merge</code>, faz squash merge, deploia em staging, roda smoke tests. Se OK → deploia em produção, atualiza DNS/nginx, registra versão no PostgreSQL. Se falhar → rollback automático para versão anterior, alerta Telegram.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: ready-to-merge</span>
+              <span class="trigger-chip">staging first</span>
+              <span class="trigger-chip">rollback automático</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">8</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-docs">Docs Agent</span>
+              <div class="flow-step-title">Documentação</div>
+            </div>
+            <p>Pós-merge: atualiza CHANGELOG.md com conventional-changelog, verifica se README ainda está preciso, atualiza OpenAPI spec se houve mudança de rotas, gera entry no wiki de decisões.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: merge event</span>
+              <span class="trigger-chip">CHANGELOG + README + OpenAPI</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="flow-step-num">9</div>
+          <div class="flow-step-body">
+            <div class="flow-step-header">
+              <span class="flow-agent-tag tag-mkt">Marketeiro</span>
+              <div class="flow-step-title">Análise Pós-Deploy → Loop</div>
+            </div>
+            <p>Analisa a feature em produção. Compara com concorrentes. Avalia copy, CTA, UX flow. Verifica métricas de conversão (se disponível). Abre novas issues de melhoria. Inicia o próximo ciclo. A fábrica nunca para.</p>
+            <div class="flow-triggers">
+              <span class="trigger-chip">trigger: deploy-succeeded</span>
+              <span class="trigger-chip">output: novas issues p1/p2</span>
+              <span class="trigger-chip">→ volta ao passo 1</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="margin-bottom: 16px; font-size: 1.1rem; font-weight: 700;">Processos que André Esqueceu</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Processo</th>
+            <th>Quem executa</th>
+            <th>Frequência</th>
+            <th>Por que importa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Definition of Done</td>
+            <td>Tech Lead + PM</td>
+            <td>Por projeto (setup)</td>
+            <td>Sem critérios claros, agentes nunca sabem quando uma issue está "pronta"</td>
+          </tr>
+          <tr>
+            <td>Sprint Planning</td>
+            <td>PM Agent</td>
+            <td>A cada 2 semanas</td>
+            <td>Agrupa issues em sprints, define velocity esperado, evita WIP ilimitado</td>
+          </tr>
+          <tr>
+            <td>Retrospectiva</td>
+            <td>PM Agent + dados do DB</td>
+            <td>Fim de cada sprint</td>
+            <td>Velocity real vs esperado, taxa de bugs, time-to-merge. A fábrica melhora a si mesma.</td>
+          </tr>
+          <tr>
+            <td>Staging Environment</td>
+            <td>DevOps Agent</td>
+            <td>Por projeto (setup)</td>
+            <td>Nunca deploiar direto em produção. Staging salva vidas.</td>
+          </tr>
+          <tr>
+            <td>Budget Tracking</td>
+            <td>PM Agent</td>
+            <td>Por sprint</td>
+            <td>Custo de API por projeto, horas-agente estimadas vs reais</td>
+          </tr>
+          <tr>
+            <td>Onboarding de Cliente</td>
+            <td>PM Agent + DevOps</td>
+            <td>Por novo cliente</td>
+            <td>Criar repo, banco isolado, CLAUDE.md, ambiente staging — processo padronizado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       4. GESTÃO MULTI-CLIENTE
+  ══════════════════════════════════════════ -->
+  <section id="multi-client">
+    <div class="section-label">04 — Gestão Multi-Cliente</div>
+    <h2>Isolamento e Contexto</h2>
+    <p class="lead">Como os agentes sabem em qual projeto estão? Como garantir que o código do cliente A nunca vaza pro cliente B? Tudo depende de isolamento estrito e context management.</p>
+
+    <div class="client-arch">
+      <div class="arch-block">
+        <h4>📁 Estrutura de Projeto Isolada</h4>
+        <div class="code-block"><span class="com"># Por projeto/cliente:</span>
+<span class="key">GitHub Org:</span>   <span class="val">AndreClawdTeam/projeto-X</span>
+<span class="key">PostgreSQL:</span>   <span class="val">db_projeto_x</span> (DB isolado)
+<span class="key">Docker:</span>      <span class="val">./docker-compose.yml</span>
+<span class="key">Staging URL:</span> <span class="val">staging.projeto-x.com</span>
+<span class="key">Prod URL:</span>    <span class="val">projeto-x.com</span>
+
+<span class="head">CLAUDE.md (contexto do agente):</span>
+<span class="key">project:</span>     <span class="val">Projeto X</span>
+<span class="key">client:</span>      <span class="val">Nome do Cliente</span>
+<span class="key">stack:</span>       <span class="val">Next.js + FastAPI + PostgreSQL</span>
+<span class="key">stage:</span>       <span class="val">MVP / Beta / Production</span>
+<span class="key">conventions:</span> <span class="val">...</span>
+<span class="key">do_not:</span>      <span class="val">nunca usar src/ sem lint</span>
+<span class="key">secrets_in:</span>  <span class="val">.env (never git)</span></div>
+      </div>
+
+      <div class="arch-block">
+        <h4>🗄️ Estado Global no PostgreSQL</h4>
+        <div class="code-block"><span class="head">tabela: agent_tasks</span>
+  id           UUID PK
+  project_id   VARCHAR  <span class="com">-- qual projeto</span>
+  issue_id     INTEGER  <span class="com">-- qual issue</span>
+  agent_type   VARCHAR  <span class="com">-- pm|dev|qa|etc</span>
+  status       VARCHAR  <span class="com">-- locked|running|done</span>
+  started_at   TIMESTAMP
+  context      JSONB    <span class="com">-- snapshot do estado</span>
+
+<span class="head">tabela: agent_heartbeats</span>
+  agent_id     VARCHAR
+  project_id   VARCHAR
+  last_ping    TIMESTAMP
+  status       VARCHAR
+
+<span class="head">tabela: audit_log</span>
+  id           UUID PK
+  agent_id     VARCHAR
+  project_id   VARCHAR
+  action       TEXT
+  result       JSONB
+  ts           TIMESTAMP</div>
+      </div>
+
+      <div class="arch-block">
+        <h4>📄 Handoff Document — Entre Agentes</h4>
+        <div class="code-block"><span class="com"># Issue comment ao passar o bastão:</span>
+
+<span class="head">## 🤝 Handoff: PM → Designer</span>
+
+<span class="key">Contexto:</span> <span class="val">Auth flow do app mobile</span>
+<span class="key">Decisões tomadas:</span>
+  - <span class="val">JWT com refresh token</span>
+  - <span class="val">Magic link como alternativa</span>
+  - <span class="val">Biometria na Fase 2</span>
+
+<span class="key">Referências:</span>
+  - <span class="val">Linear.app login screen</span>
+  - <span class="val">Vercel dashboard onboarding</span>
+
+<span class="key">Restrições:</span>
+  - <span class="val">Acessível (WCAG AA)</span>
+  - <span class="val">Mobile-first (80% usuários mobile)</span>
+
+<span class="key">Próximo agente:</span> <span class="val">Designer</span>
+<span class="key">Label a adicionar:</span> <span class="val">design-needed</span></div>
+      </div>
+
+      <div class="arch-block">
+        <h4>🚀 Onboarding de Novo Cliente (Automatizado)</h4>
+        <div class="code-block"><span class="head">Passo 1 — PM Agent recebe briefing</span>
+  gh repo create AndreClawdTeam/projeto-X
+  <span class="com"># Adicionar atreib como admin</span>
+  gh api PUT /repos/.../collaborators/atreib
+
+<span class="head">Passo 2 — DevOps Agent provisiona</span>
+  psql -c "CREATE DATABASE db_projeto_x;"
+  docker compose -p projeto-x up -d
+  <span class="com"># Configura staging URL</span>
+
+<span class="head">Passo 3 — PM Agent cria estrutura</span>
+  <span class="com"># Escreve CLAUDE.md</span>
+  <span class="com"># Cria labels padrão no repo</span>
+  <span class="com"># Cria milestone inicial</span>
+  <span class="com"># Abre issues de discovery</span>
+
+<span class="head">Passo 4 — Notifica cliente</span>
+  <span class="com"># Telegram: "Pronto! Roadmap criado."</span></div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>💡 Regra de Ouro do Multi-Cliente:</strong> Todo agente deve ler o CLAUDE.md do projeto antes de qualquer ação. O CLAUDE.md é o "briefing" do agente. Sem ele, o agente está cego — pode usar o stack errado, violar convenções, ou pior, misturar contexto de outro projeto. É o artefato mais importante da fábrica.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       5. SEGURANÇA
+  ══════════════════════════════════════════ -->
+  <section id="security">
+    <div class="section-label">05 — Segurança</div>
+    <h2>Checklist de Segurança Obrigatório</h2>
+    <p class="lead">Agentes de IA com acesso a código, banco de dados e infraestrutura são um vetor de ataque sério. Segurança não é opcional — é o que separa a fábrica de um desastre.</p>
+
+    <div class="security-grid">
+      <div class="security-category">
+        <h4>🔑 Secrets Management</h4>
+        <ul class="checklist">
+          <li class="critical"><strong>Nunca secrets em git.</strong> Nunca. Nem em .env commitado. Nem em "test" branches.</li>
+          <li>Secrets apenas em variáveis de ambiente do servidor ou HashiCorp Vault</li>
+          <li>gitleaks em todo PR — bloqueia merge se detectar secret</li>
+          <li>Rotação de chaves a cada 90 dias (automatizada)</li>
+          <li>Secrets separados por ambiente (dev/staging/prod têm chaves diferentes)</li>
+          <li><code>.env.example</code> commitado, <code>.env</code> no .gitignore</li>
+          <li>Agents têm access tokens próprios com permissões mínimas (least privilege)</li>
+        </ul>
+      </div>
+
+      <div class="security-category">
+        <h4>🔍 SAST e Dependency Scanning</h4>
+        <ul class="checklist">
+          <li>Semgrep em todo PR (regras: owasp-top-10, security-audit)</li>
+          <li>Bandit para projetos Python</li>
+          <li>npm audit / pip audit na CI</li>
+          <li>Dependabot habilitado em todos os repos</li>
+          <li>Snyk CLI para CVEs críticos (bloqueia deploy)</li>
+          <li>Lock files commitados (package-lock.json, poetry.lock)</li>
+          <li>Renovate bot para atualização automática de deps</li>
+        </ul>
+      </div>
+
+      <div class="security-category">
+        <h4>🛡️ Isolamento e Autenticação</h4>
+        <ul class="checklist">
+          <li class="critical">Cada cliente = banco separado (schema ou database). Sem compartilhamento.</li>
+          <li>Rate limiting em todas as rotas públicas (nginx + middleware)</li>
+          <li>Autenticação obrigatória em todas as rotas privadas</li>
+          <li>HTTPS everywhere (Let's Encrypt automático)</li>
+          <li>CORS configurado explicitamente (sem wildcard *)</li>
+          <li>SQL parameterizado — nunca concatenação de string em queries</li>
+          <li>Firewall: apenas portas 80/443/22 abertas externamente</li>
+        </ul>
+      </div>
+
+      <div class="security-category">
+        <h4>📋 Auditoria e Monitoramento</h4>
+        <ul class="checklist">
+          <li class="critical">Audit log de TODA ação de agente no PostgreSQL (quem, o quê, quando, resultado)</li>
+          <li>Agentes não podem deletar audit logs (append-only)</li>
+          <li>Alertas de comportamento anômalo (agente fazendo muitas chamadas, erro em loop)</li>
+          <li>Rate limiting de API por agente (evitar loop infinito custoso)</li>
+          <li>Dashboard de atividade de agentes em tempo real</li>
+          <li>Timeout obrigatório em toda ação de agente (máx 30min por task)</li>
+        </ul>
+      </div>
+
+      <div class="security-category">
+        <h4>🤖 Segurança Específica de IA</h4>
+        <ul class="checklist">
+          <li class="critical">Prompt injection: agentes não executam código recebido de issues/comentários sem validação</li>
+          <li>Agentes não têm acesso à chave de API do usuário — apenas a suas próprias</li>
+          <li>Agentes não podem alterar suas próprias regras ou system prompts</li>
+          <li>Limite de tokens por tarefa (evita loops custosos)</li>
+          <li>Human-in-the-loop para ações irreversíveis (delete DB, push to prod)</li>
+          <li>Revisão humana obrigatória antes de deploy em produção (Fase 1-2)</li>
+        </ul>
+      </div>
+
+      <div class="security-category">
+        <h4>🏗️ Infraestrutura Segura</h4>
+        <ul class="checklist">
+          <li>Docker com usuário não-root dentro do container</li>
+          <li>Read-only filesystem onde possível</li>
+          <li>Network isolation: containers em rede privada, nginx como único ponto de entrada</li>
+          <li>Backup diário do PostgreSQL (automático, testado mensalmente)</li>
+          <li>SSH com chave apenas (sem senha)</li>
+          <li>Fail2ban no SSH</li>
+          <li>Atualizações de SO automatizadas (unattended-upgrades)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       6. STACK TECNOLÓGICA
+  ══════════════════════════════════════════ -->
+  <section id="stack">
+    <div class="section-label">06 — Stack Tecnológica</div>
+    <h2>O que Usar em Cada Camada</h2>
+    <p class="lead">Escolhas pragmáticas para 2025. Cada ferramenta justificada, não apenas listada.</p>
+
+    <div class="stack-grid">
+      <div class="stack-layer">
+        <h4>🤖 Agentes / IA</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">Claude Sonnet 4</div>
+          <div class="stack-item-desc">LLM principal dos agentes. Melhor ratio custo/inteligência para tarefas de código.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">OpenClaw</div>
+          <div class="stack-item-desc">Orquestrador de sub-agents. Already in use. Infraestrutura já pronta.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">CrewAI (referência)</div>
+          <div class="stack-item-desc">Padrões de multi-agent orchestration. Estudar a arquitetura, não necessariamente usar.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>📋 Project Management</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">GitHub Issues</div>
+          <div class="stack-item-desc">Canal primário de comunicação entre agentes. Labels = estados. API robusta.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">GitHub Projects</div>
+          <div class="stack-item-desc">Kanban visual nativo. Colunas automáticas por label.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">GitHub Milestones</div>
+          <div class="stack-item-desc">Sprint containers. PM Agent agrupa issues aqui.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>⚙️ CI/CD e Deploy</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">GitHub Actions</div>
+          <div class="stack-item-desc">CI/CD nativo do repositório. Gratuito para repos privados (limite de minutos).</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Docker Compose</div>
+          <div class="stack-item-desc">Deploy por projeto. Simples, sem Kubernetes para começar.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Nginx + Certbot</div>
+          <div class="stack-item-desc">Proxy reverso + TLS automático. Já configurado na VPS.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>🗄️ Dados</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">PostgreSQL</div>
+          <div class="stack-item-desc">Estado global da fábrica. Um DB por cliente. Já disponível na VPS.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Redis</div>
+          <div class="stack-item-desc">Cache e queues de tasks. Útil a partir da Fase 3.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">pgvector</div>
+          <div class="stack-item-desc">Extensão para memória semântica dos agentes. Busca por similaridade de contexto.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>🔒 Segurança / QA</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">Semgrep</div>
+          <div class="stack-item-desc">SAST open-source. 2000+ regras de segurança. Integra nativamente no CI.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">gitleaks</div>
+          <div class="stack-item-desc">Detecta secrets no código. Rápido, configurável, zero falsos positivos relevantes.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Playwright</div>
+          <div class="stack-item-desc">E2E tests para frontends. QA Agent usa isso para validar UX flows.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>📡 Comunicação</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">Telegram Bot API</div>
+          <div class="stack-item-desc">Notificações críticas, relatórios, aprovações humanas. Já integrado.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">GitHub Webhooks</div>
+          <div class="stack-item-desc">Trigger de agentes por eventos: PR aberto, issue labeled, merge.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">conventional-changelog</div>
+          <div class="stack-item-desc">Geração automática de CHANGELOG a partir de commits. Zero trabalho manual.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>📊 Observabilidade</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">UptimeRobot</div>
+          <div class="stack-item-desc">Monitoramento de uptime. Free tier cobre bem para começar.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Plausible Analytics</div>
+          <div class="stack-item-desc">Analytics de produto self-hosted. Marketeiro Agent lê métricas daqui.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Grafana + Loki</div>
+          <div class="stack-item-desc">Dashboard de logs e métricas da fábrica. Fase 3 em diante.</div>
+        </div>
+      </div>
+
+      <div class="stack-layer">
+        <h4>🛠️ Dev Stack Padrão</h4>
+        <div class="stack-item">
+          <div class="stack-item-name">Next.js / React</div>
+          <div class="stack-item-desc">Frontend padrão. TypeScript obrigatório. App Router.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">FastAPI / Python</div>
+          <div class="stack-item-desc">Backend padrão para APIs. Rápido, tipado, ótimo ecossistema de IA.</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-item-name">Conventional Commits</div>
+          <div class="stack-item-desc">Padrão obrigatório de commit. Habilita changelog e semantic versioning automático.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       7. PLANO DE IMPLEMENTAÇÃO
+  ══════════════════════════════════════════ -->
+  <section id="phases">
+    <div class="section-label">07 — Plano de Implementação</div>
+    <h2>5 Fases — Do MVP à Autonomia Total</h2>
+    <p class="lead">Não tente construir tudo de uma vez. Cada fase adiciona agentes e processos sobre uma base sólida. A Fase 1 já entrega valor real.</p>
+
+    <div class="phases-container">
+
+      <!-- FASE 1 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">01</div>
+          <div class="phase-meta">
+            <h3>PM + Dev Agent — Projeto Piloto</h3>
+            <p>A fábrica mínima que entrega código real. Prova do conceito.</p>
+          </div>
+          <span class="phase-status mvp">MVP — Começar Agora</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-col">
+            <h4>O que implementar</h4>
+            <ul>
+              <li>PM Agent: recebe briefing via Telegram, abre issues no GitHub</li>
+              <li>Dev Agent: pega issue, implementa, abre PR</li>
+              <li>PostgreSQL: tabela agent_tasks com row-level locking</li>
+              <li>CLAUDE.md por projeto com contexto básico</li>
+              <li>Deploy manual pelo André (ainda sem DevOps Agent)</li>
+              <li>Conventional commits enforced via commitlint</li>
+              <li>GitHub Labels padrão: p0, p1, p2, design-needed, ready-for-dev, in-progress</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Critério de Sucesso</h4>
+            <ul>
+              <li>PM Agent abre ≥10 issues sem intervenção humana</li>
+              <li>Dev Agent implementa ≥5 issues e abre PRs</li>
+              <li>Zero conflitos de agentes no mesmo arquivo</li>
+              <li>André consegue revisar e mergear sem retrabalho pesado</li>
+              <li>Tempo de issue → PR: &lt; 2 horas</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase-kpi">
+          <span class="kpi-chip">🎯 1 projeto piloto real</span>
+          <span class="kpi-chip">⏱ 2 semanas para implementar</span>
+          <span class="kpi-chip">🤖 2 agentes ativos</span>
+          <span class="kpi-chip">👤 Deploy ainda manual</span>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">02</div>
+          <div class="phase-meta">
+            <h3>QA + Tech Lead + CI/CD — Qualidade Automática</h3>
+            <p>Nenhum PR entra em main sem passar por testes e revisão técnica automatizada.</p>
+          </div>
+          <span class="phase-status q2">Fase 2 — Após Fase 1 estabilizar</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-col">
+            <h4>O que implementar</h4>
+            <ul>
+              <li>QA Agent: roda pytest/jest no PR, valida cobertura ≥80%</li>
+              <li>Tech Lead Agent: code review automatizado no PR</li>
+              <li>DevOps Agent: CI/CD via GitHub Actions, deploy em staging</li>
+              <li>Security Agent: Semgrep + gitleaks em todo PR</li>
+              <li>Staging environment por projeto (subdomínio automático)</li>
+              <li>GitHub Actions workflow: lint → test → security → review → deploy-staging</li>
+              <li>Rollback automático se smoke tests falham em staging</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Critério de Sucesso</h4>
+            <ul>
+              <li>100% dos PRs passam por QA antes de merge</li>
+              <li>Cobertura de testes ≥ 80% em todos os projetos</li>
+              <li>Nenhuma secret encontrada em nenhum commit</li>
+              <li>Deploy em staging automático após PR aprovado</li>
+              <li>André só precisa aprovar o deploy em produção</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase-kpi">
+          <span class="kpi-chip">🧪 QA automático em 100% dos PRs</span>
+          <span class="kpi-chip">⚙️ CI/CD completo</span>
+          <span class="kpi-chip">🔒 Security scan em todo commit</span>
+          <span class="kpi-chip">🏗️ Staging automático</span>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">03</div>
+          <div class="phase-meta">
+            <h3>Designer + Marketeiro + Métricas — UX e Crescimento</h3>
+            <p>A fábrica começa a pensar em produto, não só em código.</p>
+          </div>
+          <span class="phase-status q3">Fase 3 — Produto com usuários reais</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-col">
+            <h4>O que implementar</h4>
+            <ul>
+              <li>Designer Agent: pesquisa referências, produz specs visuais em issues</li>
+              <li>Marketeiro Agent: analisa produto pós-deploy, abre issues de melhoria</li>
+              <li>Plausible Analytics integrado em todos os projetos</li>
+              <li>Docs Agent: CHANGELOG automático, README e OpenAPI atualizados</li>
+              <li>Customer Success Agent: processa feedback de usuários via Telegram</li>
+              <li>Sprint planning automatizado pelo PM (a cada 2 semanas)</li>
+              <li>Retrospectiva automática com métricas reais</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Critério de Sucesso</h4>
+            <ul>
+              <li>Issues de design têm specs completas antes de ir pro Dev</li>
+              <li>CHANGELOG atualizado após cada merge automaticamente</li>
+              <li>Feedback de usuários vira issue em &lt; 24h</li>
+              <li>Marketeiro abre ≥ 3 issues de melhoria por sprint</li>
+              <li>Métricas de produto visíveis no dashboard</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase-kpi">
+          <span class="kpi-chip">🎨 Design specs automáticas</span>
+          <span class="kpi-chip">📊 Métricas de produto</span>
+          <span class="kpi-chip">📝 Docs sempre atualizados</span>
+          <span class="kpi-chip">💬 Feedback loop fechado</span>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">04</div>
+          <div class="phase-meta">
+            <h3>Multi-Cliente + Onboarding Automatizado</h3>
+            <p>A fábrica escala. Múltiplos projetos rodando em paralelo com isolamento total.</p>
+          </div>
+          <span class="phase-status q4">Fase 4 — Escala</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-col">
+            <h4>O que implementar</h4>
+            <ul>
+              <li>Onboarding automatizado: briefing → repo + DB + staging em 10 minutos</li>
+              <li>Agentes gerenciam múltiplos projetos com context switching via PostgreSQL</li>
+              <li>Budget tracking: custo de API por projeto, relatório mensal</li>
+              <li>Priorização cross-projeto: fábrica sabe qual projeto tem mais urgência</li>
+              <li>Dashboard de todos os projetos ativos</li>
+              <li>SLA automático: se issue não moveu em 48h, alerta</li>
+              <li>Faturamento por projeto (horas de agente × custo de API)</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Critério de Sucesso</h4>
+            <ul>
+              <li>≥ 3 projetos rodando em paralelo sem conflitos</li>
+              <li>Onboarding de cliente novo em &lt; 10 minutos</li>
+              <li>Zero vazamento de contexto entre clientes</li>
+              <li>Budget tracking com precisão de ±10%</li>
+              <li>André consegue gerenciar a fábrica em &lt; 1h/dia</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase-kpi">
+          <span class="kpi-chip">🏢 Multi-tenant real</span>
+          <span class="kpi-chip">⚡ Onboarding em 10min</span>
+          <span class="kpi-chip">💰 Budget tracking</span>
+          <span class="kpi-chip">📋 SLA automático</span>
+        </div>
+      </div>
+
+      <!-- FASE 5 -->
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">05</div>
+          <div class="phase-meta">
+            <h3>Autonomia Total + Self-Improvement</h3>
+            <p>A fábrica melhora a si mesma. Retrospectivas identificam gargalos e propõem melhorias nos próprios processos.</p>
+          </div>
+          <span class="phase-status future">Fase 5 — Visão de Longo Prazo</span>
+        </div>
+        <div class="phase-body">
+          <div class="phase-col">
+            <h4>O que implementar</h4>
+            <ul>
+              <li>Deploy em produção 100% automático (sem aprovação humana para features)</li>
+              <li>Auto-retrospectiva: PM Agent analisa métricas, propõe mudanças no processo</li>
+              <li>Agentes melhoram CLAUDE.md com lições aprendidas</li>
+              <li>Self-healing: se agente falha, tenta novamente com contexto diferente</li>
+              <li>Memory semântica com pgvector: agentes lembram de soluções passadas</li>
+              <li>Agente de arquitetura: sugere refatorações baseado em métricas de complexidade</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Critério de Sucesso</h4>
+            <ul>
+              <li>Velocity aumenta sprint sobre sprint</li>
+              <li>Taxa de bugs decresce ao longo do tempo</li>
+              <li>André passa de operador para estrategista</li>
+              <li>Fábrica sugere novos projetos baseado em oportunidades de mercado</li>
+              <li>Custo por feature entregue decresce com o tempo</li>
+            </ul>
+          </div>
+        </div>
+        <div class="phase-kpi">
+          <span class="kpi-chip">🤖 100% autônomo</span>
+          <span class="kpi-chip">🧠 Self-improving</span>
+          <span class="kpi-chip">📈 Velocity crescente</span>
+          <span class="kpi-chip">∞ Loop eterno</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       8. O QUE NÃO ESQUECER
+  ══════════════════════════════════════════ -->
+  <section id="critical">
+    <div class="section-label">08 — Não Esquecer</div>
+    <h2>As 10 Coisas Críticas</h2>
+    <p class="lead">Construído a partir de padrões reais de falha em sistemas autônomos. Ignore qualquer um desses e a fábrica vai quebrar em produção.</p>
+
+    <div class="critical-grid">
+
+      <div class="critical-item">
+        <div class="critical-num">01</div>
+        <div class="critical-body">
+          <h4>Row-Level Locking obrigatório</h4>
+          <p>Dois agentes podem pegar a mesma issue simultaneamente. Sem <code>SELECT FOR UPDATE</code> no PostgreSQL antes de qualquer ação, haverá conflitos. Isso é o problema mais subestimado de sistemas multi-agent.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">02</div>
+        <div class="critical-body">
+          <h4>Staging é sagrado — nunca direto em prod</h4>
+          <p>O Dev Agent vai inevitavelmente introduzir um bug que quebra produção. Staging com smoke tests automáticos é a rede de segurança. Sem ela, um deploy errado derruba cliente real.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">03</div>
+        <div class="critical-body">
+          <h4>Timeout em toda tarefa de agente</h4>
+          <p>Agentes podem entrar em loop infinito (especialmente o Dev Agent em bugs complexos). Timeout obrigatório de 30 minutos por tarefa. Sem isso, você acorda com uma conta de API de $500.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">04</div>
+        <div class="critical-body">
+          <h4>Definition of Done explícita por projeto</h4>
+          <p>O que é "done" para uma issue? Tem testes? Tem docs? Foi testado em staging? Sem isso definido no CLAUDE.md, o Dev Agent vai abrir PRs incompletos eternamente.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">05</div>
+        <div class="critical-body">
+          <h4>Audit log imutável de toda ação</h4>
+          <p>Quando algo der errado (e vai), você precisa saber exatamente o que cada agente fez, quando e com qual resultado. Sem audit log, debug de problema é caçar fantasma.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">06</div>
+        <div class="critical-body">
+          <h4>CLAUDE.md como contrato do projeto</h4>
+          <p>É o artefato mais importante da fábrica. Se o CLAUDE.md está desatualizado ou incompleto, agentes tomam decisões erradas. Docs Agent deve validar e atualizar após cada sprint.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">07</div>
+        <div class="critical-body">
+          <h4>Human-in-the-loop para ações irreversíveis</h4>
+          <p>DROP TABLE, delete de registros de produção, mudanças de schema, push para produção — exigem aprovação humana via Telegram. Agentes não têm permissão para ações verdadeiramente destrutivas.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">08</div>
+        <div class="critical-body">
+          <h4>Rollback automático com zero downtime</h4>
+          <p>Se o deploy em produção falha nos smoke tests, rollback deve ser automático em &lt; 60 segundos. Sem isso, cada deploy falho é downtime real para o cliente.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">09</div>
+        <div class="critical-body">
+          <h4>WIP (Work In Progress) limit</h4>
+          <p>Sem WIP limit, agentes vão pegar 20 issues ao mesmo tempo e não terminar nenhuma. Cada agente deve trabalhar em no máximo 1 issue por vez. Kanban básico.</p>
+        </div>
+      </div>
+
+      <div class="critical-item">
+        <div class="critical-num">10</div>
+        <div class="critical-body">
+          <h4>Custo de API é uma métrica de negócio</h4>
+          <p>Cada tarefa de agente custa dinheiro real. Sem rastrear custo por projeto, você vai descobrir que está subsidiando clientes sem saber. Budget tracking desde a Fase 1, não depois.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       9. MÉTRICAS DE SUCESSO
+  ══════════════════════════════════════════ -->
+  <section id="metrics">
+    <div class="section-label">09 — Métricas de Sucesso</div>
+    <h2>Como Saber que Está Funcionando</h2>
+    <p class="lead">Uma fábrica sem métricas é uma caixa preta. Meça o que importa: velocity, qualidade, custos, autonomia.</p>
+
+    <div class="metrics-grid">
+
+      <div class="metric-card velocity">
+        <div class="metric-label">Velocidade</div>
+        <div class="metric-name">Issues por Sprint</div>
+        <div class="metric-target">
+          <strong>≥ 10</strong>
+          <span>issues fechadas / 2 semanas</span>
+        </div>
+        <div class="metric-desc">Baseline da capacidade da fábrica. Deve crescer sprint sobre sprint. Se estiver caindo, há gargalo a identificar.</div>
+      </div>
+
+      <div class="metric-card velocity">
+        <div class="metric-label">Velocidade</div>
+        <div class="metric-name">Lead Time</div>
+        <div class="metric-target">
+          <strong>&lt; 4h</strong>
+          <span>issue criada → PR aberto</span>
+        </div>
+        <div class="metric-desc">Tempo entre PM criar issue e Dev Agent abrir PR. Mede fluidez do pipeline de design → desenvolvimento.</div>
+      </div>
+
+      <div class="metric-card quality">
+        <div class="metric-label">Qualidade</div>
+        <div class="metric-name">Cobertura de Testes</div>
+        <div class="metric-target">
+          <strong>≥ 80%</strong>
+          <span>de cobertura de código</span>
+        </div>
+        <div class="metric-desc">QA Agent bloqueia merge abaixo de 80%. Meta de longo prazo: 90%. Mede maturidade do código entregue.</div>
+      </div>
+
+      <div class="metric-card quality">
+        <div class="metric-label">Qualidade</div>
+        <div class="metric-name">Taxa de Bugs em Prod</div>
+        <div class="metric-target">
+          <strong>&lt; 5%</strong>
+          <span>das features entregues</span>
+        </div>
+        <div class="metric-desc">Features que chegam em produção e geram bug report. Deve cair com o tempo conforme QA Agent melhora.</div>
+      </div>
+
+      <div class="metric-card ops">
+        <div class="metric-label">Operações</div>
+        <div class="metric-name">Uptime</div>
+        <div class="metric-target">
+          <strong>99.5%</strong>
+          <span>de disponibilidade</span>
+        </div>
+        <div class="metric-desc">Meta de SLA por projeto. Rollback automático e smoke tests devem manter isso. UptimeRobot monitora.</div>
+      </div>
+
+      <div class="metric-card ops">
+        <div class="metric-label">Operações</div>
+        <div class="metric-name">Deploy Frequency</div>
+        <div class="metric-target">
+          <strong>≥ 3x</strong>
+          <span>deploys por semana</span>
+        </div>
+        <div class="metric-desc">Fábricas modernas fazem deploys frequentes e pequenos. Lotes menores = menos risco por deploy.</div>
+      </div>
+
+      <div class="metric-card business">
+        <div class="metric-label">Negócio</div>
+        <div class="metric-name">Custo por Feature</div>
+        <div class="metric-target">
+          <strong>↓</strong>
+          <span>deve cair com o tempo</span>
+        </div>
+        <div class="metric-desc">Custo de API / número de features entregues. Deve cair com otimizações de prompt e caching. Mede eficiência da fábrica.</div>
+      </div>
+
+      <div class="metric-card business">
+        <div class="metric-label">Negócio</div>
+        <div class="metric-name">Tempo do André</div>
+        <div class="metric-target">
+          <strong>&lt; 1h</strong>
+          <span>de gestão por dia</span>
+        </div>
+        <div class="metric-desc">A métrica mais importante. Se André está gerenciando a fábrica mais de 1h/dia, algo está errado nos processos.</div>
+      </div>
+
+      <div class="metric-card autonomy">
+        <div class="metric-label">Autonomia</div>
+        <div class="metric-name">% Autônomo</div>
+        <div class="metric-target">
+          <strong>→ 95%</strong>
+          <span>sem intervenção humana</span>
+        </div>
+        <div class="metric-desc">Fase 1: ~60% autônomo. Fase 5: 95%+. Os 5% restantes são decisões estratégicas e aprovações de deploy em produção.</div>
+      </div>
+
+      <div class="metric-card autonomy">
+        <div class="metric-label">Autonomia</div>
+        <div class="metric-name">Retrospectiva Score</div>
+        <div class="metric-target">
+          <strong>↑</strong>
+          <span>velocity trend</span>
+        </div>
+        <div class="metric-desc">A fábrica é melhor hoje do que era no sprint passado? Se sim, a auto-melhoria está funcionando. A tendência é o que importa.</div>
+      </div>
+
+    </div>
+
+    <div class="highlight-box" style="margin-top: 32px;">
+      <strong>🎯 O Dashboard da Fábrica</strong> deve mostrar em tempo real: agentes ativos, issues em cada estado do Kanban, última ação de cada agente, uptime por projeto, custo de API nas últimas 24h, e alertas ativos. Uma tela. Zero necessidade de abrir 10 abas para entender o estado da fábrica.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  🏭 Software Factory Blueprint v1.0 — by Johnny Juvenil 🫡 &nbsp;|&nbsp;
+  <a href="../">← Playground</a> &nbsp;|&nbsp;
+  <a href="https://github.com/AndreClawdTeam" target="_blank">AndreClawdTeam</a>
+</footer>
+
+</body>
+</html>
