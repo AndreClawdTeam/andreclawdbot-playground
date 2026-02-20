@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🤖 Johnny como Trader — Planejamento</title>
+  <title>🤖 Trading Bot — Fonte da Verdade</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -115,6 +115,7 @@
     .badge-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35);  color: #86efac; }
     .badge-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.35);  color: #fde047; }
     .badge-cyan   { background: rgba(6,182,212,0.12);  border-color: rgba(6,182,212,0.35);  color: #67e8f9; }
+    .badge-red    { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.35);  color: #fca5a5; }
 
     @keyframes fadeInDown {
       from { opacity: 0; transform: translateY(-20px); }
@@ -143,10 +144,10 @@
 
     nav a {
       display: inline-block;
-      padding: 14px 16px;
+      padding: 14px 14px;
       color: var(--muted);
       text-decoration: none;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 500;
       border-bottom: 2px solid transparent;
       transition: color 0.2s, border-color 0.2s;
@@ -211,7 +212,6 @@
       border-radius: 16px;
       padding: 24px;
       transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      cursor: default;
     }
 
     .card:hover {
@@ -231,128 +231,8 @@
 
     .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
 
-    /* ── STRATEGY TABS ── */
-    .tabs-container { margin-top: 0; }
-
-    .tabs-nav {
-      display: flex;
-      gap: 4px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      padding: 10px 20px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.2s, border-color 0.2s;
-      border-radius: 6px 6px 0 0;
-    }
-
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { color: var(--accent); border-color: var(--accent); }
-
-    .tab-panel { display: none; animation: fadeIn 0.3s ease; }
-    .tab-panel.active { display: block; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-    .strategy-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-    }
-
-    .strategy-card h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .strategy-card p { color: var(--muted); margin-bottom: 20px; }
-
-    .pros-cons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 580px) { .pros-cons { grid-template-columns: 1fr; } }
-
-    .pros, .cons {
-      background: var(--bg4);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .pros h4 { color: var(--green); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-    .cons h4 { color: var(--red);   margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-
-    .pros ul, .cons ul { list-style: none; }
-    .pros ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
-    .cons ul li::before { content: '✗ '; color: var(--red);   font-weight: 700; }
-    .pros ul li, .cons ul li { font-size: 0.88rem; color: var(--muted); margin-bottom: 6px; line-height: 1.5; }
-
-    .risk-meter {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .risk-meter span { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
-
-    .risk-bar-bg {
-      flex: 1;
-      height: 8px;
-      background: var(--bg4);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .risk-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      animation: fillBar 1.2s ease both;
-    }
-
-    @keyframes fillBar { from { width: 0; } }
-
-    /* ── TECH STACK ── */
-    .stack-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-    }
-
-    .stack-item {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .stack-item:hover { border-color: var(--accent); transform: translateX(4px); }
-
-    .stack-item-icon { font-size: 1.5rem; }
-
-    .stack-item-info h4 { font-size: 0.9rem; font-weight: 700; }
-    .stack-item-info p { font-size: 0.77rem; color: var(--muted); }
-
-    /* ── EXCHANGE TABLE ── */
-    .exchange-table-wrap { overflow-x: auto; }
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
 
     table {
       width: 100%;
@@ -397,182 +277,9 @@
     .tag-green  { background: rgba(34,197,94,0.15);  color: #86efac; }
     .tag-yellow { background: rgba(234,179,8,0.15);  color: #fde047; }
     .tag-red    { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .tag-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
 
-    /* ── ARCHITECTURE ── */
-    .arch-diagram {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .arch-layer {
-      display: flex;
-      align-items: stretch;
-      gap: 12px;
-    }
-
-    .arch-box {
-      flex: 1;
-      background: var(--bg4);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .arch-box:hover { border-color: var(--accent); transform: scale(1.02); }
-
-    .arch-box h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
-    .arch-box p  { font-size: 0.8rem; color: var(--muted); }
-
-    .arch-arrow {
-      display: flex;
-      justify-content: center;
-      padding: 8px 0;
-      color: var(--border);
-      font-size: 1.3rem;
-    }
-
-    .component-color-1 { border-left: 3px solid var(--accent); }
-    .component-color-2 { border-left: 3px solid var(--green); }
-    .component-color-3 { border-left: 3px solid var(--yellow); }
-    .component-color-4 { border-left: 3px solid var(--red); }
-    .component-color-5 { border-left: 3px solid var(--cyan); }
-
-    /* ── COLLAPSIBLE ── */
-    .collapsible-group { display: flex; flex-direction: column; gap: 8px; }
-
-    .collapsible-item {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .collapsible-trigger {
-      width: 100%;
-      background: none;
-      border: none;
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-align: left;
-      transition: background 0.2s;
-    }
-
-    .collapsible-trigger:hover { background: var(--bg4); }
-
-    .collapsible-chevron {
-      transition: transform 0.3s;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    .collapsible-item.open .collapsible-chevron { transform: rotate(180deg); }
-
-    .collapsible-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-    }
-
-    .collapsible-body-inner {
-      padding: 0 20px 20px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.8;
-    }
-
-    .collapsible-body-inner ul { padding-left: 20px; margin-top: 8px; }
-    .collapsible-body-inner li { margin-bottom: 6px; }
-    .collapsible-body-inner code {
-      background: var(--bg4);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      color: #a5b4fc;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    }
-
-    /* ── PHASES TIMELINE ── */
-    .timeline { position: relative; padding-left: 36px; }
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 14px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
-    }
-
-    .phase {
-      position: relative;
-      margin-bottom: 32px;
-    }
-
-    .phase::before {
-      content: '';
-      position: absolute;
-      left: -28px;
-      top: 16px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      background: var(--bg);
-      box-shadow: 0 0 12px rgba(99,102,241,0.5);
-    }
-
-    .phase-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      transition: border-color 0.2s;
-    }
-
-    .phase-card:hover { border-color: var(--accent); }
-
-    .phase-number {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-
-    .phase-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
-
-    .phase-card p { color: var(--muted); font-size: 0.9rem; }
-
-    .phase-steps {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .phase-step {
-      background: var(--bg4);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    /* ── WARNING BOX ── */
+    /* ── WARNING / INFO BOXES ── */
     .warning-box {
       background: rgba(239,68,68,0.08);
       border: 1px solid rgba(239,68,68,0.3);
@@ -586,9 +293,6 @@
       font-size: 1rem;
       font-weight: 700;
       margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .warning-box p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
@@ -598,6 +302,7 @@
       border: 1px solid rgba(99,102,241,0.3);
       border-radius: 14px;
       padding: 24px;
+      margin-bottom: 16px;
     }
 
     .info-box h3 {
@@ -609,32 +314,152 @@
 
     .info-box p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
 
-    /* ── CODE BLOCK ── */
-    .code-block {
+    .success-box {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .success-box h3 {
+      color: var(--green);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .success-box p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── CODE BLOCKS ── */
+    .code-wrap {
+      position: relative;
+      margin: 16px 0;
+    }
+
+    .code-label {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    pre {
+      background: #0d0d10;
+      border: 1px solid var(--border);
+      border-radius: 0 12px 12px 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.7;
+      white-space: pre;
+      word-break: normal;
+    }
+
+    pre.no-label {
+      border-radius: 12px;
+    }
+
+    .code-block-simple {
       background: #0d0d10;
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
       font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      font-size: 0.82rem;
-      color: #a5b4fc;
+      font-size: 0.8rem;
+      color: #e2e8f0;
       overflow-x: auto;
       line-height: 1.7;
-      margin-top: 16px;
+      margin: 16px 0;
     }
 
-    .code-block .kw  { color: #c084fc; }
-    .code-block .str { color: #86efac; }
-    .code-block .cm  { color: #3f3f46; }
-    .code-block .fn  { color: #67e8f9; }
-    .code-block .num { color: #fde047; }
+    code {
+      background: var(--bg4);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #a5b4fc;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* ── RISK ITEMS ── */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .risk-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      border-left: 4px solid var(--red);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .risk-item:hover { transform: translateY(-2px); border-color: var(--red); }
+
+    .risk-item-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .risk-item-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(239,68,68,0.2);
+      border: 1px solid rgba(239,68,68,0.4);
+      color: var(--red);
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .risk-item-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .risk-item p {
+      color: var(--muted);
+      font-size: 0.87rem;
+      line-height: 1.6;
+    }
+
+    .risk-value {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 4px 12px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #fca5a5;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
 
     /* ── STAT CARDS ── */
     .stat-row {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
 
     .stat-card {
@@ -646,7 +471,7 @@
     }
 
     .stat-value {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       background: linear-gradient(135deg, #a5b4fc, #c084fc);
       -webkit-background-clip: text;
@@ -655,6 +480,122 @@
     }
 
     .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── STEP LIST ── */
+    .step-list {
+      counter-reset: steps;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      counter-increment: steps;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.2);
+      border: 1px solid rgba(99,102,241,0.4);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* ── ARCH DIAGRAM ── */
+    .arch-ascii {
+      background: #0d0d10;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: #a5b4fc;
+      overflow-x: auto;
+    }
+
+    /* ── GRID VISUALIZER ── */
+    .grid-viz {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+    }
+
+    /* ── COLLAPSIBLE SOURCE ── */
+    .source-file {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .source-trigger {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      transition: background 0.2s;
+    }
+
+    .source-trigger:hover { background: var(--bg4); }
+    .source-trigger-left { display: flex; align-items: center; gap: 12px; }
+
+    .source-chevron {
+      transition: transform 0.3s;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .source-file.open .source-chevron { transform: rotate(180deg); }
+
+    .source-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .source-body pre {
+      border-radius: 0;
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+      max-height: 600px;
+      overflow-y: auto;
+    }
 
     /* ── FOOTER ── */
     footer {
@@ -668,19 +609,18 @@
     footer span { color: var(--accent); }
 
     /* ── MISC ── */
+    .text-green  { color: var(--green); }
+    .text-yellow { color: var(--yellow); }
+    .text-red    { color: var(--red); }
+    .text-cyan   { color: var(--cyan); }
+    .text-accent { color: var(--accent); }
+    .text-muted  { color: var(--muted); }
+    .fw700       { font-weight: 700; }
+
     .divider {
       height: 1px;
       background: linear-gradient(to right, transparent, var(--border), transparent);
-      margin: 0;
     }
-
-    .highlight { color: var(--accent); font-weight: 600; }
-    .text-green { color: var(--green); }
-    .text-yellow { color: var(--yellow); }
-    .text-red { color: var(--red); }
-    .text-cyan { color: var(--cyan); }
-
-    pre { white-space: pre-wrap; word-break: break-word; }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -688,7 +628,7 @@
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-    /* Animations on scroll */
+    /* Scroll animation */
     .animate-on-scroll {
       opacity: 0;
       transform: translateY(30px);
@@ -698,6 +638,46 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    ul.styled { padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.8; }
+    ul.styled li { margin-bottom: 4px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    .file-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #a5b4fc;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .inline-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--bg4); color: var(--text); border: 1px solid var(--border); }
+    .btn-green { background: rgba(34,197,94,0.2); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
   </style>
 </head>
 <body>
@@ -707,13 +687,18 @@
   <div class="header-grid"></div>
   <div class="header-glow"></div>
   <div class="header-content">
-    <h1>🤖 Johnny como Trader</h1>
-    <p class="subtitle">Planejamento completo para trading automatizado com IA — alta frequência, baixo risco por operação</p>
+    <h1>🤖 AndreClawdTeam Trading Bot</h1>
+    <p class="subtitle">Fonte da Verdade — Documentação técnica completa da implementação atual</p>
     <div class="header-badges">
-      <span class="badge badge-indigo">Claude claude-sonnet-4-6</span>
-      <span class="badge badge-green">Python + CCXT</span>
-      <span class="badge badge-yellow">VPS Ubuntu 24/7</span>
-      <span class="badge badge-cyan">Paper Trading First</span>
+      <span class="badge badge-green">✅ LIVE — Paper Mode Ativo</span>
+      <span class="badge badge-indigo">6 Coins | $120 USDT</span>
+      <span class="badge badge-cyan">OKX · KuCoin · Gate.io</span>
+      <span class="badge badge-yellow">VPS 138.197.19.184</span>
+      <span class="badge badge-red">Rodando desde 20/02/2026</span>
+    </div>
+    <div class="inline-links" style="justify-content:center;margin-top:24px;">
+      <a href="http://138.197.19.184:8766" target="_blank" class="btn btn-primary">📊 Dashboard ao Vivo</a>
+      <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank" class="btn btn-secondary">💻 GitHub Repo</a>
     </div>
   </div>
 </header>
@@ -721,1096 +706,2322 @@
 <!-- ═══════════ NAV ═══════════ -->
 <nav>
   <div class="nav-inner">
-    <a href="#visao-geral">Visão Geral</a>
-    <a href="#estrategias">Estratégias</a>
-    <a href="#stack">Stack Técnica</a>
-    <a href="#exchanges">Exchanges</a>
+    <a href="#o-que-e">O que é</a>
     <a href="#arquitetura">Arquitetura</a>
-    <a href="#risco">Gestão de Risco</a>
-    <a href="#paper">Paper Trading</a>
-    <a href="#plano">Plano</a>
-    <a href="#avisos">⚠️ Avisos</a>
+    <a href="#coins">Coins</a>
+    <a href="#grid">Como o Grid Funciona</a>
+    <a href="#risco">Sistema de Risco</a>
+    <a href="#banco">Banco de Dados</a>
+    <a href="#codigo">Código Fonte</a>
+    <a href="#systemd">Systemd</a>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#notificacoes">Notificações</a>
+    <a href="#recriar">Como Recriar</a>
+    <a href="#live">Ir para Live</a>
+    <a href="#comandos">Comandos Úteis</a>
+    <a href="#estado">Estado Atual</a>
   </div>
 </nav>
 
 <!-- ═══════════ MAIN ═══════════ -->
 <main>
 
-  <!-- ── 1. VISÃO GERAL ── -->
-  <section id="visao-geral" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-indigo">🎯</div>
-      <h2>Visão Geral</h2>
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 1 — O QUE É
+═══════════════════════════════════════════════════════ -->
+<section id="o-que-e" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-indigo">🎯</div>
+    <h2>O que é</h2>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Coins ativas</div>
     </div>
-
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-value">24/7</div>
-        <div class="stat-label">Operação ininterrupta na VPS</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">&lt;2%</div>
-        <div class="stat-label">Risco máximo por operação</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">High</div>
-        <div class="stat-label">Volume de operações</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">Small</div>
-        <div class="stat-label">Posições individuais</div>
-      </div>
+    <div class="stat-card">
+      <div class="stat-value">$120</div>
+      <div class="stat-label">Capital total (USDT)</div>
     </div>
-
-    <div class="cards-grid">
-      <div class="card">
-        <div class="card-title">🎯 Objetivo</div>
-        <p>Configurar o Johnny (Claude claude-sonnet-4-6 via OpenClaw) como um agente de trading automatizado, rodando 24/7 na VPS, executando operações de alta frequência com posições pequenas — acumulando ganhos consistentes ao invés de apostar em movimentos grandes.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">💡 Por que Alta Frequência + Baixo Valor?</div>
-        <p>Estratégia de <strong>edge repetitivo</strong>: muitas operações pequenas com leve vantagem estatística resultam em retornos compostos com drawdown controlado. A lei dos grandes números trabalha a favor. Perdas individuais são absorvíveis e não há "aposta grande" que possa derrubar o portfólio.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">🤖 Papel do LLM (Johnny)</div>
-        <p>O modelo não executa operações diretamente — ele <strong>interpreta contexto, ajusta parâmetros, detecta anomalias</strong> e toma decisões de alto nível. A execução real fica com código determinístico (Python + CCXT), enquanto o LLM age como o "analista sênior" do sistema.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">🏗️ Estrutura Geral</div>
-        <p>VPS Ubuntu → Johnny (OpenClaw/Claude) → Python Scripts → CCXT → Exchange API. Monitoramento via Telegram. Logs em arquivo. Alertas automáticos em caso de anomalia, drawdown excessivo ou falha de conexão.</p>
-      </div>
+    <div class="stat-card">
+      <div class="stat-value">10</div>
+      <div class="stat-label">Níveis por grid</div>
     </div>
-  </section>
-
-  <!-- ── 2. ESTRATÉGIAS ── -->
-  <section id="estrategias" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-purple">♟️</div>
-      <h2>Estratégias Recomendadas</h2>
+    <div class="stat-card">
+      <div class="stat-value">24/7</div>
+      <div class="stat-label">Operação contínua</div>
     </div>
-
-    <div class="tabs-container">
-      <div class="tabs-nav">
-        <button class="tab-btn active" onclick="switchTab(event, 'tab-grid')">🔲 Grid Trading</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-scalp')">⚡ Scalping</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-dca')">📉 DCA Bot</button>
-        <button class="tab-btn" onclick="switchTab(event, 'tab-arb')">🔀 Arbitragem</button>
-      </div>
-
-      <!-- GRID TRADING -->
-      <div id="tab-grid" class="tab-panel active">
-        <div class="strategy-card">
-          <h3>🔲 Grid Trading</h3>
-          <p>Coloca ordens de compra e venda em intervalos fixos (a "grade") dentro de uma faixa de preço. Quando o preço oscila, o bot compra nas ordens mais baixas e vende nas mais altas, capturando o spread repetidamente. Ideal para mercados laterais/consolidando.</p>
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Prós</h4>
-              <ul>
-                <li>Funciona sem prever direção do mercado</li>
-                <li>Perfeito para alta frequência / baixo risco</li>
-                <li>Fácil de configurar e entender</li>
-                <li>Funciona bem em mercados voláteis</li>
-                <li>Lucro proporcional ao número de oscilações</li>
-                <li>Pionex tem grid bot gratuito (sem VPS)</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Contras</h4>
-              <ul>
-                <li>Perde feio em tendência forte de baixa</li>
-                <li>Requer definição de faixa de preço</li>
-                <li>Capital fica "preso" nas ordens</li>
-                <li>Needs rebalancing periódico</li>
-              </ul>
-            </div>
-          </div>
-          <div class="risk-meter">
-            <span>Risco:</span>
-            <div class="risk-bar-bg">
-              <div class="risk-bar-fill" style="width:40%; background:linear-gradient(90deg, var(--green), var(--yellow));"></div>
-            </div>
-            <span class="text-yellow">Médio-Baixo</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SCALPING -->
-      <div id="tab-scalp" class="tab-panel">
-        <div class="strategy-card">
-          <h3>⚡ Scalping</h3>
-          <p>Operações ultra-curtas (segundos a minutos) buscando capturar pequenos movimentos de preço repetidamente. Usa indicadores técnicos como RSI, MACD, médias móveis em timeframes de 1m a 5m. Requer baixas taxas de negociação para ser lucrativo.</p>
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Prós</h4>
-              <ul>
-                <li>Muitas oportunidades por dia</li>
-                <li>Exposição curta ao mercado</li>
-                <li>Não requer previsão de longo prazo</li>
-                <li>Ganhos compostos rápidos se lucrativo</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Contras</h4>
-              <ul>
-                <li>Taxas de corretagem corroem o lucro</li>
-                <li>Latência importa muito</li>
-                <li>Requer backtesting rigoroso</li>
-                <li>Slippage em volumes baixos</li>
-                <li>Alta complexidade de implementação</li>
-              </ul>
-            </div>
-          </div>
-          <div class="risk-meter">
-            <span>Risco:</span>
-            <div class="risk-bar-bg">
-              <div class="risk-bar-fill" style="width:65%; background:linear-gradient(90deg, var(--yellow), var(--orange));"></div>
-            </div>
-            <span class="text-orange">Médio-Alto</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- DCA -->
-      <div id="tab-dca" class="tab-panel">
-        <div class="strategy-card">
-          <h3>📉 DCA Bot (Dollar Cost Averaging)</h3>
-          <p>Compra periodicamente pequenas quantias de um ativo, independentemente do preço. Quando o preço cai, compra mais (averaging down). Vende quando o preço sobe acima de um alvo. Estratégia defensiva que reduz o impacto da volatilidade.</p>
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Prós</h4>
-              <ul>
-                <li>Simplíssimo de implementar</li>
-                <li>Reduz risco de timing errado</li>
-                <li>Funciona bem para acúmulo</li>
-                <li>3Commas tem DCA bot completo</li>
-                <li>Baixa frequência = menos taxas</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Contras</h4>
-              <ul>
-                <li>Baixa frequência = menos trades</li>
-                <li>Capital fica preso se ativo cai muito</li>
-                <li>Não é ideal para "alta frequência"</li>
-                <li>Requer teto de ordens de segurança</li>
-              </ul>
-            </div>
-          </div>
-          <div class="risk-meter">
-            <span>Risco:</span>
-            <div class="risk-bar-bg">
-              <div class="risk-bar-fill" style="width:30%; background:linear-gradient(90deg, var(--green), var(--cyan));"></div>
-            </div>
-            <span class="text-green">Baixo</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ARBITRAGE -->
-      <div id="tab-arb" class="tab-panel">
-        <div class="strategy-card">
-          <h3>🔀 Arbitragem</h3>
-          <p>Explora diferenças de preço do mesmo ativo em exchanges diferentes ou em pares diferentes (triangular arbitrage). Compra onde está mais barato e vende onde está mais caro quase simultaneamente. Muito competitivo — bots profissionais dominam esse espaço.</p>
-          <div class="pros-cons">
-            <div class="pros">
-              <h4>✅ Prós</h4>
-              <ul>
-                <li>Lucro quase "risk-free" em teoria</li>
-                <li>Alta frequência natural</li>
-                <li>Não depende de direção do mercado</li>
-              </ul>
-            </div>
-            <div class="cons">
-              <h4>❌ Contras</h4>
-              <ul>
-                <li>Spreads são mínimos — taxas devoram lucro</li>
-                <li>Janelas de oportunidade fecham em ms</li>
-                <li>Requer capital em múltiplas exchanges</li>
-                <li>Latência da VPS pode ser insuficiente</li>
-                <li>Não recomendado para small capital</li>
-              </ul>
-            </div>
-          </div>
-          <div class="risk-meter">
-            <span>Risco:</span>
-            <div class="risk-bar-bg">
-              <div class="risk-bar-fill" style="width:50%; background:linear-gradient(90deg, var(--cyan), var(--accent));"></div>
-            </div>
-            <span style="color:var(--cyan)">Médio (em prática)</span>
-          </div>
-        </div>
-      </div>
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Exchanges (fallback)</div>
     </div>
+  </div>
 
-    <div class="info-box" style="margin-top:20px;">
-      <h3>💡 Recomendação para começar</h3>
-      <p><strong>Grid Trading</strong> é a melhor estratégia para começar com pequeno capital e alta frequência. É simples, funciona sem previsão de mercado, e pode ser combinado com sinais do LLM para ajustar a faixa automaticamente conforme o mercado muda.</p>
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-title">📋 Descrição Geral</div>
+      <p>Bot de <strong>grid trading multi-coin</strong> rodando em paper mode 24/7 em uma VPS DigitalOcean (Ubuntu 22.04). Opera 6 memecoins simultâneas com capital isolado de $20 por coin, capturando oscilações de preço repetidamente dentro de uma grade de ordens espaçadas.</p>
     </div>
-  </section>
-
-  <!-- ── 3. STACK TÉCNICA ── -->
-  <section id="stack" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-cyan">🛠️</div>
-      <h2>Stack Técnica</h2>
+    <div class="card">
+      <div class="card-title">🏦 Exchanges</div>
+      <p>Usa apenas <strong>APIs públicas de preço</strong> (paper mode — sem execução real). <strong>OKX</strong> é a fonte primária de preços. <strong>KuCoin</strong> é o fallback automático. <strong>Gate.io</strong> é o fallback terciário. Binance e Bybit são geo-bloqueadas nesta VPS (testado em 20/02/2026).</p>
     </div>
-
-    <div class="stack-grid">
-      <div class="stack-item">
-        <div class="stack-item-icon">🐍</div>
-        <div class="stack-item-info">
-          <h4>Python 3.11+</h4>
-          <p>Linguagem base de tudo</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🔗</div>
-        <div class="stack-item-info">
-          <h4>CCXT</h4>
-          <p>API unificada p/ 100+ exchanges</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">📊</div>
-        <div class="stack-item-info">
-          <h4>pandas-ta</h4>
-          <p>Indicadores técnicos (RSI, MACD…)</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🧠</div>
-        <div class="stack-item-info">
-          <h4>OpenClaw + Claude</h4>
-          <p>Decisões de alto nível, alertas</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🗄️</div>
-        <div class="stack-item-info">
-          <h4>SQLite / PostgreSQL</h4>
-          <p>Log de trades e performance</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">📡</div>
-        <div class="stack-item-info">
-          <h4>Telegram Bot API</h4>
-          <p>Alertas e controle remoto</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">📈</div>
-        <div class="stack-item-info">
-          <h4>Freqtrade</h4>
-          <p>Framework open-source completo</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">⏰</div>
-        <div class="stack-item-info">
-          <h4>APScheduler / cron</h4>
-          <p>Execução periódica de tarefas</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🐳</div>
-        <div class="stack-item-info">
-          <h4>Docker</h4>
-          <p>Isolamento e fácil deploy</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">📦</div>
-        <div class="stack-item-info">
-          <h4>Redis</h4>
-          <p>Cache de preços em tempo real</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🔍</div>
-        <div class="stack-item-info">
-          <h4>CoinGecko API</h4>
-          <p>Dados de mercado gratuitos</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-item-icon">🌐</div>
-        <div class="stack-item-info">
-          <h4>WebSockets</h4>
-          <p>Preços em tempo real (ccxt.pro)</p>
-        </div>
-      </div>
+    <div class="card">
+      <div class="card-title">🛡️ Sistema de Risco</div>
+      <p>Cada coin opera de forma <strong>completamente independente</strong> com seu próprio capital. Seis mecanismos de proteção por coin: strike system, daily loss limit, stop-loss mode, stop-loss total, balance floor e global circuit breaker. Se uma coin for desabilitada, as outras continuam.</p>
     </div>
-
-    <div class="code-block" style="margin-top:24px;">
-      <pre><span class="cm"># Exemplo mínimo: conectar à exchange e executar ordem via CCXT</span>
-<span class="kw">import</span> ccxt
-<span class="kw">import</span> pandas_ta <span class="kw">as</span> ta
-<span class="kw">import</span> pandas <span class="kw">as</span> pd
-
-exchange = ccxt.<span class="fn">binance</span>({
-    <span class="str">'apiKey'</span>: <span class="str">'SUA_API_KEY'</span>,
-    <span class="str">'secret'</span>: <span class="str">'SEU_SECRET'</span>,
-    <span class="str">'sandbox'</span>: <span class="kw">True</span>,  <span class="cm"># ← SEMPRE começar no testnet!</span>
-})
-
-<span class="cm"># Buscar candles OHLCV</span>
-ohlcv = exchange.<span class="fn">fetch_ohlcv</span>(<span class="str">'BTC/USDT'</span>, timeframe=<span class="str">'1m'</span>, limit=<span class="num">100</span>)
-df = pd.<span class="fn">DataFrame</span>(ohlcv, columns=[<span class="str">'timestamp','open','high','low','close','volume'</span>])
-
-<span class="cm"># Calcular RSI</span>
-df[<span class="str">'rsi'</span>] = ta.<span class="fn">rsi</span>(df[<span class="str">'close'</span>], length=<span class="num">14</span>)
-last_rsi = df[<span class="str">'rsi'</span>].<span class="fn">iloc</span>[-<span class="num">1</span>]
-
-<span class="kw">if</span> last_rsi &lt; <span class="num">30</span>:
-    <span class="cm"># Sinal de sobrevenda — comprar</span>
-    order = exchange.<span class="fn">create_market_buy_order</span>(<span class="str">'BTC/USDT'</span>, amount=<span class="num">0.001</span>)
-    <span class="fn">print</span>(<span class="str">f"Ordem executada: {order['id']}"</span>)</pre>
+    <div class="card">
+      <div class="card-title">🔔 Notificações</div>
+      <p>Eventos importantes geram notificações automáticas via <strong>Telegram</strong> (chat do André). Isso inclui: bot iniciado, coin desabilitada por risco, stop-loss ativado, strikes de drawdown. Implementado via <code>openclaw message send</code> por subprocess.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── 4. EXCHANGES ── -->
-  <section id="exchanges" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-yellow">🏦</div>
-      <h2>Exchanges Recomendadas</h2>
-    </div>
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 2 — ARQUITETURA
+═══════════════════════════════════════════════════════ -->
+<section id="arquitetura" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">🏗️</div>
+    <h2>Arquitetura</h2>
+  </div>
 
-    <div class="exchange-table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Exchange</th>
-            <th>Maker Fee</th>
-            <th>Taker Fee</th>
-            <th>Mín. Trade</th>
-            <th>Testnet</th>
-            <th>VPS (DO/US) ✅</th>
-            <th>Adequação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Binance</strong> 🥇</td>
-            <td class="text-green">0.10% (c/ BNB: 0.075%)</td>
-            <td class="text-yellow">0.10%</td>
-            <td>~$5 USDT</td>
-            <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-red">❌ Bloqueado</span></td>
-            <td><span class="tag tag-red">Geo-block VPS</span></td>
-          </tr>
-          <tr>
-            <td><strong>Bybit</strong></td>
-            <td class="text-green">0.01% (maker)</td>
-            <td class="text-yellow">0.06%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-red">❌ Bloqueado</span></td>
-            <td><span class="tag tag-red">Geo-block VPS</span></td>
-          </tr>
-          <tr>
-            <td><strong>OKX</strong> ⭐</td>
-            <td class="text-green">0.08%</td>
-            <td class="text-yellow">0.10%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-green">✅ Confirmado</span></td>
-            <td><span class="tag tag-green">Primária ✅</span></td>
-          </tr>
-          <tr>
-            <td><strong>KuCoin</strong> ⭐</td>
-            <td class="text-green">0.08%</td>
-            <td class="text-yellow">0.10%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-green">✓ Sim</span></td>
-            <td><span class="tag tag-green">✅ Confirmado</span></td>
-            <td><span class="tag tag-green">Fallback ✅</span></td>
-          </tr>
-          <tr>
-            <td><strong>Gate.io</strong></td>
-            <td class="text-yellow">0.10%</td>
-            <td class="text-yellow">0.10%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-yellow">Parcial</span></td>
-            <td><span class="tag tag-green">✅ Confirmado</span></td>
-            <td><span class="tag tag-yellow">Terciária</span></td>
-          </tr>
-          <tr>
-            <td><strong>Pionex</strong></td>
-            <td class="text-green">0.05%</td>
-            <td class="text-green">0.05%</td>
-            <td>~$1 USDT</td>
-            <td><span class="tag tag-yellow">~ Paper</span></td>
-            <td><span class="tag tag-yellow">Não testado</span></td>
-            <td><span class="tag tag-yellow">Grid nativo</span></td>
-          </tr>
-          <tr>
-            <td><strong>Kraken</strong></td>
-            <td class="text-yellow">0.25%</td>
-            <td class="text-red">0.40%</td>
-            <td>~$10 USD</td>
-            <td><span class="tag tag-red">✗ Não</span></td>
-            <td><span class="tag tag-yellow">Não testado</span></td>
-            <td><span class="tag tag-red">Caro p/ HFT</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#a5b4fc;">
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │                  VPS — 138.197.19.184 (Ubuntu 22.04)                 │
+  │                                                                      │
+  │  ┌─────────────────────────────────────────────────────────────┐    │
+  │  │  trading-bot.service  (systemd user service)                │    │
+  │  │                                                             │    │
+  │  │   bot.py (main loop, 10s interval)                          │    │
+  │  │     │                                                        │    │
+  │  │     ├── is_trading_enabled() ──► bot_state (PostgreSQL)     │    │
+  │  │     │                                                        │    │
+  │  │     ├── exchange.py ──► OKX REST API  (primário)            │    │
+  │  │     │                ├► KuCoin REST API (fallback)          │    │
+  │  │     │                └► Gate.io REST API (terciário)        │    │
+  │  │     │                                                        │    │
+  │  │     ├── GridBot[PEPE]  ──┐                                  │    │
+  │  │     ├── GridBot[SHIB]    │                                  │    │
+  │  │     ├── GridBot[BONK]    ├── database.py ──► PostgreSQL 16  │    │
+  │  │     ├── GridBot[FLOKI]   │   (trades, daily_results,        │    │
+  │  │     ├── GridBot[DOGE]    │    total_results,                │    │
+  │  │     └── GridBot[WIF]  ──┘    disabled_symbols, bot_state)  │    │
+  │  │                                                             │    │
+  │  │     └── notifier.py ──► openclaw CLI ──► Telegram           │    │
+  │  └─────────────────────────────────────────────────────────────┘    │
+  │                                                                      │
+  │  ┌─────────────────────────────────────────────────────────────┐    │
+  │  │  trading-dashboard.service  (Flask, porta 8766)             │    │
+  │  │                                                             │    │
+  │  │   dashboard.py ──► PostgreSQL (read-only)                   │    │
+  │  │   Rotas:  /  (HTML)  |  /api/stats  |  /api/daily-pnl-by-coin  │  │
+  │  │           /api/resume/&lt;symbol&gt;  (reabilita coin)            │    │
+  │  └─────────────────────────────────────────────────────────────┘    │
+  │                                                                      │
+  └──────────────────────────────────────────────────────────────────────┘
 
-    <div class="warning-box" style="margin-top:20px;">
-      <h3>⚠️ Binance e Bybit: Geo-bloqueadas nesta VPS</h3>
-      <p>Testado em 2026-02-20: a VPS (DigitalOcean, IP <code>138.197.19.184</code>, ASN AS14061, EUA) recebe recusa de conexão tanto da Binance quanto da Bybit. Ambas bloqueiam ranges de IP de data centers americanos. <strong>OKX e KuCoin respondem normalmente</strong> — preços ao vivo de PEPE/USDT obtidos com sucesso.</p>
-    </div>
+  Ficheiros do projeto:
+  /home/clawdbot/workspace/coding/trading-bot/
+    ├── config.py      ← Toda a configuração (coins, risk, DB URL)
+    ├── strategy.py    ← GridBot class (lógica de grid + risk checks)
+    ├── bot.py         ← Main loop multi-coin + circuit breaker
+    ├── exchange.py    ← Preços de OKX/KuCoin/Gate.io
+    ├── database.py    ← PostgreSQL layer (CRUD, ensure_tables)
+    ├── notifier.py    ← Telegram via openclaw CLI subprocess
+    ├── dashboard.py   ← Flask dashboard (porta 8766, ~600 linhas)
+    └── requirements.txt
+</pre>
+  </div>
 
-    <div class="info-box" style="margin-top:16px;">
-      <h3>✅ Validação da VPS — 2026-02-20</h3>
-      <p style="margin-bottom:12px;">Teste ao vivo da VPS (<code>138.197.19.184</code>):</p>
-      <table style="width:100%;font-size:0.85rem;border-collapse:collapse;">
-        <thead><tr style="border-bottom:1px solid rgba(255,255,255,0.15)">
-          <th style="text-align:left;padding:6px 8px">Exchange</th>
-          <th style="text-align:left;padding:6px 8px">Público</th>
-          <th style="text-align:left;padding:6px 8px">Privado (s/ auth)</th>
-          <th style="text-align:left;padding:6px 8px">PEPE/USDT</th>
-          <th style="text-align:left;padding:6px 8px">Rate Limit Spot</th>
-          <th style="text-align:left;padding:6px 8px">Rate Limit Ordens</th>
-        </tr></thead>
-        <tbody>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.07)">
-            <td style="padding:6px 8px"><strong>OKX</strong></td>
-            <td style="padding:6px 8px" class="text-green">✅ OK</td>
-            <td style="padding:6px 8px" class="text-green">✅ 50103 (sem key)</td>
-            <td style="padding:6px 8px" class="text-green">✅ $0.000004097</td>
-            <td style="padding:6px 8px">20 req / 2s (por instrumento)</td>
-            <td style="padding:6px 8px">60 ordens / 2s</td>
-          </tr>
-          <tr>
-            <td style="padding:6px 8px"><strong>KuCoin</strong></td>
-            <td style="padding:6px 8px" class="text-green">✅ OK</td>
-            <td style="padding:6px 8px" class="text-green">✅ 400001 (sem key)</td>
-            <td style="padding:6px 8px" class="text-green">✅ $0.000004098</td>
-            <td style="padding:6px 8px">4.000 req / 30s (VIP0)</td>
-            <td style="padding:6px 8px">200 req / 3s (VIP0)</td>
-          </tr>
-        </tbody>
-      </table>
-      <p style="margin-top:12px;font-size:0.85rem;opacity:0.8">Nossa demanda estimada: ~1 price check / 3s + &lt;10 ordens/min → <strong>&lt;1% do rate limit mesmo no VIP0</strong>. Totalmente viável para grid trading em paper e produção.</p>
-    </div>
-
-    <div class="info-box" style="margin-top:16px;border-color:rgba(99,255,132,0.3)">
-      <h3>🏆 Recomendação Atualizada: OKX (primária) + KuCoin (fallback)</h3>
-      <p>Binance e Bybit estão geo-bloqueadas nesta VPS — testado ao vivo. <strong>OKX</strong> foi configurada como exchange primária para preços e ordens. <strong>KuCoin</strong> é o fallback automático caso a OKX falhe. <strong>Gate.io</strong> é a terceira opção. Quando André criar conta na OKX + KuCoin e gerar API keys, basta preencher <code>config.py</code> e mudar <code>PAPER_MODE = False</code>.</p>
-    </div>
-  </section>
-
-  <!-- ── 5. ARQUITETURA ── -->
-  <section id="arquitetura" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-cyan">🏗️</div>
-      <h2>Arquitetura na VPS</h2>
-    </div>
-
-    <div class="arch-diagram">
-      <div class="arch-layer">
-        <div class="arch-box component-color-5">
-          <h4>📡 Data Collector</h4>
-          <p>WebSocket/REST → candles OHLCV, order book, ticker em tempo real. CoinGecko para dados extras. Armazena em Redis (cache) + SQLite (histórico).</p>
-        </div>
-      </div>
-
-      <div class="arch-arrow">↓</div>
-
-      <div class="arch-layer" style="gap:12px; display:grid; grid-template-columns:1fr 1fr;">
-        <div class="arch-box component-color-2">
-          <h4>📊 Signal Generator</h4>
-          <p>Calcula indicadores técnicos (RSI, MACD, Bollinger Bands). Detecta padrões e gera sinais BUY/SELL/HOLD com score de confiança.</p>
-        </div>
-        <div class="arch-box component-color-1">
-          <h4>🧠 LLM Advisor (Johnny)</h4>
-          <p>Claude via OpenClaw analisa contexto macro, ajusta parâmetros da grade, detecta anomalias e pode pausar o bot em condições extremas.</p>
-        </div>
-      </div>
-
-      <div class="arch-arrow">↓</div>
-
-      <div class="arch-box component-color-3">
-        <h4>⚖️ Risk Manager</h4>
-        <p>Valida toda ordem antes de enviar. Aplica regras: max posição, stop-loss, max drawdown diário, exposição máxima. Bloqueia ordens que violem as regras.</p>
-      </div>
-
-      <div class="arch-arrow">↓</div>
-
-      <div class="arch-box component-color-4">
-        <h4>⚡ Order Executor (CCXT)</h4>
-        <p>Envia ordens à exchange via API. Monitora fills. Gerencia ordens abertas. Cancela ordens stale. Trata erros de API e retenta com backoff exponencial.</p>
-      </div>
-
-      <div class="arch-arrow">↓</div>
-
-      <div class="arch-layer" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div class="arch-box" style="border-left:3px solid var(--pink);">
-          <h4>📋 Performance Tracker</h4>
-          <p>Log de todos os trades, P&L, drawdown, win rate, Sharpe Ratio. Dashboard simples em HTML ou Telegram report.</p>
-        </div>
-        <div class="arch-box" style="border-left:3px solid var(--cyan);">
-          <h4>📢 Telegram Notifier</h4>
-          <p>Alertas de trades executados, erros críticos, drawdown atingido, status diário automático. Aceita comandos remotos.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="code-block" style="margin-top:20px;">
-      <pre><span class="cm"># Estrutura de diretórios sugerida na VPS</span>
-~/trading-bot/
-├── config/
-│   ├── settings.yaml       <span class="cm"># Parâmetros da estratégia</span>
-│   └── .env                <span class="cm"># API keys (NUNCA no git!)</span>
-├── src/
-│   ├── collector.py        <span class="cm"># Coleta de dados</span>
-│   ├── signals.py          <span class="cm"># Gerador de sinais</span>
-│   ├── risk_manager.py     <span class="cm"># Gestão de risco</span>
-│   ├── executor.py         <span class="cm"># Execução de ordens</span>
-│   ├── llm_advisor.py      <span class="cm"># Integração com Johnny/Claude</span>
-│   └── notifier.py         <span class="cm"># Telegram alerts</span>
-├── data/
-│   ├── trades.db           <span class="cm"># SQLite com histórico</span>
-│   └── logs/               <span class="cm"># Logs rotacionados</span>
-├── docker-compose.yml
-└── main.py                 <span class="cm"># Entry point</span></pre>
-    </div>
-  </section>
-
-  <!-- ── 6. GESTÃO DE RISCO ── -->
-  <section id="risco" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-red">🛡️</div>
-      <h2>Gestão de Risco</h2>
-    </div>
-
-    <div class="collapsible-group">
-
-      <div class="collapsible-item open">
-        <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
-          💰 Sizing de Posição (Position Sizing)
-          <svg class="collapsible-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="collapsible-body" style="max-height:500px;">
-          <div class="collapsible-body-inner">
-            <p>Nunca arrisque mais de <strong>1-2% do capital total por operação</strong>. Exemplo: com $500 de capital, o risco máximo por trade é $5-10.</p>
-            <ul>
-              <li><strong>Regra fixa:</strong> 1% do portfólio por trade — simples e eficaz para iniciantes</li>
-              <li><strong>Critério de Kelly:</strong> f = (edge / odds) — tamanho proporcional à vantagem estatística (avançado)</li>
-              <li><strong>Volatility-based:</strong> posições menores quando ATR (volatilidade) está alto</li>
-              <li>Para grid bot: dividir capital em N grids — ex. $500 em 10 grids = $50/grid</li>
-            </ul>
-            <p style="margin-top:12px;">Fórmula básica: <code>tamanho = (capital * risco%) / stop_loss_distância</code></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="collapsible-item">
-        <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
-          🛑 Stop-Loss e Take-Profit
-          <svg class="collapsible-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="collapsible-body">
-          <div class="collapsible-body-inner">
-            <ul>
-              <li><strong>Stop fixo:</strong> -1.5% a -2% do preço de entrada — simples e confiável</li>
-              <li><strong>Trailing stop:</strong> segue o preço para cima, travando lucros à medida que sobe</li>
-              <li><strong>ATR-based stop:</strong> stop = preço_entrada - (2 × ATR_14) — adapta-se à volatilidade</li>
-              <li><strong>Take-profit:</strong> mínimo 1:1.5 risk/reward — para cada $1 arriscado, buscar $1.50 de lucro</li>
-              <li>Em grid bot, o próprio grid define implicitamente take-profit em cada célula</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="collapsible-item">
-        <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
-          📉 Max Drawdown e Circuit Breakers
-          <svg class="collapsible-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="collapsible-body">
-          <div class="collapsible-body-inner">
-            <ul>
-              <li><strong>Max drawdown diário:</strong> se perder >5% do capital em um dia → pausar bot por 24h</li>
-              <li><strong>Max drawdown total:</strong> se perder >15% do capital → parar tudo e revisar estratégia</li>
-              <li><strong>Circuit breaker de volatilidade:</strong> se o mercado mover >10% em 1h → pausar (evento extremo)</li>
-              <li><strong>Max operações simultâneas:</strong> limitar a N posições abertas ao mesmo tempo</li>
-              <li>Implementar via monitor que checa saldo a cada ciclo e trava se limites forem atingidos</li>
-            </ul>
-            <p style="margin-top:12px;"><code>if current_drawdown > MAX_DRAWDOWN: bot.stop(); notify_telegram("⚠️ Circuit breaker ativado!")</code></p>
-          </div>
-        </div>
-      </div>
-
-      <div class="collapsible-item">
-        <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
-          🔐 Segurança das API Keys
-          <svg class="collapsible-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="collapsible-body">
-          <div class="collapsible-body-inner">
-            <ul>
-              <li>Sempre usar variáveis de ambiente (<code>.env</code>) — <strong>JAMAIS hardcodar keys no código</strong></li>
-              <li>Criar API keys <strong>sem permissão de saque</strong> — só trading</li>
-              <li>Restringir API key por IP (IP da VPS)</li>
-              <li>Usar <code>.gitignore</code> para nunca commitar <code>.env</code></li>
-              <li>Rotacionar keys periodicamente</li>
-              <li>Monitorar atividade suspeita na conta da exchange</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="collapsible-item">
-        <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
-          🌡️ Gestão de Correlações e Diversificação
-          <svg class="collapsible-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="collapsible-body">
-          <div class="collapsible-body-inner">
-            <ul>
-              <li>Operar múltiplos pares mas com correlação baixa (evitar BTC/USDT + ETH/USDT ao mesmo tempo com estratégia igual — eles caem juntos)</li>
-              <li>Limitar exposição máxima em um único ativo a 30% do capital</li>
-              <li>Preferir pares de stablecoin (USDT) — elimina risco cambial</li>
-              <li>No início: operar apenas 1-2 pares até entender o comportamento do bot</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── 7. PAPER TRADING ── -->
-  <section id="paper" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-green">📝</div>
-      <h2>Paper Trading First — Teste Sem Dinheiro Real</h2>
-    </div>
-
-    <div class="cards-grid">
-      <div class="card">
-        <div class="card-title">🧪 Binance Testnet</div>
-        <p>A Binance oferece um testnet completo (spot e futures) com dinheiro fictício. <code>exchange.set_sandbox_mode(True)</code> no CCXT. API key gerada em <strong>testnet.binance.vision</strong> — exatamente igual à produção, mas sem risco.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">📊 Bybit Testnet</div>
-        <p>Bybit também tem testnet em <strong>testnet.bybit.com</strong> com suporte CCXT. Taxas maker ultralow (0.01%) fazem do Bybit excelente para simular cenários realistas de alta frequência.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">🔄 Backtesting com Freqtrade</div>
-        <p>Freqtrade permite <code>freqtrade backtesting</code> com dados históricos reais. Simule meses de operação em segundos. Métricas automáticas: win rate, Sharpe, max drawdown, profit factor.</p>
-      </div>
-      <div class="card">
-        <div class="card-title">🎮 Paper Mode Local</div>
-        <p>Implementar um simulador interno que registra "ordens virtuais" usando preços reais do mercado mas sem enviar nada à exchange. Permite testar sem depender de testnet (que às vezes é instável).</p>
-      </div>
-    </div>
-
-    <div class="code-block" style="margin-top:20px;">
-      <pre><span class="cm"># Ativar modo sandbox/testnet no CCXT</span>
-exchange = ccxt.<span class="fn">binance</span>({
-    <span class="str">'apiKey'</span>: <span class="str">'testnet_api_key'</span>,
-    <span class="str">'secret'</span>: <span class="str">'testnet_secret'</span>,
-    <span class="str">'options'</span>: {<span class="str">'defaultType'</span>: <span class="str">'spot'</span>},
-})
-exchange.<span class="fn">set_sandbox_mode</span>(<span class="kw">True</span>)
-
-<span class="cm"># Verificar saldo fictício</span>
-balance = exchange.<span class="fn">fetch_balance</span>()
-<span class="fn">print</span>(<span class="str">f"USDT disponível: {balance['USDT']['free']}"</span>)
-
-<span class="cm"># Freqtrade backtesting (terminal)</span>
-<span class="cm"># freqtrade download-data --exchange binance -p BTC/USDT --days 90 --timeframe 1m</span>
-<span class="cm"># freqtrade backtesting --strategy GridStrategy --timerange 20240101-20240401</span></pre>
-    </div>
-
-    <div class="info-box" style="margin-top:20px;">
-      <h3>⏱️ Quanto tempo de paper trading?</h3>
-      <p>Mínimo <strong>30 dias</strong> em testnet antes de colocar dinheiro real. Prefira 60-90 dias para pegar ciclos de mercado diferentes (alta, baixa, lateral). Só avance para capital real quando tiver:</p>
-      <ul style="margin-top:10px; padding-left:20px; color:var(--muted); font-size:0.9rem;">
-        <li>Win rate acima de 50% consistentemente</li>
-        <li>Max drawdown &lt; 10% no período</li>
-        <li>Sharpe Ratio &gt; 1.0</li>
-        <li>Nenhuma falha crítica no código</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ── 8. PLANO ── -->
-  <section id="plano" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-orange">🗺️</div>
-      <h2>Plano de Implementação</h2>
-    </div>
-
-    <div class="timeline">
-
-      <div class="phase">
-        <div class="phase-card">
-          <div class="phase-number">Fase 1 · Semanas 1-4</div>
-          <h3>🧪 Fundação e Paper Trading</h3>
-          <p>Configurar o ambiente, estudar CCXT, implementar estratégia básica de grid, conectar ao testnet da Binance, testar por 30 dias sem dinheiro real. O Johnny monitora logs e sugere ajustes.</p>
-          <div class="phase-steps">
-            <span class="phase-step">Instalar Python + CCXT</span>
-            <span class="phase-step">Criar conta Binance Testnet</span>
-            <span class="phase-step">Grid bot básico</span>
-            <span class="phase-step">Telegram alerts</span>
-            <span class="phase-step">30 dias testnet</span>
-            <span class="phase-step">Analisar métricas</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-card">
-          <div class="phase-number">Fase 2 · Semanas 5-8</div>
-          <h3>💵 Micro Live — Capital Mínimo</h3>
-          <p>Iniciar com capital mínimo ($50-100 reais em USDT). Apenas 1 par, 1 estratégia. Observar comportamento em mercado real vs testnet. Ajustar parâmetros com base nos resultados reais.</p>
-          <div class="phase-steps">
-            <span class="phase-step">Capital inicial: ~$50</span>
-            <span class="phase-step">1 par (BTC/USDT)</span>
-            <span class="phase-step">Grid estreito</span>
-            <span class="phase-step">Monitor de risco ativo</span>
-            <span class="phase-step">Review semanal</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-card">
-          <div class="phase-number">Fase 3 · Mês 3+</div>
-          <h3>📈 Otimização e Escala Gradual</h3>
-          <p>Se lucrativo e estável, adicionar mais pares, ajustar a grade com LLM, integrar indicadores técnicos adicionais. Aumentar capital gradualmente com base nos resultados. Johnny começa a sugerir ajustes automaticamente.</p>
-          <div class="phase-steps">
-            <span class="phase-step">2-3 pares simultâneos</span>
-            <span class="phase-step">LLM ajusta parâmetros</span>
-            <span class="phase-step">Backtesting contínuo</span>
-            <span class="phase-step">Capital proporcional ao lucro</span>
-            <span class="phase-step">DCA como complemento</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-card">
-          <div class="phase-number">Fase 4 · Mês 6+</div>
-          <h3>🚀 Sistema Maduro</h3>
-          <p>Sistema autônomo com múltiplas estratégias, gestão de risco sofisticada, LLM como supervisor inteligente. Reporting automático. Possibilidade de adicionar estratégias de scalping para complementar o grid.</p>
-          <div class="phase-steps">
-            <span class="phase-step">Grid + Scalping</span>
-            <span class="phase-step">Multi-exchange</span>
-            <span class="phase-step">Dashboard de performance</span>
-            <span class="phase-step">Relatórios automatizados</span>
-            <span class="phase-step">Self-tuning via LLM</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ── 9. AVISOS ── -->
-  <section id="avisos" class="animate-on-scroll">
-    <div class="section-header">
-      <div class="section-icon icon-red">⚠️</div>
-      <h2>Avisos e Riscos</h2>
-    </div>
-
-    <div class="warning-box">
-      <h3>⚠️ Trading envolve risco real de perda total do capital</h3>
-      <p>Nenhum bot, algoritmo ou IA garante lucro. Mercados financeiros são sistemas complexos, imprevisíveis e influenciados por incontáveis fatores. Estratégias que funcionaram no passado podem falhar no futuro. <strong>Nunca invista mais do que você pode perder.</strong></p>
-    </div>
-
-    <div class="warning-box">
-      <h3>⚠️ Custos ocultos que destroem a lucratividade</h3>
-      <p>Taxas de trading (0.05-0.10% por operação), spread bid-ask, slippage em ordens a mercado, e custo de infraestrutura (VPS) precisam ser contabilizados. Em alta frequência, taxas se acumulam rápido. <strong>Calcule o break-even antes de começar.</strong> Uma estratégia que ganha 0.08% por trade mas paga 0.10% em taxas está perdendo dinheiro.</p>
-    </div>
-
-    <div class="warning-box">
-      <h3>⚠️ LLM não é oráculo financeiro</h3>
-      <p>O Claude (Johnny) é excelente para analisar contexto, gerar código e sugerir ajustes de parâmetros — mas <strong>não tem acesso a dados em tempo real, não prevê o futuro</strong> e pode cometer erros de análise. Decisões de trading baseadas exclusivamente na saída do LLM são perigosas.</p>
-    </div>
-
-    <div class="warning-box">
-      <h3>⚠️ Riscos técnicos</h3>
-      <p>Falha de conexão, bugs no código, downtime da exchange, APIs com rate limits, mudanças nas APIs sem aviso — tudo isso pode causar ordens duplicadas, posições presas ou perdas. Implemente <strong>tratamento robusto de erros</strong> e monitore o bot 24/7.</p>
-    </div>
-
-    <div class="warning-box">
-      <h3>⚠️ Questões regulatórias e fiscais</h3>
-      <p>Lucros com trading de criptomoedas são tributáveis no Brasil (Declaração de IR, GCAP para ganhos &gt;35k/mês). Algumas exchanges têm restrições geográficas. Consulte um contador especializado em criptoativos.</p>
-    </div>
-
-    <div class="info-box">
-      <h3>✅ O que fazer para minimizar riscos</h3>
+  <div style="margin-top:24px;" class="two-col">
+    <div class="info-box" style="margin-bottom:0;">
+      <h3>🐍 Python Environment</h3>
       <p>
-        1. <strong>Paper trade primeiro</strong> — pelo menos 30 dias<br/>
-        2. <strong>Comece pequeno</strong> — capital que você pode perder sem impacto<br/>
-        3. <strong>Circuit breakers</strong> — bot para automaticamente se perder demais<br/>
-        4. <strong>Monitore daily</strong> — não deixe rodar sem supervisão<br/>
-        5. <strong>Documente tudo</strong> — logs, métricas, decisões<br/>
-        6. <strong>Estude continuamente</strong> — mercados mudam, estratégias precisam evoluir<br/>
-        7. <strong>Diversifique</strong> — não coloque todo capital no bot
+        <strong>Bot:</strong> <code>/home/clawdbot/.openclaw/workspace/venv/bin/python3</code><br/>
+        <strong>Dashboard:</strong> <code>/home/linuxbrew/.linuxbrew/bin/python3</code><br/>
+        Dois ambientes separados por compatibilidade de dependências.
       </p>
     </div>
-  </section>
+    <div class="info-box" style="margin-bottom:0;">
+      <h3>🗄️ Banco de Dados</h3>
+      <p>
+        <strong>PostgreSQL 16</strong> gerenciado pelo systemd (serviço do sistema).<br/>
+        Database: <code>trading</code><br/>
+        User: <code>andre</code><br/>
+        Port: <code>5432</code> (local only)
+      </p>
+    </div>
+  </div>
+</section>
 
-</main>
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 3 — CONFIGURAÇÃO DAS COINS
+═══════════════════════════════════════════════════════ -->
+<section id="coins" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">🪙</div>
+    <h2>Configuração das Coins</h2>
+  </div>
 
-<!-- ═══════════ FOOTER ═══════════ -->
-<footer>
-  <p>Documento gerado por <span>🤖 Johnny (Claude claude-sonnet-4-6)</span> via OpenClaw · Fevereiro 2026</p>
-  <p style="margin-top:8px; font-size:0.75rem;">Este documento é apenas para fins educacionais e de planejamento. Não constitui conselho financeiro.</p>
-</footer>
-
-<script>
-  // ── TAB SWITCHING ──
-  function switchTab(event, panelId) {
-    const container = event.target.closest('.tabs-container');
-    container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    container.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(panelId).classList.add('active');
-  }
-
-  // ── COLLAPSIBLE ──
-  function toggleCollapsible(trigger) {
-    const item = trigger.closest('.collapsible-item');
-    const body = item.querySelector('.collapsible-body');
-    const isOpen = item.classList.contains('open');
-    if (isOpen) {
-      item.classList.remove('open');
-      body.style.maxHeight = '0';
-    } else {
-      item.classList.add('open');
-      body.style.maxHeight = body.scrollHeight + 'px';
-    }
-  }
-
-  // Initialize open items
-  document.querySelectorAll('.collapsible-item.open').forEach(item => {
-    const body = item.querySelector('.collapsible-body');
-    body.style.maxHeight = body.scrollHeight + 'px';
-  });
-
-  // ── SCROLL ANIMATION ──
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-
-  // ── ACTIVE NAV ──
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('nav a');
-
-  const navObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link => link.style.color = '');
-        const activeLink = document.querySelector(`nav a[href="#${entry.target.id}"]`);
-        if (activeLink) activeLink.style.color = '#a5b4fc';
-      }
-    });
-  }, { threshold: 0.3 });
-
-  sections.forEach(section => navObserver.observe(section));
-
-  // ── ANIMATED STATS ──
-  function animateValue(el, start, end, duration) {
-    const startTime = performance.now();
-    function update(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.round(start + (end - start) * eased);
-      if (progress < 1) requestAnimationFrame(update);
-    }
-    requestAnimationFrame(update);
-  }
-
-  // ── RISK BAR ANIMATION ON VISIBLE ──
-  const riskObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll('.risk-bar-fill').forEach(bar => {
-          const targetWidth = bar.style.width;
-          bar.style.width = '0';
-          setTimeout(() => { bar.style.width = targetWidth; }, 100);
-        });
-      }
-    });
-  }, { threshold: 0.5 });
-
-  document.querySelectorAll('.strategy-card').forEach(card => riskObserver.observe(card));
-</script>
-
-<!-- ══════════════════════════════════════════════════════════════════════════
-     Multi-Coin Trading Bot — Documentação
-     Adicionado em: 2026-02-20
-     ══════════════════════════════════════════════════════════════════════════ -->
-<section id="multi-coin" style="
-  max-width: 900px;
-  margin: 48px auto;
-  padding: 0 20px;
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #fafafa;
-">
-  <h2 style="font-size:1.6rem;font-weight:700;margin-bottom:8px;letter-spacing:-0.5px;">
-    🤖 Multi-Coin Grid Trading Bot
-  </h2>
-  <p style="color:#71717a;font-size:.9rem;margin-bottom:32px;">
-    Implementado em 2026-02-20 · Paper Mode · Exchange: OKX (primária), KuCoin (fallback), Gate.io (terciária)
-  </p>
-
-  <!-- Coins escolhidas -->
-  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
-    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
-      📊 Coins Ativas (6)
-    </h3>
-    <table style="width:100%;border-collapse:collapse;font-size:.875rem;">
+  <div class="table-wrap">
+    <table>
       <thead>
-        <tr style="border-bottom:1px solid #27272a;">
-          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Coin</th>
-          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Par</th>
-          <th style="text-align:right;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Vol 24h (OKX, USDT)</th>
-          <th style="text-align:left;padding:8px 12px;color:#71717a;font-size:.75rem;text-transform:uppercase;">Justificativa</th>
+        <tr>
+          <th>Coin</th>
+          <th>Par</th>
+          <th>Espaçamento Grid</th>
+          <th>Níveis</th>
+          <th>Ordem / lado</th>
+          <th>Capital Alocado</th>
+          <th>Categoria</th>
         </tr>
       </thead>
       <tbody>
-        <tr style="border-bottom:1px solid #27272a;">
-          <td style="padding:10px 12px;font-weight:600;">PEPE</td>
-          <td style="padding:10px 12px;color:#71717a;">PEPE/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$5.33M</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Coin original do bot; liquidez confirmada OKX</td>
-        </tr>
-        <tr style="border-bottom:1px solid #27272a;">
-          <td style="padding:10px 12px;font-weight:600;">DOGE</td>
-          <td style="padding:10px 12px;color:#71717a;">DOGE/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$33.8M</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Maior volume entre memecoins; amplamente líquido</td>
-        </tr>
-        <tr style="border-bottom:1px solid #27272a;">
-          <td style="padding:10px 12px;font-weight:600;">SHIB</td>
-          <td style="padding:10px 12px;color:#71717a;">SHIB/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#22c55e;">~$6.7M (KuCoin)</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Grande market cap; segundo memecoin mais conhecido</td>
-        </tr>
-        <tr style="border-bottom:1px solid #27272a;">
-          <td style="padding:10px 12px;font-weight:600;">BONK</td>
-          <td style="padding:10px 12px;color:#71717a;">BONK/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$977K</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Popular no ecossistema Solana; disponível OKX + KuCoin</td>
-        </tr>
-        <tr style="border-bottom:1px solid #27272a;">
-          <td style="padding:10px 12px;font-weight:600;">WIF</td>
-          <td style="padding:10px 12px;color:#71717a;">WIF/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$1.34M</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Top Solana memecoin; preço baixo ideal para grid</td>
+        <tr>
+          <td class="fw700">PEPE</td>
+          <td><code>PEPE/USDT</code></td>
+          <td class="text-green">0.2%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-indigo">micro-cap meme</span></td>
         </tr>
         <tr>
-          <td style="padding:10px 12px;font-weight:600;">FLOKI</td>
-          <td style="padding:10px 12px;color:#71717a;">FLOKI/USDT</td>
-          <td style="padding:10px 12px;text-align:right;color:#eab308;">~$302K</td>
-          <td style="padding:10px 12px;color:#a1a1aa;">Memecoin estabelecida; volatilidade favorável para grid</td>
+          <td class="fw700">SHIB</td>
+          <td><code>SHIB/USDT</code></td>
+          <td class="text-green">0.2%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-indigo">micro-cap meme</span></td>
+        </tr>
+        <tr>
+          <td class="fw700">BONK</td>
+          <td><code>BONK/USDT</code></td>
+          <td class="text-green">0.2%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-indigo">micro-cap meme</span></td>
+        </tr>
+        <tr>
+          <td class="fw700">FLOKI</td>
+          <td><code>FLOKI/USDT</code></td>
+          <td class="text-green">0.2%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-indigo">micro-cap meme</span></td>
+        </tr>
+        <tr>
+          <td class="fw700">DOGE</td>
+          <td><code>DOGE/USDT</code></td>
+          <td class="text-yellow">0.3%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-green">mid-cap meme</span></td>
+        </tr>
+        <tr>
+          <td class="fw700">WIF</td>
+          <td><code>WIF/USDT</code></td>
+          <td class="text-yellow">0.3%</td>
+          <td>10</td>
+          <td>$1.00 USDT</td>
+          <td class="text-cyan fw700">$20</td>
+          <td><span class="tag tag-green">mid-cap meme</span></td>
+        </tr>
+        <tr style="background:rgba(99,102,241,0.05);">
+          <td colspan="5" class="fw700" style="color:var(--text);">TOTAL</td>
+          <td class="fw700" style="color:var(--accent);font-size:1rem;">$120 USDT</td>
+          <td></td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Auto-disable -->
-  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
-    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
-      🛡️ Critérios de Auto-Disable
-    </h3>
-    <p style="color:#a1a1aa;margin-bottom:16px;font-size:.875rem;">
-      Cada coin é monitorada independentemente. Quando uma delas ultrapassa os limites de perda,
-      é automaticamente desabilitada e André recebe uma notificação no Telegram.
-      As demais coins continuam operando normalmente.
-    </p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div style="background:#1c1c1f;border:1px solid #ef4444;border-radius:8px;padding:16px;">
-        <div style="color:#ef4444;font-weight:700;font-size:.875rem;margin-bottom:8px;">⚠️ Perda Diária &gt; 20%</div>
-        <p style="color:#a1a1aa;font-size:.82rem;line-height:1.5;">
-          Se a perda acumulada no dia para uma coin ultrapassar 20% do capital alocado,
-          a coin é desabilitada até intervenção manual.
-        </p>
-      </div>
-      <div style="background:#1c1c1f;border:1px solid #ef4444;border-radius:8px;padding:16px;">
-        <div style="color:#ef4444;font-weight:700;font-size:.875rem;margin-bottom:8px;">🚨 Perda Total &gt; 30%</div>
-        <p style="color:#a1a1aa;font-size:.82rem;line-height:1.5;">
-          Se a perda total acumulada (all-time) ultrapassar 30% do capital alocado,
-          a coin é desabilitada permanentemente até reativação manual.
-        </p>
-      </div>
-    </div>
-    <div style="margin-top:16px;background:#1c1c1f;border-radius:8px;padding:16px;">
-      <div style="color:#71717a;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">
-        Capital alocado por coin
-      </div>
-      <code style="color:#3b82f6;font-size:.82rem;">
-        capital = order_size_usdt × grid_levels × 2 = 5 × 10 × 2 = <strong>$100 USDT</strong> por coin
-      </code>
+  <div style="margin-top:24px;">
+    <div class="info-box">
+      <h3>💡 Fórmula do Capital Alocado por Coin</h3>
+      <p>
+        <code>capital_coin = order_size_usdt × grid_levels × 2</code><br/>
+        Para todas as coins: <code>$1.00 × 10 × 2 = $20 por coin</code><br/>
+        O fator 2 é porque há ordens BUY abaixo <em>e</em> SELL acima do preço central.
+      </p>
     </div>
   </div>
 
-  <!-- Como habilitar/desabilitar manualmente -->
-  <div style="background:#18181b;border:1px solid #27272a;border-radius:12px;padding:24px;margin-bottom:24px;">
-    <h3 style="font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:16px;">
-      🔧 Habilitar / Desabilitar Manualmente via DB
-    </h3>
-
-    <p style="color:#a1a1aa;font-size:.875rem;margin-bottom:16px;">
-      Para reativar uma coin desabilitada, basta remover o registro da tabela
-      <code style="color:#3b82f6;">disabled_symbols</code> e reiniciar o bot:
-    </p>
-
-    <pre style="background:#0d0d0f;border:1px solid #27272a;border-radius:8px;padding:16px;font-size:.8rem;color:#22c55e;overflow-x:auto;margin-bottom:16px;">-- Verificar coins desabilitadas
-SELECT * FROM disabled_symbols ORDER BY disabled_at DESC;
-
--- Reativar uma coin (remove o registro de disable)
-DELETE FROM disabled_symbols WHERE symbol = 'PEPE/USDT';
-
--- Reiniciar o bot após a mudança
--- (executar na VPS:)
-systemctl --user restart trading-bot</pre>
-
-    <p style="color:#a1a1aa;font-size:.875rem;margin-bottom:12px;">
-      Para desabilitar manualmente uma coin sem esperar o auto-disable:
-    </p>
-
-    <pre style="background:#0d0d0f;border:1px solid #27272a;border-radius:8px;padding:16px;font-size:.8rem;color:#eab308;overflow-x:auto;">-- Desabilitar manualmente
-INSERT INTO disabled_symbols (symbol, reason)
-VALUES ('FLOKI/USDT', 'manual_disable');
-
--- A mudança entra em vigor no próximo tick do bot (a cada 10s)</pre>
-
-    <p style="color:#a1a1aa;font-size:.875rem;margin-top:16px;">
-      Para adicionar ou remover uma coin permanentemente, edite <code style="color:#3b82f6;">SYMBOLS</code>
-      em <code style="color:#3b82f6;">/home/clawdbot/workspace/coding/trading-bot/config.py</code>
-      e reinicie o bot.
-    </p>
-  </div>
-
-  <!-- Links -->
-  <div style="display:flex;gap:12px;flex-wrap:wrap;">
-    <a href="http://138.197.19.184:8766" target="_blank"
-       style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#3b82f6;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;font-size:.875rem;">
-      📊 Dashboard ao Vivo
-    </a>
-    <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank"
-       style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#27272a;color:#fafafa;border-radius:8px;text-decoration:none;font-weight:600;font-size:.875rem;">
-      💻 Código no GitHub
-    </a>
+  <div style="margin-top:16px;">
+    <p class="text-muted" style="margin-bottom:8px;font-size:0.9rem;">Configuração completa em <code>config.py</code> — trecho relevante:</p>
+    <div class="code-wrap">
+      <span class="code-label">config.py — SYMBOLS</span>
+      <pre>SYMBOLS = [
+    # Micro-cap meme coins: spacing 0.2% — $1/ordem × 10 níveis × 2 = $20/coin
+    {"symbol": "PEPE/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "SHIB/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "BONK/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "FLOKI/USDT", "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    # Mid-cap meme coins: spacing 0.3%
+    {"symbol": "DOGE/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.3, "order_size_usdt": 1.0},
+    {"symbol": "WIF/USDT",   "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.3, "order_size_usdt": 1.0},
+]</pre>
+    </div>
   </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 4 — COMO O GRID FUNCIONA
+═══════════════════════════════════════════════════════ -->
+<section id="grid" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">🔲</div>
+    <h2>Como o Grid Funciona</h2>
+  </div>
+
+  <div class="grid-viz">
+    <pre style="background:transparent;border:none;border-radius:0;padding:0;color:#e2e8f0;font-size:0.8rem;">
+  EXEMPLO: PEPE/USDT | Preço inicial: $0.00001000 | Spacing: 0.2% | 10 níveis
+
+
+                    Nível +10  $0.00001020  SELL ─────────────── topo
+                    Nível  +9  $0.00001018  SELL
+                    Nível  +8  $0.00001016  SELL
+                    Nível  +7  $0.00001014  SELL
+                    Nível  +6  $0.00001012  SELL
+                    Nível  +5  $0.00001010  SELL
+                    Nível  +4  $0.00001008  SELL
+                    Nível  +3  $0.00001006  SELL
+                    Nível  +2  $0.00001004  SELL
+                    Nível  +1  $0.00001002  SELL
+  ──── PREÇO ATUAL ─── $0.00001000 ════════════════════════ centro
+                    Nível  -1  $0.00000998  BUY
+                    Nível  -2  $0.00000996  BUY
+                    Nível  -3  $0.00000994  BUY
+                    Nível  -4  $0.00000992  BUY
+                    Nível  -5  $0.00000990  BUY
+                    Nível  -6  $0.00000988  BUY
+                    Nível  -7  $0.00000986  BUY
+                    Nível  -8  $0.00000984  BUY
+                    Nível  -9  $0.00000982  BUY
+                    Nível -10  $0.00000980  BUY ─────────────── fundo
+
+
+  Sequência de um trade lucrativo:
+  ─────────────────────────────────────────────────────────────────────
+  1. Preço cai até Nível -3 ($0.00000994)
+     → BUY executado: compra 1005.03 PEPE por $1.00 + fee $0.001
+
+  2. Bot cria nova SELL no nível seguinte acima ($0.00000996)
+     → SELL pendente: 1005.03 PEPE @ $0.00000996
+
+  3. Preço sobe e toca $0.00000996
+     → SELL executado: vende 1005.03 PEPE
+     → Receita: $1.001 - fee $0.001 = lucro ~$0.001 (0.1% net)
+
+  4. Bot cria nova BUY de volta em $0.00000994
+     → Ciclo recomeça indefinidamente
+
+  Lucro por ciclo completo:
+  (grid_spacing_pct - fee_pct×2) × order_size_usdt
+  = (0.2% - 0.2%) × $1.00 ≈ $0.00 → leve ganho nas micro-oscilações
+  Nota: lucro real vem de múltiplas oscilações dentro da grade
+    </pre>
+  </div>
+
+  <div style="margin-top:24px;" class="cards-grid">
+    <div class="card">
+      <div class="card-title">📌 Setup Inicial</div>
+      <p>Ao iniciar, o bot busca o preço atual da coin e cria a grade centrada nesse preço. Ordens BUY ficam abaixo, SELL ficam acima. O bot faz um price check a cada <strong>10 segundos</strong> (POLL_INTERVAL).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔄 Ciclo Perpétuo</div>
+      <p>Após um BUY, uma SELL é criada no nível imediatamente acima. Após um SELL, uma BUY é criada no nível imediatamente abaixo. O grid nunca expira — opera enquanto o bot estiver rodando.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">💰 Lucro Real</div>
+      <p>A taxa de trading simulada é <strong>0.1% por lado</strong> (0.2% round-trip). Com spacing de 0.2%, o lucro líquido por trade é próximo de zero — o ganho real vem do volume de trades ao longo do tempo e de oscilações maiores.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔒 Capital Isolado</div>
+      <p>Cada GridBot tem seu próprio <code>self.balance</code> e <code>self.coin_holdings</code>. Uma coin perdendo dinheiro <strong>não drena</strong> o capital das outras. O total_results no DB agrega todas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 5 — SISTEMA DE RISCO
+═══════════════════════════════════════════════════════ -->
+<section id="risco" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-red">🛡️</div>
+    <h2>Sistema de Risco</h2>
+  </div>
+
+  <p class="text-muted" style="margin-bottom:24px;font-size:0.95rem;">Seis mecanismos independentes protegem cada coin. A maioria é <strong>por coin</strong> — uma coin desabilitada não afeta as outras. O circuit breaker global é a única exceção.</p>
+
+  <div class="risk-grid">
+
+    <div class="risk-item">
+      <div class="risk-item-header">
+        <div class="risk-item-num">1</div>
+        <div class="risk-item-title">Strike System (Drawdown)</div>
+      </div>
+      <p>Monitora o drawdown do pico de saldo de cada coin. Quando ultrapassa o threshold, registra um "strike". Após 3 strikes dentro de 30 minutos, a coin é desabilitada. O flag de "em drawdown" é resetado quando a recuperação é suficiente (strikes permanecem no window).</p>
+      <div class="risk-value">Threshold: drawdown &gt; 25% do pico</div>
+      <div class="risk-value" style="margin-left:8px;">3 strikes / 30 min → disable</div>
+      <div class="risk-value" style="margin-left:8px;">Recovery: drawdown &lt; 10%</div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-item-header">
+        <div class="risk-item-num">2</div>
+        <div class="risk-item-title">Daily Loss Limit</div>
+      </div>
+      <p>Se a perda bruta da coin no dia corrente ultrapassar o limite, a coin é desabilitada imediatamente — sem esperar strikes. Esse check acontece a cada trade via <code>_update_stats()</code>. Medido em USDT absoluto (não percentual).</p>
+      <div class="risk-value">Limite: perda diária &gt; $10 USDT</div>
+      <div class="risk-value" style="margin-left:8px;">Ação: disable imediato</div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-item-header">
+        <div class="risk-item-num">3</div>
+        <div class="risk-item-title">Stop-Loss Mode (Suspensão de BUYs)</div>
+      </div>
+      <p>Quando o preço cai mais de 12% abaixo do centro do grid, o bot para de executar ordens BUY mas continua executando SELLs (para liquidar posições abertas). Quando o preço se recupera (queda &lt; 6% = 50% do threshold), o modo é desativado automaticamente.</p>
+      <div class="risk-value">Ativa: queda &gt; 12% do centro</div>
+      <div class="risk-value" style="margin-left:8px;">Desativa: queda &lt; 6% (50% recovery)</div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-item-header">
+        <div class="risk-item-num">4</div>
+        <div class="risk-item-title">Stop-Loss Total (Fechamento Forçado)</div>
+      </div>
+      <p>Queda crítica: se o preço cair mais de 15% abaixo do centro do grid, o bot fecha todas as posições abertas (SELL imediato a preço de mercado), registra o P&L no banco, desabilita a coin e notifica via Telegram. Sem possibilidade de auto-recuperação — requer intervenção manual.</p>
+      <div class="risk-value">Ativa: queda &gt; 15% do centro</div>
+      <div class="risk-value" style="margin-left:8px;">Ação: fechar tudo + disable</div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-item-header">
+        <div class="risk-item-num">5</div>
+        <div class="risk-item-title">Balance Floor</div>
+      </div>
+      <p>Se o saldo da coin cair abaixo de 60% do capital inicial alocado (i.e., perda acumulada de 40% ou mais), a coin é desabilitada. Isso garante que nunca se perde mais de $8 de um capital inicial de $20 por coin através deste mecanismo.</p>
+      <div class="risk-value">Capital inicial: $20 por coin</div>
+      <div class="risk-value" style="margin-left:8px;">Floor: perda &gt; 40% ($8) → disable</div>
+    </div>
+
+    <div class="risk-item" style="border-left-color:var(--orange);">
+      <div class="risk-item-header">
+        <div class="risk-item-num" style="background:rgba(249,115,22,0.2);border-color:rgba(249,115,22,0.4);color:var(--orange);">6</div>
+        <div class="risk-item-title">Global Circuit Breaker</div>
+      </div>
+      <p>Flag no banco de dados (<code>bot_state.trading_enabled</code>) que pausa <strong>todo o bot</strong> imediatamente. O processo Python continua rodando (dashboard continua funcionando), mas nenhuma ordem é executada. Pode ser setado manualmente via SQL ou via dashboard.</p>
+      <div class="risk-value" style="background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);color:#fdba74;">Escopo: todo o bot (todas as coins)</div>
+      <div class="risk-value" style="margin-left:8px;background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3);color:#fdba74;">Reabilitar: UPDATE bot_state SET trading_enabled=TRUE</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:32px;">
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px;">🔧 Como Reabilitar uma Coin Desabilitada</h3>
+    <div class="two-col">
+      <div>
+        <p class="text-muted" style="margin-bottom:8px;font-size:0.88rem;">Via SQL (forma direta):</p>
+        <div class="code-wrap">
+          <span class="code-label">psql</span>
+          <pre>-- Ver coins desabilitadas
+SELECT symbol, reason, disabled_at
+FROM disabled_symbols
+ORDER BY disabled_at DESC;
+
+-- Reabilitar coin específica
+DELETE FROM disabled_symbols
+WHERE symbol = 'PEPE/USDT';
+
+-- Reabilitar circuit breaker global
+UPDATE bot_state
+SET trading_enabled = TRUE
+WHERE id = 1;
+
+-- Reiniciar bot após mudança
+-- (no terminal da VPS)
+systemctl --user restart trading-bot</pre>
+        </div>
+      </div>
+      <div>
+        <p class="text-muted" style="margin-bottom:8px;font-size:0.88rem;">Via Dashboard (mais fácil):</p>
+        <div class="success-box" style="margin-bottom:0;">
+          <h3>✅ Dashboard — Botão Reabilitar</h3>
+          <p>
+            O dashboard em <code>http://138.197.19.184:8766</code> exibe um botão <strong>"Reabilitar"</strong> ao lado de cada coin desabilitada.<br/><br/>
+            Ao clicar, a rota <code>POST /api/resume/&lt;symbol&gt;</code> do Flask executa o <code>DELETE FROM disabled_symbols</code> e reinicia o grid para aquela coin automaticamente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 6 — BANCO DE DADOS
+═══════════════════════════════════════════════════════ -->
+<section id="banco" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🗄️</div>
+    <h2>Banco de Dados</h2>
+  </div>
+
+  <div class="info-box" style="margin-bottom:24px;">
+    <h3>📌 Conexão</h3>
+    <p>
+      <strong>Engine:</strong> PostgreSQL 16 (systemd service do sistema)<br/>
+      <strong>URL:</strong> <code>postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/trading</code><br/>
+      <strong>Tabelas criadas automaticamente</strong> pelo <code>ensure_tables()</code> no startup do bot (exceto <code>trades</code> e <code>total_results</code> que devem existir previamente).
+    </p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:24px;">
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">📊 Tabela: <code>trades</code></h3>
+      <p class="text-muted" style="margin-bottom:12px;font-size:0.88rem;">Registro de cada trade executado (BUY ou SELL) por todas as coins.</p>
+      <div class="code-wrap">
+        <span class="code-label">SQL — CREATE TABLE trades</span>
+        <pre>CREATE TABLE IF NOT EXISTS trades (
+    id          SERIAL PRIMARY KEY,
+    symbol      VARCHAR(20) DEFAULT 'PEPE/USDT',  -- par negociado
+    side        VARCHAR(4)  NOT NULL,               -- 'BUY' ou 'SELL'
+    amount      NUMERIC(20,10) NOT NULL,             -- quantidade da coin
+    price       NUMERIC(20,10) NOT NULL,             -- preço de execução
+    value_usdt  NUMERIC(16,6),                       -- amount × price
+    fee_usdt    NUMERIC(16,8) DEFAULT 0,             -- taxa 0.1% simulada
+    profit_usdt NUMERIC(16,8) DEFAULT 0,             -- lucro/prejuízo (só SELLs)
+    profit_pct  NUMERIC(10,6) DEFAULT 0,             -- profit_usdt / custo_buy × 100
+    mode        VARCHAR(10) DEFAULT 'paper',         -- 'paper' ou 'live'
+    grid_level  INT,                                  -- índice do nível no grid
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">📅 Tabela: <code>daily_results</code></h3>
+      <p class="text-muted" style="margin-bottom:12px;font-size:0.88rem;">Resultados diários agregados (upsert a cada trade — data é chave única).</p>
+      <div class="code-wrap">
+        <span class="code-label">SQL — CREATE TABLE daily_results</span>
+        <pre>CREATE TABLE IF NOT EXISTS daily_results (
+    id               SERIAL PRIMARY KEY,
+    date             DATE UNIQUE NOT NULL,         -- chave: YYYY-MM-DD
+    total_trades     INT     DEFAULT 0,
+    winning_trades   INT     DEFAULT 0,
+    losing_trades    INT     DEFAULT 0,
+    gross_profit     NUMERIC(14,6) DEFAULT 0,      -- soma dos SELLs lucrativos
+    gross_loss       NUMERIC(14,6) DEFAULT 0,      -- soma dos SELLs com prejuízo (negativo)
+    net_profit       NUMERIC(14,6) DEFAULT 0,      -- gross_profit + gross_loss
+    win_rate         NUMERIC(6,2)  DEFAULT 0,      -- winning_trades / total × 100
+    starting_balance NUMERIC(14,4) DEFAULT 0,      -- saldo no início do dia
+    ending_balance   NUMERIC(14,4) DEFAULT 0       -- saldo atual (atualizado a cada trade)
+);</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">📈 Tabela: <code>total_results</code></h3>
+      <p class="text-muted" style="margin-bottom:12px;font-size:0.88rem;">Métricas globais acumuladas (sempre 1 linha — id=1). Atualizada a cada trade.</p>
+      <div class="code-wrap">
+        <span class="code-label">SQL — CREATE TABLE total_results</span>
+        <pre>CREATE TABLE IF NOT EXISTS total_results (
+    id               INT PRIMARY KEY DEFAULT 1,
+    updated_at       TIMESTAMPTZ DEFAULT NOW(),
+    starting_balance NUMERIC(14,4) DEFAULT 120.0,  -- capital inicial total
+    current_balance  NUMERIC(14,4) DEFAULT 120.0,  -- saldo atual somado de todas as coins
+    net_profit_usdt  NUMERIC(14,6) DEFAULT 0,       -- lucro líquido total (USDT)
+    net_profit_pct   NUMERIC(10,4) DEFAULT 0,       -- (current - starting) / starting × 100
+    win_rate         NUMERIC(6,2)  DEFAULT 0,       -- % de trades lucrativos
+    total_trades     INT           DEFAULT 0,
+    winning_trades   INT           DEFAULT 0,
+    peak_balance     NUMERIC(14,4) DEFAULT 120.0,   -- maior saldo atingido
+    max_drawdown_pct NUMERIC(10,4) DEFAULT 0        -- maior queda do pico (%)
+);
+
+INSERT INTO total_results (id) VALUES (1) ON CONFLICT DO NOTHING;</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">🚫 Tabela: <code>disabled_symbols</code></h3>
+      <p class="text-muted" style="margin-bottom:12px;font-size:0.88rem;">Coins desabilitadas pelo sistema de risco. Presença de um registro = coin pausada.</p>
+      <div class="code-wrap">
+        <span class="code-label">SQL — CREATE TABLE disabled_symbols</span>
+        <pre>CREATE TABLE IF NOT EXISTS disabled_symbols (
+    id          SERIAL PRIMARY KEY,
+    symbol      VARCHAR(20)  NOT NULL,   -- ex: 'PEPE/USDT'
+    reason      VARCHAR(100),             -- ex: 'drawdown_3x_28pct', 'daily_loss_$3.50'
+    daily_pnl   NUMERIC(12,6),           -- P&amp;L do dia no momento do disable
+    total_pnl   NUMERIC(12,6),           -- P&amp;L total no momento do disable
+    disabled_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Para reabilitar: DELETE FROM disabled_symbols WHERE symbol = 'PEPE/USDT';</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">⛔ Tabela: <code>bot_state</code></h3>
+      <p class="text-muted" style="margin-bottom:12px;font-size:0.88rem;">Circuit breaker global. Sempre 1 linha (id=1). Criada pelo <code>ensure_tables()</code>.</p>
+      <div class="code-wrap">
+        <span class="code-label">SQL — CREATE TABLE bot_state</span>
+        <pre>CREATE TABLE IF NOT EXISTS bot_state (
+    id              INT PRIMARY KEY DEFAULT 1,
+    trading_enabled BOOLEAN NOT NULL DEFAULT TRUE,  -- FALSE = bot pausado
+    halted_at       TIMESTAMPTZ,                     -- quando foi pausado
+    halt_reason     TEXT,                            -- motivo do pause
+    halted_coin     VARCHAR(20),                     -- qual coin triggerou (se aplicável)
+    resumed_at      TIMESTAMPTZ                      -- quando foi reabilitado
+);
+
+INSERT INTO bot_state (id, trading_enabled) VALUES (1, TRUE) ON CONFLICT DO NOTHING;
+
+-- Para pausar tudo:
+UPDATE bot_state SET trading_enabled = FALSE WHERE id = 1;
+-- Para retomar:
+UPDATE bot_state SET trading_enabled = TRUE WHERE id = 1;</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 7 — CÓDIGO FONTE
+═══════════════════════════════════════════════════════ -->
+<section id="codigo" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">💻</div>
+    <h2>Código Fonte</h2>
+  </div>
+
+  <p class="text-muted" style="margin-bottom:24px;font-size:0.95rem;">Código completo e atual de todos os arquivos principais. Clique em cada arquivo para expandir. Última versão sincronizada com o repositório no momento da geração deste documento.</p>
+
+  <div class="info-box" style="margin-bottom:24px;">
+    <h3>📦 dashboard.py — não incluído aqui</h3>
+    <p>
+      O <code>dashboard.py</code> tem ~600 linhas e está disponível no repositório GitHub.<br/>
+      <strong>Rotas principais:</strong><br/>
+      &nbsp;&nbsp;• <code>GET /</code> — Serve o HTML do dashboard (métricas, coins, trades recentes, chart 7 dias)<br/>
+      &nbsp;&nbsp;• <code>GET /api/stats</code> — Retorna JSON com total_results + disabled_symbols<br/>
+      &nbsp;&nbsp;• <code>GET /api/daily-pnl-by-coin</code> — Retorna JSON com P&L diário agrupado por coin<br/>
+      &nbsp;&nbsp;• <code>POST /api/resume/&lt;symbol&gt;</code> — Remove da disabled_symbols (reabilita a coin)
+    </p>
+  </div>
+
+  <!-- requirements.txt -->
+  <div class="source-file open" id="sf-requirements">
+    <button class="source-trigger" onclick="toggleSource('sf-requirements')">
+      <span class="source-trigger-left">
+        <span class="file-badge">📄 requirements.txt</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">dependências Python do bot</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body" style="max-height:500px;">
+      <pre>ccxt>=4.0.0
+psycopg2-binary>=2.9.0
+requests>=2.31.0
+# flask e flask-cors instalados separadamente para o dashboard
+# pip install flask flask-cors</pre>
+    </div>
+  </div>
+
+  <!-- config.py -->
+  <div class="source-file" id="sf-config">
+    <button class="source-trigger" onclick="toggleSource('sf-config')">
+      <span class="source-trigger-left">
+        <span class="file-badge">🔧 config.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">toda a configuração — coins, risk, DB, API</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre># Trading Bot Configuration
+# Switch PAPER_MODE to False and add API keys to go live
+
+PAPER_MODE = True
+
+# Exchange (used for live mode)
+EXCHANGE = "okx"
+API_KEY = ""       # Fill in when going live
+API_SECRET = ""    # Fill in when going live
+
+# ── Multi-Coin Configuration ──────────────────────────────────────────────────
+# Each entry: symbol, enabled flag, grid settings, order size
+# To manually disable a coin: set "enabled": False
+SYMBOLS = [
+    # Micro-cap meme coins: spacing 0.2% — $1/ordem × 10 níveis × 2 = $20/coin
+    {"symbol": "PEPE/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "SHIB/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "BONK/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    {"symbol": "FLOKI/USDT", "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.2, "order_size_usdt": 1.0},
+    # Mid-cap meme coins: spacing 0.3%
+    {"symbol": "DOGE/USDT",  "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.3, "order_size_usdt": 1.0},
+    {"symbol": "WIF/USDT",   "enabled": True, "grid_levels": 10, "grid_spacing_pct": 0.3, "order_size_usdt": 1.0},
+]
+
+# ── Auto-Disable Thresholds ───────────────────────────────────────────────────
+# Coin is disabled automatically if it exceeds these loss thresholds
+AUTO_DISABLE_DAILY_LOSS_PCT  = 20.0   # % of capital allocated (order_size * grid_levels * 2)
+AUTO_DISABLE_TOTAL_LOSS_PCT  = 30.0   # % of capital allocated (cumulative)
+
+# ── Legacy single-symbol fallback (kept for compatibility) ────────────────────
+SYMBOL = SYMBOLS[0]["symbol"]
+QUOTE_CURRENCY = "USDT"
+
+# ── Shared Grid defaults (used if per-symbol values not present) ──────────────
+STARTING_BALANCE  = 120.0   # USDT total (6 coins × $20/coin)
+GRID_LEVELS       = 10
+GRID_SPACING_PCT  = 0.5
+ORDER_SIZE_USDT   = 5.0
+
+# ── Stop-Loss ─────────────────────────────────────────────────────────────────
+STOP_LOSS_PCT        = 12.0   # Se preço cair X% abaixo do centro do grid → para compras
+STOP_LOSS_CLOSE_PCT  = 15.0   # Se preço cair X% → fecha posições e desabilita coin
+BALANCE_FLOOR_PCT    = 40.0   # Se saldo cair abaixo de 40% do capital inicial → desabilita
+
+# ── Risk management (global) ──────────────────────────────────────────────────
+MAX_DRAWDOWN_PCT      = 25.0   # Drawdown strike threshold (per-coin, from peak)
+DRAWDOWN_MAX_STRIKES  = 3      # Disable coin after this many strikes
+DRAWDOWN_STRIKE_WINDOW_MIN = 30  # Strike window in minutes (older strikes don't count)
+DRAWDOWN_RECOVERY_PCT = 10.0  # Reset strikes when drawdown drops below this %
+DAILY_LOSS_LIMIT_USDT = 10.0  # Disable coin if daily loss > this (per-coin)
+
+# ── Notifications ─────────────────────────────────────────────────────────────
+TELEGRAM_TARGET  = "7965086167"
+TELEGRAM_CHANNEL = "telegram"
+
+# ── Database ──────────────────────────────────────────────────────────────────
+DB_URL = "postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/trading"
+
+# ── Polling interval (seconds) ────────────────────────────────────────────────
+POLL_INTERVAL = 10</pre>
+    </div>
+  </div>
+
+  <!-- exchange.py -->
+  <div class="source-file" id="sf-exchange">
+    <button class="source-trigger" onclick="toggleSource('sf-exchange')">
+      <span class="source-trigger-left">
+        <span class="file-badge">📡 exchange.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">price feeds — OKX → KuCoin → Gate.io</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre>"""Exchange abstraction — paper mode uses real prices, simulates orders."""
+import requests
+from config import SYMBOL, EXCHANGE, API_KEY, API_SECRET, PAPER_MODE
+
+def get_price(symbol=SYMBOL) -> float:
+    """Fetch current price. OKX primary, KuCoin fallback, Gate.io tertiary."""
+    base, quote = symbol.split("/")
+
+    # OKX public API (no geo-restrictions)
+    try:
+        url = f"https://www.okx.com/api/v5/market/ticker?instId={base}-{quote}"
+        r = requests.get(url, timeout=5)
+        return float(r.json()["data"][0]["last"])
+    except Exception as e:
+        print(f"[exchange] OKX error: {e}")
+
+    # KuCoin fallback
+    try:
+        url = f"https://api.kucoin.com/api/v1/market/orderbook/level1?symbol={base}-{quote}"
+        r = requests.get(url, timeout=5)
+        return float(r.json()["data"]["price"])
+    except Exception as e:
+        print(f"[exchange] KuCoin error: {e}")
+
+    # Gate.io tertiary
+    try:
+        url = f"https://api.gateio.ws/api/v4/spot/tickers?currency_pair={base}_{quote}"
+        r = requests.get(url, timeout=5)
+        return float(r.json()[0]["last"])
+    except Exception as e:
+        print(f"[exchange] Gate.io error: {e}")
+        return None
+
+def get_ccxt_exchange():
+    """Return authenticated ccxt exchange (live mode only)."""
+    import ccxt
+    exchange_class = getattr(ccxt, EXCHANGE)
+    return exchange_class({"apiKey": API_KEY, "secret": API_SECRET})</pre>
+    </div>
+  </div>
+
+  <!-- notifier.py -->
+  <div class="source-file" id="sf-notifier">
+    <button class="source-trigger" onclick="toggleSource('sf-notifier')">
+      <span class="source-trigger-left">
+        <span class="file-badge">📢 notifier.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">Telegram via openclaw CLI subprocess</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre>"""Telegram notifications."""
+import subprocess
+import shutil
+from config import TELEGRAM_TARGET, TELEGRAM_CHANNEL
+
+# Resolve openclaw path at import time
+OPENCLAW_BIN = shutil.which("openclaw") or "/home/clawdbot/.npm-global/bin/openclaw"
+
+def send(message: str):
+    try:
+        subprocess.run(
+            [OPENCLAW_BIN, "message", "send",
+             "--channel", TELEGRAM_CHANNEL,
+             "--target", TELEGRAM_TARGET,
+             "--message", message],
+            check=True, capture_output=True
+        )
+    except Exception as e:
+        print(f"[notifier] error: {e}")</pre>
+    </div>
+  </div>
+
+  <!-- database.py -->
+  <div class="source-file" id="sf-database">
+    <button class="source-trigger" onclick="toggleSource('sf-database')">
+      <span class="source-trigger-left">
+        <span class="file-badge">🗄️ database.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">PostgreSQL layer — CRUD, ensure_tables, circuit breaker</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre>"""PostgreSQL interface for the trading bot."""
+import psycopg2
+import psycopg2.extras
+from datetime import date, datetime, timezone
+from config import DB_URL
+
+def get_conn():
+    return psycopg2.connect(DB_URL)
+
+
+def ensure_tables():
+    """Create any missing tables (idempotent — safe to call on startup)."""
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            # disabled_symbols table — tracks coins auto-disabled by risk limits
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS disabled_symbols (
+                    id          SERIAL PRIMARY KEY,
+                    symbol      VARCHAR(20) NOT NULL,
+                    reason      VARCHAR(100),
+                    daily_pnl   NUMERIC(12,6),
+                    total_pnl   NUMERIC(12,6),
+                    disabled_at TIMESTAMPTZ DEFAULT NOW()
+                )
+            """)
+            # Ensure trades table has symbol column (migration safety)
+            cur.execute("""
+                ALTER TABLE trades ADD COLUMN IF NOT EXISTS symbol VARCHAR(20) DEFAULT 'PEPE/USDT'
+            """)
+            # bot_state table — persistent circuit breaker flag
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS bot_state (
+                    id              INT PRIMARY KEY DEFAULT 1,
+                    trading_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+                    halted_at       TIMESTAMPTZ,
+                    halt_reason     TEXT,
+                    halted_coin     VARCHAR(20),
+                    resumed_at      TIMESTAMPTZ
+                )
+            """)
+            # Ensure exactly one row always exists
+            cur.execute("""
+                INSERT INTO bot_state (id, trading_enabled)
+                VALUES (1, TRUE)
+                ON CONFLICT (id) DO NOTHING
+            """)
+        conn.commit()
+
+
+def is_trading_enabled() -> bool:
+    """Check if trading is globally enabled (circuit breaker not tripped)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT trading_enabled FROM bot_state WHERE id = 1")
+                row = cur.fetchone()
+                return bool(row[0]) if row else True
+    except Exception as e:
+        print(f"[db] is_trading_enabled error: {e}")
+        return True  # fail-open: don't block trading on DB error
+
+
+def halt_trading(reason: str, coin: str = None):
+    """Disable trading globally and record why (circuit breaker)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE bot_state SET
+                        trading_enabled = FALSE,
+                        halted_at       = NOW(),
+                        halt_reason     = %s,
+                        halted_coin     = %s
+                    WHERE id = 1
+                """, (reason, coin))
+            conn.commit()
+        print(f"[db] halt_trading: {reason} (coin={coin})")
+    except Exception as e:
+        print(f"[db] halt_trading error: {e}")
+
+
+def resume_trading():
+    """Re-enable trading globally (call after operator gives the OK)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE bot_state SET
+                        trading_enabled = TRUE,
+                        resumed_at      = NOW(),
+                        halt_reason     = NULL,
+                        halted_coin     = NULL
+                    WHERE id = 1
+                """)
+            conn.commit()
+        print("[db] resume_trading: trading re-enabled")
+    except Exception as e:
+        print(f"[db] resume_trading error: {e}")
+
+
+def log_trade(side, amount, price, fee_usdt=0, profit_usdt=0, profit_pct=0,
+              grid_level=None, mode="paper", symbol="PEPE/USDT"):
+    value_usdt = float(amount) * float(price)
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO trades
+                    (symbol, side, amount, price, value_usdt, fee_usdt,
+                     profit_usdt, profit_pct, mode, grid_level)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (symbol, side, amount, price, value_usdt, fee_usdt,
+                  profit_usdt, profit_pct, mode, grid_level))
+        conn.commit()
+
+
+def update_total(current_balance, starting_balance, net_profit, win_rate,
+                 total_trades, winning_trades, peak_balance, max_drawdown_pct):
+    net_profit_pct = ((current_balance - starting_balance) / starting_balance) * 100
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE total_results SET
+                    updated_at       = NOW(),
+                    current_balance  = %s,
+                    net_profit_usdt  = %s,
+                    net_profit_pct   = %s,
+                    win_rate         = %s,
+                    total_trades     = %s,
+                    winning_trades   = %s,
+                    peak_balance     = %s,
+                    max_drawdown_pct = %s
+                WHERE id = 1
+            """, (current_balance, net_profit, net_profit_pct, win_rate,
+                  total_trades, winning_trades, peak_balance, max_drawdown_pct))
+        conn.commit()
+
+
+def upsert_daily(date_val, total_trades, winning_trades, losing_trades,
+                 gross_profit, gross_loss, starting_balance, ending_balance):
+    net_profit = gross_profit + gross_loss
+    win_rate   = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO daily_results
+                    (date, total_trades, winning_trades, losing_trades,
+                     gross_profit, gross_loss, net_profit, win_rate,
+                     starting_balance, ending_balance)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (date) DO UPDATE SET
+                    total_trades     = EXCLUDED.total_trades,
+                    winning_trades   = EXCLUDED.winning_trades,
+                    losing_trades    = EXCLUDED.losing_trades,
+                    gross_profit     = EXCLUDED.gross_profit,
+                    gross_loss       = EXCLUDED.gross_loss,
+                    net_profit       = EXCLUDED.net_profit,
+                    win_rate         = EXCLUDED.win_rate,
+                    ending_balance   = EXCLUDED.ending_balance
+            """, (date_val, total_trades, winning_trades, losing_trades,
+                  gross_profit, gross_loss, net_profit, win_rate,
+                  starting_balance, ending_balance))
+        conn.commit()
+
+
+def load_state() -> dict:
+    """Load persisted bot state from total_results. Returns defaults if empty."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT current_balance, starting_balance, peak_balance,
+                           net_profit_usdt, total_trades, winning_trades, max_drawdown_pct
+                    FROM total_results WHERE id=1
+                """)
+                row = cur.fetchone()
+                if row:
+                    keys = ["current_balance", "starting_balance", "peak_balance",
+                            "net_profit_usdt", "total_trades", "winning_trades",
+                            "max_drawdown_pct"]
+                    return dict(zip(keys,
+                                   [float(v) if v is not None else 0.0 for v in row]))
+    except Exception as e:
+        print(f"[db] load_state error: {e}")
+    return {}
+
+
+# ── Per-symbol P&amp;L helpers ────────────────────────────────────────────────────
+
+def get_symbol_daily_pnl(symbol: str) -> float:
+    """Return today's net P&amp;L (USDT) for a specific symbol."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT COALESCE(SUM(profit_usdt), 0.0)
+                    FROM trades
+                    WHERE symbol = %s
+                      AND DATE(created_at AT TIME ZONE 'UTC') = CURRENT_DATE
+                """, (symbol,))
+                row = cur.fetchone()
+                return float(row[0]) if row else 0.0
+    except Exception as e:
+        print(f"[db] get_symbol_daily_pnl error ({symbol}): {e}")
+        return 0.0
+
+
+def get_symbol_total_pnl(symbol: str) -> float:
+    """Return cumulative net P&amp;L (USDT) for a specific symbol (all time)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT COALESCE(SUM(profit_usdt), 0.0)
+                    FROM trades
+                    WHERE symbol = %s
+                """, (symbol,))
+                row = cur.fetchone()
+                return float(row[0]) if row else 0.0
+    except Exception as e:
+        print(f"[db] get_symbol_total_pnl error ({symbol}): {e}")
+        return 0.0
+
+
+def disable_symbol(symbol: str, reason: str = "manual",
+                   daily_pnl: float = 0.0, total_pnl: float = 0.0):
+    """Record that a symbol was disabled (auto or manual)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO disabled_symbols (symbol, reason, daily_pnl, total_pnl)
+                    VALUES (%s, %s, %s, %s)
+                """, (symbol, reason, daily_pnl, total_pnl))
+            conn.commit()
+        print(f"[db] disabled_symbols: {symbol} ({reason})")
+    except Exception as e:
+        print(f"[db] disable_symbol error ({symbol}): {e}")
+
+
+def get_disabled_symbols() -> list:
+    """Return list of currently disabled symbols (most recent entry per symbol)."""
+    try:
+        with get_conn() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("""
+                    SELECT DISTINCT ON (symbol)
+                           symbol, reason, daily_pnl, total_pnl, disabled_at
+                    FROM disabled_symbols
+                    ORDER BY symbol, disabled_at DESC
+                """)
+                return [dict(r) for r in cur.fetchall()]
+    except Exception as e:
+        print(f"[db] get_disabled_symbols error: {e}")
+        return []</pre>
+    </div>
+  </div>
+
+  <!-- strategy.py -->
+  <div class="source-file" id="sf-strategy">
+    <button class="source-trigger" onclick="toggleSource('sf-strategy')">
+      <span class="source-trigger-left">
+        <span class="file-badge">♟️ strategy.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">GridBot class — toda a lógica de grid + sistema de risco</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre>"""Grid trading strategy — multi-symbol capable."""
+import time
+from datetime import date, datetime, timezone
+from config import (
+    STARTING_BALANCE, MAX_DRAWDOWN_PCT, DAILY_LOSS_LIMIT_USDT, PAPER_MODE,
+    DRAWDOWN_MAX_STRIKES, DRAWDOWN_STRIKE_WINDOW_MIN, DRAWDOWN_RECOVERY_PCT,
+    STOP_LOSS_PCT, STOP_LOSS_CLOSE_PCT, BALANCE_FLOOR_PCT
+)
+from exchange import get_price
+from database import log_trade, update_total, upsert_daily, disable_symbol
+import notifier
+
+
+class GridBot:
+    """Grid bot for a single symbol.  Instantiate one per active coin."""
+
+    def __init__(self, symbol_cfg: dict):
+        """
+        symbol_cfg keys:
+            symbol          str   e.g. "PEPE/USDT"
+            grid_levels     int
+            grid_spacing_pct float
+            order_size_usdt  float
+        """
+        self.symbol          = symbol_cfg["symbol"]
+        self.grid_levels     = symbol_cfg.get("grid_levels", 10)
+        self.grid_spacing_pct= symbol_cfg.get("grid_spacing_pct", 0.5)
+        self.order_size_usdt = symbol_cfg.get("order_size_usdt", 5.0)
+
+        # Persisted state — each bot instance has its own balance bucket
+        from database import load_state
+        state = load_state()
+        # Use a per-symbol portion of the starting balance
+        self.balance          = self.order_size_usdt * self.grid_levels * 2  # allocated capital
+        self.starting_balance = self.balance
+        self.peak_balance     = self.balance
+        self.net_profit       = 0.0
+        self.total_trades     = 0
+        self.winning_trades   = 0
+        self.max_drawdown_pct = 0.0
+        self.coin_holdings    = 0.0
+        self.grid_orders      = {}
+        self.day_trades       = 0
+        self.day_gross_profit = 0.0
+        self.day_gross_loss   = 0.0
+        self.day_starting_balance = self.balance
+        self.current_day      = date.today()
+        self.running          = True
+        self.center_price     = None
+        self.grid_prices      = []
+        # Strike system — tracks drawdown events to avoid disabling on single spike
+        self._strike_times: list = []   # timestamps (float) of each strike
+        self._in_drawdown   = False     # True while currently above threshold
+        # Stop-loss state
+        self.stop_loss_triggered = False  # True quando preço caiu demais
+
+    # ── Grid setup ────────────────────────────────────────────────────────────
+
+    def setup_grid(self, center_price: float):
+        """Initialize grid lines around current price."""
+        self.center_price = center_price
+        self.grid_prices  = []
+        for i in range(-self.grid_levels, self.grid_levels + 1):
+            price = center_price * (1 + i * self.grid_spacing_pct / 100)
+            self.grid_prices.append(round(price, 10))
+        self.grid_prices.sort()
+
+        for i, price in enumerate(self.grid_prices):
+            if price &lt; center_price:
+                amount = self.order_size_usdt / price
+                self.grid_orders[i] = {
+                    "side": "BUY", "price": price,
+                    "amount": amount, "filled": False
+                }
+            elif price &gt; center_price:
+                amount = self.order_size_usdt / center_price
+                self.grid_orders[i] = {
+                    "side": "SELL", "price": price,
+                    "amount": amount, "filled": False
+                }
+
+        base = self.symbol.split("/")[0]
+        print(f"[grid:{base}] Setup {len(self.grid_orders)} orders @ {center_price:.10g}")
+
+    # ── Tick ─────────────────────────────────────────────────────────────────
+
+    def check_fills(self, current_price: float):
+        """Check and simulate order fills at current price."""
+        # ── Stop-loss check ───────────────────────────────────────────────────
+        if self.center_price:
+            drop_pct = (self.center_price - current_price) / self.center_price * 100
+
+            if drop_pct &gt;= STOP_LOSS_CLOSE_PCT and not self.stop_loss_triggered:
+                # Queda crítica — fechar tudo e desabilitar
+                self._trigger_stop_loss(current_price, drop_pct)
+                return
+
+            if drop_pct &gt;= STOP_LOSS_PCT:
+                # Modo de proteção — não comprar mais, só vender
+                if not self.stop_loss_triggered:
+                    self.stop_loss_triggered = True
+                    base = self.symbol.split("/")[0]
+                    print(f"[grid:{base}] ⚠️  Stop-loss mode — queda {drop_pct:.1f}% do centro, suspendendo BUYs")
+                    notifier.send(
+                        f"⚠️ Stop-loss ativado — {self.symbol}\n"
+                        f"Queda de {drop_pct:.1f}% do centro do grid ({STOP_LOSS_PCT}% limite)\n"
+                        f"Modo proteção: apenas SELLs até recuperação."
+                    )
+            elif drop_pct &lt; STOP_LOSS_PCT * 0.5 and self.stop_loss_triggered:
+                # Preço se recuperou — resetar stop loss
+                self.stop_loss_triggered = False
+                base = self.symbol.split("/")[0]
+                print(f"[grid:{base}] ✅ Stop-loss resetado — preço se recuperou (drop={drop_pct:.1f}%)")
+                notifier.send(
+                    f"✅ Stop-loss resetado — {self.symbol}\n"
+                    f"Preço se recuperou (queda atual: {drop_pct:.1f}%)\n"
+                    f"Retomando compras normalmente."
+                )
+
+        # ── Processar orders ──────────────────────────────────────────────────
+        for level, order in list(self.grid_orders.items()):
+            if order["filled"]:
+                continue
+            # Em stop-loss mode: ignora BUYs, só executa SELLs
+            if self.stop_loss_triggered and order["side"] == "BUY":
+                continue
+            if order["side"] == "BUY" and current_price &lt;= order["price"]:
+                self._fill_buy(level, order, current_price)
+            elif order["side"] == "SELL" and current_price &gt;= order["price"]:
+                self._fill_sell(level, order, current_price)
+
+    # ── Stop-loss trigger ─────────────────────────────────────────────────────
+
+    def _trigger_stop_loss(self, current_price: float, drop_pct: float):
+        """Fechar todas as posições abertas e desabilitar a coin."""
+        self.stop_loss_triggered = True
+
+        # Fechar todas as posições compradas (BUYs filled → SELL pendente)
+        total_loss = 0.0
+        positions_closed = 0
+        for level, order in list(self.grid_orders.items()):
+            if order["side"] == "SELL" and not order["filled"]:
+                # Há uma posição comprada aguardando SELL
+                buy_price = order.get("buy_price", self.center_price)
+                if buy_price:
+                    loss = order["amount"] * (current_price - buy_price)
+                    fee  = order["amount"] * current_price * 0.001
+                    total_loss        += loss - fee
+                    self.balance      += order["amount"] * current_price - fee
+                    self.coin_holdings -= order["amount"]
+                    positions_closed  += 1
+
+        if positions_closed &gt; 0:
+            self.net_profit += total_loss
+            log_trade("SELL", 0, current_price,
+                      fee_usdt=0, profit_usdt=total_loss,
+                      profit_pct=drop_pct * -1,
+                      grid_level=-1,
+                      mode="paper" if PAPER_MODE else "live",
+                      symbol=self.symbol)
+
+        disable_symbol(
+            self.symbol,
+            reason=f"stop_loss_{drop_pct:.0f}pct_drop",
+            daily_pnl=self.day_gross_profit + self.day_gross_loss,
+            total_pnl=self.net_profit
+        )
+        notifier.send(
+            f"🛑 STOP-LOSS — {self.symbol}\n"
+            f"Queda de {drop_pct:.1f}% do centro do grid\n"
+            f"Posições fechadas: {positions_closed}\n"
+            f"P&amp;L desta ação: ${total_loss:.2f}\n"
+            f"Saldo: ${self.balance:.2f} | Lucro total: ${self.net_profit:.2f}\n\n"
+            f"Coin desabilitada. Use o botão no dashboard para reabilitar."
+        )
+        base = self.symbol.split("/")[0]
+        print(f"[grid:{base}] 🛑 STOP-LOSS triggered — {drop_pct:.1f}% drop, "
+              f"{positions_closed} positions closed, P&amp;L: ${total_loss:.2f}")
+        self.running = False
+
+    # ── Fill helpers ──────────────────────────────────────────────────────────
+
+    def _fill_buy(self, level, order, price):
+        cost = order["amount"] * price
+        fee  = cost * 0.001
+        if self.balance &lt; cost + fee:
+            return
+        self.balance      -= (cost + fee)
+        self.coin_holdings += order["amount"]
+        self.total_trades  += 1
+        self.day_trades    += 1
+        order["filled"]     = True
+
+        log_trade("BUY", order["amount"], price,
+                  fee_usdt=fee, grid_level=level,
+                  mode="paper" if PAPER_MODE else "live",
+                  symbol=self.symbol)
+
+        next_price = price * (1 + self.grid_spacing_pct / 100)
+        self.grid_orders[level] = {
+            "side": "SELL", "price": next_price,
+            "amount": order["amount"], "filled": False,
+            "buy_price": price
+        }
+        self._update_stats()
+        base = self.symbol.split("/")[0]
+        print(f"[grid:{base}] BUY  {order['amount']:.2f} @ {price:.10g} | "
+              f"Balance: ${self.balance:.2f}")
+
+    def _fill_sell(self, level, order, price):
+        buy_price  = order.get("buy_price", self.center_price)
+        profit     = order["amount"] * (price - buy_price)
+        fee        = order["amount"] * price * 0.001
+        profit    -= fee
+        self.balance      += order["amount"] * price - fee
+        self.coin_holdings -= order["amount"]
+        self.total_trades  += 1
+        self.day_trades    += 1
+        order["filled"]     = True
+
+        if profit &gt; 0:
+            self.winning_trades   += 1
+            self.day_gross_profit += profit
+        else:
+            self.day_gross_loss   += profit
+        self.net_profit += profit
+
+        profit_pct = (profit / (order["amount"] * buy_price)) * 100 if buy_price else 0
+        log_trade("SELL", order["amount"], price,
+                  fee_usdt=fee, profit_usdt=profit, profit_pct=profit_pct,
+                  grid_level=level,
+                  mode="paper" if PAPER_MODE else "live",
+                  symbol=self.symbol)
+
+        next_price = price * (1 - self.grid_spacing_pct / 100)
+        self.grid_orders[level] = {
+            "side": "BUY", "price": next_price,
+            "amount": order["amount"], "filled": False
+        }
+        self._update_stats()
+        base = self.symbol.split("/")[0]
+        print(f"[grid:{base}] SELL {order['amount']:.2f} @ {price:.10g} | "
+              f"Profit: ${profit:.4f} | Balance: ${self.balance:.2f}")
+
+    # ── Stats helpers ─────────────────────────────────────────────────────────
+
+    def _win_rate(self):
+        return (self.winning_trades / self.total_trades * 100) \
+               if self.total_trades &gt; 0 else 0
+
+    def _update_stats(self):
+        if self.balance &gt; self.peak_balance:
+            self.peak_balance = self.balance
+        drawdown = ((self.peak_balance - self.balance) / self.peak_balance) * 100
+        self.max_drawdown_pct = max(self.max_drawdown_pct, drawdown)
+
+        update_total(self.balance, self.starting_balance, self.net_profit,
+                     self._win_rate(), self.total_trades, self.winning_trades,
+                     self.peak_balance, self.max_drawdown_pct)
+
+        today = date.today()
+        if today != self.current_day:
+            upsert_daily(self.current_day, self.day_trades, self.winning_trades,
+                         self.day_trades - self.winning_trades,
+                         self.day_gross_profit, self.day_gross_loss,
+                         self.day_starting_balance, self.balance)
+            self.current_day          = today
+            self.day_trades           = 0
+            self.day_gross_profit     = 0.0
+            self.day_gross_loss       = 0.0
+            self.day_starting_balance = self.balance
+        else:
+            upsert_daily(self.current_day, self.day_trades, self.winning_trades,
+                         self.day_trades - self.winning_trades,
+                         self.day_gross_profit, self.day_gross_loss,
+                         self.day_starting_balance, self.balance)
+
+        # ── Strike system: drawdown per-coin ─────────────────────────────────
+        now = time.time()
+        window_secs = DRAWDOWN_STRIKE_WINDOW_MIN * 60
+
+        if drawdown &gt;= MAX_DRAWDOWN_PCT:
+            if not self._in_drawdown:
+                # New strike — entering drawdown territory
+                self._in_drawdown = True
+                # Prune strikes older than the window
+                self._strike_times = [t for t in self._strike_times
+                                      if now - t &lt; window_secs]
+                self._strike_times.append(now)
+                strike_count = len(self._strike_times)
+
+                if strike_count &gt;= DRAWDOWN_MAX_STRIKES:
+                    # Too many strikes in the window — disable this coin
+                    disable_symbol(
+                        self.symbol,
+                        reason=f"drawdown_{strike_count}x_{drawdown:.0f}pct",
+                        daily_pnl=self.day_gross_profit + self.day_gross_loss,
+                        total_pnl=self.net_profit
+                    )
+                    notifier.send(
+                        f"⛔ {self.symbol} DESABILITADA — {strike_count}º strike\n"
+                        f"Drawdown: {drawdown:.1f}% atingido {strike_count}x "
+                        f"em {DRAWDOWN_STRIKE_WINDOW_MIN} min\n"
+                        f"Saldo: ${self.balance:.2f} | Lucro: ${self.net_profit:.2f}\n"
+                        f"Use o botão Reabilitar no dashboard quando quiser retomar."
+                    )
+                    self.running = False
+                else:
+                    # Warning strike — keep running
+                    notifier.send(
+                        f"⚠️ {self.symbol} — Strike {strike_count}/{DRAWDOWN_MAX_STRIKES}\n"
+                        f"Drawdown: {drawdown:.1f}% (limite: {MAX_DRAWDOWN_PCT}%)\n"
+                        f"Saldo: ${self.balance:.2f} | Lucro total: ${self.net_profit:.2f}\n"
+                        f"Continuando... desabilitará no {DRAWDOWN_MAX_STRIKES}º strike."
+                    )
+        elif drawdown &lt; DRAWDOWN_RECOVERY_PCT and self._in_drawdown:
+            # Price recovered — reset drawdown flag (strikes remain for window)
+            self._in_drawdown = False
+
+        # ── Daily loss limit (disable immediately — no strikes) ───────────────
+        daily_loss = self.day_gross_loss
+        if daily_loss &lt;= -DAILY_LOSS_LIMIT_USDT:
+            disable_symbol(
+                self.symbol,
+                reason=f"daily_loss_${abs(daily_loss):.2f}",
+                daily_pnl=self.day_gross_profit + self.day_gross_loss,
+                total_pnl=self.net_profit
+            )
+            notifier.send(
+                f"⛔ {self.symbol} DESABILITADA — Perda diária\n"
+                f"Perda hoje: ${abs(daily_loss):.2f} (limite: ${DAILY_LOSS_LIMIT_USDT})\n"
+                f"Lucro total: ${self.net_profit:.2f}\n"
+                f"As outras coins continuam. Reabilitável pelo dashboard."
+            )
+            self.running = False
+
+        # ── Balance floor — nunca perder mais que X% do capital alocado ───────
+        if self.starting_balance &gt; 0 and not self.stop_loss_triggered:
+            balance_loss_pct = (self.starting_balance - self.balance) / self.starting_balance * 100
+            if balance_loss_pct &gt;= BALANCE_FLOOR_PCT:
+                floor_usdt = self.starting_balance * (1 - BALANCE_FLOOR_PCT / 100)
+                disable_symbol(
+                    self.symbol,
+                    reason=f"balance_floor_{balance_loss_pct:.0f}pct_loss",
+                    daily_pnl=self.day_gross_profit + self.day_gross_loss,
+                    total_pnl=self.net_profit
+                )
+                notifier.send(
+                    f"🛑 FLOOR DE CAPITAL — {self.symbol}\n"
+                    f"Perda de {balance_loss_pct:.1f}% do capital inicial\n"
+                    f"Saldo: ${self.balance:.2f} (mínimo: ${floor_usdt:.2f})\n"
+                    f"Coin desabilitada. Use o botão no dashboard para reabilitar."
+                )
+                base = self.symbol.split("/")[0]
+                print(f"[grid:{base}] 🛑 BALANCE FLOOR triggered — {balance_loss_pct:.1f}% loss "
+                      f"(floor: ${floor_usdt:.2f})")
+                self.running = False</pre>
+    </div>
+  </div>
+
+  <!-- bot.py -->
+  <div class="source-file" id="sf-bot">
+    <button class="source-trigger" onclick="toggleSource('sf-bot')">
+      <span class="source-trigger-left">
+        <span class="file-badge">🚀 bot.py</span>
+        <span class="text-muted" style="font-size:0.82rem;font-weight:400;">main loop multi-coin + circuit breaker global</span>
+      </span>
+      <svg class="source-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="source-body">
+      <pre>"""Main bot loop — multi-coin grid trading with persistent circuit breaker."""
+import time
+import signal
+import sys
+from config import (
+    PAPER_MODE, SYMBOLS, POLL_INTERVAL,
+    AUTO_DISABLE_DAILY_LOSS_PCT, AUTO_DISABLE_TOTAL_LOSS_PCT
+)
+from exchange import get_price
+from strategy import GridBot
+from database import (
+    ensure_tables, get_symbol_daily_pnl, get_symbol_total_pnl,
+    disable_symbol, is_trading_enabled
+)
+import notifier
+
+
+# ── Startup ───────────────────────────────────────────────────────────────────
+
+ensure_tables()
+
+# Build active bots from config (only enabled symbols)
+active_configs = [cfg for cfg in SYMBOLS if cfg.get("enabled", True)]
+bots: dict[str, GridBot] = {}   # symbol -> GridBot instance
+
+print(f"[bot] Starting {'PAPER' if PAPER_MODE else 'LIVE'} trading — "
+      f"{len(active_configs)} coins: {[c['symbol'] for c in active_configs]}")
+
+
+# ── Signal handlers ───────────────────────────────────────────────────────────
+
+def handle_stop(sig, frame):
+    total_profit = sum(b.net_profit for b in bots.values())
+    total_trades = sum(b.total_trades for b in bots.values())
+    symbols_str  = ", ".join(bots.keys())
+    print(f"\n[bot] Stopping all bots…")
+    notifier.send(
+        f"⏹️ Multi-coin bot parado manualmente.\n"
+        f"Coins: {symbols_str}\n"
+        f"Trades totais: {total_trades} | Lucro total: ${total_profit:.4f}"
+    )
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, handle_stop)
+signal.signal(signal.SIGINT,  handle_stop)
+
+
+# ── Per-symbol auto-disable check ─────────────────────────────────────────────
+
+def check_auto_disable(symbol: str, bot: GridBot) -&gt; bool:
+    """
+    Returns True if the symbol should be disabled (and handles notification).
+    Uses the per-symbol capital allocation as the reference.
+    """
+    capital = bot.starting_balance  # allocated capital for this coin
+
+    daily_pnl = get_symbol_daily_pnl(symbol)
+    total_pnl = get_symbol_total_pnl(symbol)
+
+    daily_loss_pct = (daily_pnl / capital * 100) if capital &gt; 0 else 0
+    total_loss_pct = (total_pnl / capital * 100) if capital &gt; 0 else 0
+
+    reason = None
+    if daily_loss_pct &lt;= -AUTO_DISABLE_DAILY_LOSS_PCT:
+        reason = "daily_loss_exceeded"
+        threshold = AUTO_DISABLE_DAILY_LOSS_PCT
+        loss_label = f"Perda diária de {daily_loss_pct:.1f}% ultrapassou limite de -{threshold:.0f}%"
+    elif total_loss_pct &lt;= -AUTO_DISABLE_TOTAL_LOSS_PCT:
+        reason = "total_loss_exceeded"
+        threshold = AUTO_DISABLE_TOTAL_LOSS_PCT
+        loss_label = f"Perda total de {total_loss_pct:.1f}% ultrapassou limite de -{threshold:.0f}%"
+
+    if reason:
+        disable_symbol(symbol, reason=reason,
+                       daily_pnl=daily_pnl, total_pnl=total_pnl)
+        notifier.send(
+            f"⚠️ [TRADING BOT] {symbol} desabilitada automaticamente!\n"
+            f"Motivo: {loss_label}\n"
+            f"P&amp;L hoje: ${daily_pnl:.2f} | P&amp;L total: ${total_pnl:.2f}"
+        )
+        print(f"[bot] AUTO-DISABLED {symbol}: {reason}")
+        return True
+
+    return False
+
+
+# ── Grid initialisation helper ────────────────────────────────────────────────
+
+def init_bots():
+    """Initialise GridBot instances for all active configs."""
+    result: dict[str, GridBot] = {}
+    for cfg in active_configs:
+        sym = cfg["symbol"]
+        print(f"[bot] Initialising {sym}…")
+        while True:
+            price = get_price(sym)
+            if price:
+                bot = GridBot(cfg)
+                bot.setup_grid(price)
+                result[sym] = bot
+                break
+            time.sleep(5)
+    return result
+
+
+# ── Main loop ─────────────────────────────────────────────────────────────────
+
+def main():
+    global bots
+
+    # Check persistent circuit breaker before initialising grids
+    if not is_trading_enabled():
+        print("[bot] Trading is globally HALTED (circuit breaker active). "
+              "Waiting in paused mode…")
+        notifier.send(
+            "⏸️ Bot iniciou em modo PAUSADO (circuit breaker ativo no banco).\n"
+            "Para retomar: UPDATE bot_state SET trading_enabled=TRUE WHERE id=1;"
+        )
+    else:
+        bots = init_bots()
+        notifier.send(
+            f"🚀 Multi-coin grid bot iniciado!\n"
+            f"Modo: {'📄 PAPER' if PAPER_MODE else '💰 LIVE'}\n"
+            f"Coins activas: {len(bots)}\n"
+            + "\n".join(f"  • {s}" for s in bots)
+        )
+
+    # Main tick loop — process ALWAYS stays alive
+    while True:
+        # ── Check persistent circuit breaker ─────────────────────────────────
+        if not is_trading_enabled():
+            time.sleep(POLL_INTERVAL)
+            continue
+
+        # ── Re-initialise grids if bots dict is empty (after resume) ─────────
+        if not bots:
+            print("[bot] Re-initialising grids after resume…")
+            bots = init_bots()
+            notifier.send(f"▶️ Bot retomado! {len(bots)} coins reinicializadas.")
+
+        # ── Per-coin loop ─────────────────────────────────────────────────────
+        disabled_this_tick = []
+
+        for symbol, bot in list(bots.items()):
+            if not bot.running:
+                print(f"[bot] {symbol}: disabled by circuit breaker, removing from active set.")
+                disabled_this_tick.append(symbol)
+                continue
+
+            # Per-symbol auto-disable check
+            if check_auto_disable(symbol, bot):
+                disabled_this_tick.append(symbol)
+                continue
+
+            # Tick
+            price = get_price(symbol)
+            if price:
+                bot.check_fills(price)
+
+        # Remove disabled bots from active map
+        for sym in disabled_this_tick:
+            bots.pop(sym, None)
+
+        if not bots:
+            print("[bot] No active symbols left. All coins disabled. Dashboard still running.")
+
+        time.sleep(POLL_INTERVAL)
+
+
+if __name__ == "__main__":
+    main()</pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 8 — SYSTEMD SERVICES
+═══════════════════════════════════════════════════════ -->
+<section id="systemd" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-orange">⚙️</div>
+    <h2>Systemd Services</h2>
+  </div>
+
+  <p class="text-muted" style="margin-bottom:24px;font-size:0.95rem;">Dois serviços systemd de usuário (<code>--user</code>), rodando como o usuário <code>clawdbot</code>. São reiniciados automaticamente pelo sistema operacional em caso de crash.</p>
+
+  <div class="two-col" style="margin-bottom:24px;">
+    <div>
+      <p class="text-muted" style="margin-bottom:8px;font-size:0.88rem;"><code>/home/clawdbot/.config/systemd/user/trading-bot.service</code></p>
+      <div class="code-wrap">
+        <span class="code-label">trading-bot.service</span>
+        <pre>[Unit]
+Description=Crypto Grid Trading Bot (Multi-Coin, Paper Mode)
+After=network.target postgresql.service
+
+[Service]
+Environment=PATH=/home/clawdbot/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+WorkingDirectory=/home/clawdbot/workspace/coding/trading-bot
+ExecStart=/home/clawdbot/.openclaw/workspace/venv/bin/python3 \
+    /home/clawdbot/workspace/coding/trading-bot/bot.py
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/home/clawdbot/workspace/coding/trading-bot/bot.log
+StandardError=append:/home/clawdbot/workspace/coding/trading-bot/bot.log
+
+[Install]
+WantedBy=default.target</pre>
+      </div>
+    </div>
+    <div>
+      <p class="text-muted" style="margin-bottom:8px;font-size:0.88rem;"><code>/home/clawdbot/.config/systemd/user/trading-dashboard.service</code></p>
+      <div class="code-wrap">
+        <span class="code-label">trading-dashboard.service</span>
+        <pre>[Unit]
+Description=Trading Bot Dashboard (Flask, porta 8766)
+After=network.target
+
+[Service]
+WorkingDirectory=/home/clawdbot/workspace/coding/trading-bot
+ExecStart=/home/linuxbrew/.linuxbrew/bin/python3 \
+    /home/clawdbot/workspace/coding/trading-bot/dashboard.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/clawdbot/workspace/coding/trading-bot/dashboard.log
+StandardError=append:/home/clawdbot/workspace/coding/trading-bot/dashboard.log
+
+[Install]
+WantedBy=default.target</pre>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">🔧 Comandos de Gestão</h3>
+  <div class="code-wrap">
+    <span class="code-label">bash — gestão dos services</span>
+    <pre># Ver status dos dois serviços
+systemctl --user status trading-bot trading-dashboard
+
+# Iniciar
+systemctl --user start trading-bot trading-dashboard
+
+# Parar
+systemctl --user stop trading-bot trading-dashboard
+
+# Reiniciar (após mudanças no código)
+systemctl --user restart trading-bot
+systemctl --user restart trading-dashboard
+
+# Habilitar no boot
+systemctl --user enable trading-bot trading-dashboard
+
+# Recarregar unit files (após editar os .service)
+systemctl --user daemon-reload
+
+# Ver logs em tempo real
+journalctl --user -u trading-bot -f
+journalctl --user -u trading-dashboard -f</pre>
+  </div>
+
+  <div class="warning-box" style="margin-top:16px;">
+    <h3>⚠️ PATH no trading-bot.service</h3>
+    <p>O <code>notifier.py</code> usa <code>subprocess</code> para chamar o binário <code>openclaw</code>. O PATH da linha <code>Environment=PATH=...</code> no service file é essencial para que o <code>shutil.which("openclaw")</code> resolva para <code>/home/clawdbot/.npm-global/bin/openclaw</code>. Sem isso, as notificações Telegram falham silenciosamente.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 9 — DASHBOARD
+═══════════════════════════════════════════════════════ -->
+<section id="dashboard" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-pink">📊</div>
+    <h2>Dashboard</h2>
+  </div>
+
+  <div class="info-box" style="margin-bottom:24px;">
+    <h3>🌐 URL do Dashboard</h3>
+    <p>
+      <a href="http://138.197.19.184:8766" target="_blank" style="color:#a5b4fc;">http://138.197.19.184:8766</a><br/>
+      Flask rodando na porta 8766, servido pelo <code>trading-dashboard.service</code>.<br/>
+      Acesso público (sem autenticação). Dashboard atualiza automaticamente a cada 30s via JavaScript.
+    </p>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-title">📈 Métricas Globais</div>
+      <p>Painel principal com: saldo atual, lucro líquido (USDT e %), win rate, total de trades, peak balance e max drawdown. Dados vindos de <code>/api/stats</code> → <code>total_results</code>.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🪙 Tabela de Coins</div>
+      <p>Status de cada coin (ativa / desabilitada), P&L do dia, P&L total, número de trades. Coins desabilitadas mostram o motivo e o botão <strong>"Reabilitar"</strong>.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Trades Recentes</div>
+      <p>Tabela paginada com os últimos trades de todas as coins. Colunas: timestamp, símbolo, side (BUY/SELL), amount, price, profit USDT, profit %, mode, grid level.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📉 Chart 7 Dias</div>
+      <p>Gráfico de linha com o P&L diário por coin nos últimos 7 dias. Dados de <code>/api/daily-pnl-by-coin</code> → agrega tabela <code>trades</code> por data e símbolo.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:1rem;font-weight:700;margin:24px 0 12px;">🔌 Rotas da API Flask</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Método</th>
+          <th>Rota</th>
+          <th>Retorno</th>
+          <th>Descrição</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-indigo">GET</span></td>
+          <td><code>/</code></td>
+          <td>HTML</td>
+          <td>Serve o dashboard completo (HTML + CSS + JS embutidos)</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-indigo">GET</span></td>
+          <td><code>/api/stats</code></td>
+          <td>JSON</td>
+          <td>total_results + disabled_symbols + trades recentes</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-indigo">GET</span></td>
+          <td><code>/api/daily-pnl-by-coin</code></td>
+          <td>JSON</td>
+          <td>P&L diário agrupado por símbolo (7 dias)</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-green">POST</span></td>
+          <td><code>/api/resume/&lt;symbol&gt;</code></td>
+          <td>JSON</td>
+          <td>Remove símbolo de disabled_symbols (reabilita a coin)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 10 — NOTIFICAÇÕES TELEGRAM
+═══════════════════════════════════════════════════════ -->
+<section id="notificacoes" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-indigo">📱</div>
+    <h2>Notificações Telegram</h2>
+  </div>
+
+  <div class="info-box" style="margin-bottom:24px;">
+    <h3>⚙️ Como funciona</h3>
+    <p>
+      O <code>notifier.py</code> usa <code>subprocess.run()</code> para chamar o binário <code>openclaw</code>.<br/>
+      Binário resolvido via <code>shutil.which("openclaw")</code> com fallback para <code>/home/clawdbot/.npm-global/bin/openclaw</code>.<br/>
+      Destino: chat do André no Telegram (ID <code>7965086167</code>).<br/>
+      Command: <code>openclaw message send --channel telegram --target 7965086167 --message "..."</code>
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Evento</th>
+          <th>Quando dispara</th>
+          <th>Emoji</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw700">Bot iniciado</td>
+          <td>Ao subir o <code>trading-bot.service</code> (ou reiniciar)</td>
+          <td>🚀</td>
+        </tr>
+        <tr>
+          <td class="fw700">Bot parado manualmente</td>
+          <td>SIGTERM ou SIGINT recebido</td>
+          <td>⏹️</td>
+        </tr>
+                <tr>
+          <td class="fw700">Bot pausado (circuit breaker)</td>
+          <td>Ao iniciar com circuit breaker ativo no banco</td>
+          <td>⏸️</td>
+        </tr>
+        <tr>
+          <td class="fw700">Strike de drawdown (aviso)</td>
+          <td>Coin com drawdown &gt;25% — strike 1 ou 2 de 3</td>
+          <td>⚠️</td>
+        </tr>
+        <tr>
+          <td class="fw700">Coin desabilitada (3 strikes)</td>
+          <td>3 strikes em 30 minutos para a mesma coin</td>
+          <td>⛔</td>
+        </tr>
+        <tr>
+          <td class="fw700">Coin desabilitada (perda diária)</td>
+          <td>Perda diária da coin ultrapassa $10 USDT</td>
+          <td>⛔</td>
+        </tr>
+        <tr>
+          <td class="fw700">Stop-loss mode ativado</td>
+          <td>Preço caiu &gt;12% do centro do grid</td>
+          <td>⚠️</td>
+        </tr>
+        <tr>
+          <td class="fw700">Stop-loss mode desativado</td>
+          <td>Preço se recuperou (queda &lt;6%)</td>
+          <td>✅</td>
+        </tr>
+        <tr>
+          <td class="fw700">Stop-loss total</td>
+          <td>Preço caiu &gt;15% — posições fechadas, coin desabilitada</td>
+          <td>🛑</td>
+        </tr>
+        <tr>
+          <td class="fw700">Balance floor</td>
+          <td>Coin perdeu &gt;40% do capital alocado ($20)</td>
+          <td>🛑</td>
+        </tr>
+        <tr>
+          <td class="fw700">Auto-disable (perda % do capital)</td>
+          <td>Perda diária &gt;20% ou total &gt;30% do capital alocado</td>
+          <td>⚠️</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 11 — COMO RECRIAR DO ZERO
+═══════════════════════════════════════════════════════ -->
+<section id="recriar" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">🔨</div>
+    <h2>Como Recriar do Zero</h2>
+  </div>
+
+  <p class="text-muted" style="margin-bottom:24px;font-size:0.95rem;">Passo a passo completo para recriar toda a infraestrutura numa nova VPS ou após reset total.</p>
+
+  <div class="step-list">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Clonar o repositório</h4>
+        <p>O código está no GitHub da AndreClawdTeam.</p>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">git clone https://github.com/AndreClawdTeam/trading-bot.git
+cd trading-bot</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Instalar PostgreSQL 16</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">sudo apt update && sudo apt install -y postgresql postgresql-contrib
+sudo -u postgres psql -c "CREATE USER andre WITH PASSWORD 'u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50';"
+sudo -u postgres psql -c "CREATE DATABASE trading OWNER andre;"
+sudo systemctl enable postgresql && sudo systemctl start postgresql</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Criar as tabelas manualmente</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">psql "postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/trading" -c "
+CREATE TABLE IF NOT EXISTS trades (
+    id SERIAL PRIMARY KEY, symbol VARCHAR(20) DEFAULT 'PEPE/USDT',
+    side VARCHAR(4) NOT NULL, amount NUMERIC(20,10) NOT NULL,
+    price NUMERIC(20,10) NOT NULL, value_usdt NUMERIC(16,6),
+    fee_usdt NUMERIC(16,8) DEFAULT 0, profit_usdt NUMERIC(16,8) DEFAULT 0,
+    profit_pct NUMERIC(10,6) DEFAULT 0, mode VARCHAR(10) DEFAULT 'paper',
+    grid_level INT, created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS total_results (
+    id INT PRIMARY KEY DEFAULT 1, updated_at TIMESTAMPTZ DEFAULT NOW(),
+    starting_balance NUMERIC(14,4) DEFAULT 120.0,
+    current_balance NUMERIC(14,4) DEFAULT 120.0,
+    net_profit_usdt NUMERIC(14,6) DEFAULT 0,
+    net_profit_pct NUMERIC(10,4) DEFAULT 0,
+    win_rate NUMERIC(6,2) DEFAULT 0, total_trades INT DEFAULT 0,
+    winning_trades INT DEFAULT 0, peak_balance NUMERIC(14,4) DEFAULT 120.0,
+    max_drawdown_pct NUMERIC(10,4) DEFAULT 0
+);
+INSERT INTO total_results (id) VALUES (1) ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS daily_results (
+    id SERIAL PRIMARY KEY, date DATE UNIQUE NOT NULL,
+    total_trades INT DEFAULT 0, winning_trades INT DEFAULT 0,
+    losing_trades INT DEFAULT 0, gross_profit NUMERIC(14,6) DEFAULT 0,
+    gross_loss NUMERIC(14,6) DEFAULT 0, net_profit NUMERIC(14,6) DEFAULT 0,
+    win_rate NUMERIC(6,2) DEFAULT 0, starting_balance NUMERIC(14,4) DEFAULT 0,
+    ending_balance NUMERIC(14,4) DEFAULT 0
+);"</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Criar virtualenv e instalar dependências do bot</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">python3 -m venv /home/clawdbot/.openclaw/workspace/venv
+source /home/clawdbot/.openclaw/workspace/venv/bin/activate
+pip install -r requirements.txt</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Instalar Flask para o dashboard</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label"># Com linuxbrew python (conforme configuração atual):
+/home/linuxbrew/.linuxbrew/bin/pip3 install flask flask-cors psycopg2-binary</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h4>Testar o bot manualmente</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">cd /home/clawdbot/workspace/coding/trading-bot
+/home/clawdbot/.openclaw/workspace/venv/bin/python3 bot.py
+# Ctrl+C para parar</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <h4>Criar os arquivos .service e ativar no systemd</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">mkdir -p ~/.config/systemd/user/
+# Criar trading-bot.service e trading-dashboard.service
+# (conteúdo completo na seção Systemd Services acima)
+systemctl --user daemon-reload
+systemctl --user enable trading-bot trading-dashboard
+systemctl --user start trading-bot trading-dashboard
+sudo loginctl enable-linger clawdbot  # persist after logout</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <h4>Verificar dashboard</h4>
+        <p>Abrir <a href="http://138.197.19.184:8766" target="_blank" style="color:#a5b4fc;">http://138.197.19.184:8766</a> — deve mostrar as 6 coins ativas e métricas zeradas ou acumuladas.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 12 — COMO IR PARA LIVE MODE
+═══════════════════════════════════════════════════════ -->
+<section id="live" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">💰</div>
+    <h2>Como Ir para Live Mode</h2>
+  </div>
+
+  <div class="warning-box">
+    <h3>⚠️ Paper Mode Ativo — Nenhuma Ordem Real</h3>
+    <p>Atualmente <code>PAPER_MODE = True</code> em <code>config.py</code>. Toda a lógica funciona com preços reais mas sem executar ordens na exchange. Para ir live, siga os passos abaixo.</p>
+  </div>
+
+  <div class="step-list" style="margin-top:24px;">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Criar conta na OKX</h4>
+        <p>A OKX não tem geo-block para esta VPS. Acessar <a href="https://www.okx.com" target="_blank" style="color:#a5b4fc;">okx.com</a>, criar conta e completar KYC básico.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Gerar API Key na OKX</h4>
+        <p>Painel OKX → Account → API → Criar Key. Permissão: <strong>Trade Only</strong> (sem Withdrawal). IP Whitelist: <code>138.197.19.184</code>. Salvar API Key, Secret e Passphrase.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Editar config.py</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">config.py</span>
+          <pre class="no-label">PAPER_MODE = False   # ← mudar para False
+API_KEY    = "sua_api_key_aqui"
+API_SECRET = "seu_api_secret_aqui"
+# Se OKX exigir passphrase, adicionar: API_PASSPHRASE = "..."</pre>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Implementar execução real de ordens</h4>
+        <p class="text-muted">Os métodos <code>_fill_buy()</code> e <code>_fill_sell()</code> em <code>strategy.py</code> precisam ser adaptados para chamar <code>get_ccxt_exchange().create_order()</code> quando <code>PAPER_MODE = False</code>. A função <code>get_ccxt_exchange()</code> já existe em <code>exchange.py</code> e retorna a instância ccxt autenticada.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h4>Reiniciar o bot</h4>
+        <div class="code-wrap" style="margin-top:8px;">
+          <span class="code-label">bash</span>
+          <pre class="no-label">systemctl --user restart trading-bot
+tail -f /home/clawdbot/workspace/coding/trading-bot/bot.log</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 13 — COMANDOS ÚTEIS
+═══════════════════════════════════════════════════════ -->
+<section id="comandos" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">🔧</div>
+    <h2>Comandos Úteis</h2>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:24px;">
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">📋 psql — Queries de Monitoramento</h3>
+      <div class="code-wrap">
+        <span class="code-label">psql</span>
+        <pre class="no-label">-- Conectar
+psql "postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/trading"
+
+-- Métricas globais
+SELECT current_balance, net_profit_usdt, net_profit_pct, win_rate,
+       total_trades, max_drawdown_pct FROM total_results WHERE id=1;
+
+-- Últimos 20 trades
+SELECT symbol, side, price, profit_usdt, created_at
+FROM trades ORDER BY created_at DESC LIMIT 20;
+
+-- P&amp;L por coin (total)
+SELECT symbol, SUM(profit_usdt) AS pnl, COUNT(*) AS trades
+FROM trades GROUP BY symbol ORDER BY pnl DESC;
+
+-- P&amp;L por coin (hoje)
+SELECT symbol, SUM(profit_usdt) AS daily_pnl
+FROM trades
+WHERE DATE(created_at AT TIME ZONE 'UTC') = CURRENT_DATE
+GROUP BY symbol ORDER BY daily_pnl DESC;
+
+-- Coins desabilitadas
+SELECT symbol, reason, total_pnl, disabled_at FROM disabled_symbols ORDER BY disabled_at DESC;
+
+-- Reabilitar coin
+DELETE FROM disabled_symbols WHERE symbol = 'PEPE/USDT';
+
+-- Ativar/desativar circuit breaker global
+UPDATE bot_state SET trading_enabled = FALSE WHERE id = 1;  -- pausa
+UPDATE bot_state SET trading_enabled = TRUE  WHERE id = 1;  -- retoma</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">⚙️ Systemctl</h3>
+      <div class="code-wrap">
+        <span class="code-label">bash</span>
+        <pre class="no-label">systemctl --user status trading-bot trading-dashboard
+systemctl --user restart trading-bot
+systemctl --user restart trading-dashboard
+journalctl --user -u trading-bot -f
+journalctl --user -u trading-dashboard -f
+tail -f /home/clawdbot/workspace/coding/trading-bot/bot.log</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">🐍 Testar Price Feed</h3>
+      <div class="code-wrap">
+        <span class="code-label">bash</span>
+        <pre class="no-label">cd /home/clawdbot/workspace/coding/trading-bot
+/home/clawdbot/.openclaw/workspace/venv/bin/python3 -c "
+from exchange import get_price
+coins = ['PEPE/USDT','SHIB/USDT','BONK/USDT','FLOKI/USDT','DOGE/USDT','WIF/USDT']
+for c in coins: print(f'{c}: {get_price(c)}')
+"</pre>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">🔔 Testar Notificação Manual</h3>
+      <div class="code-wrap">
+        <span class="code-label">bash</span>
+        <pre class="no-label">/home/clawdbot/.npm-global/bin/openclaw message send   --channel telegram --target 7965086167 --message "🔔 Teste manual"</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 14 — ESTADO ATUAL
+═══════════════════════════════════════════════════════ -->
+<section id="estado" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">📡</div>
+    <h2>Estado Atual</h2>
+  </div>
+
+  <div class="success-box" style="margin-bottom:24px;">
+    <h3>✅ Bot Operacional — Paper Mode</h3>
+    <p>
+      Rodando desde <strong>20/02/2026</strong> na VPS <code>138.197.19.184</code>.<br/>
+      6 coins ativas, capital total de $120 USDT simulado.<br/>
+      Nenhuma ordem real executada — paper mode com preços reais da OKX.
+    </p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:1.1rem;background:linear-gradient(135deg,#86efac,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">PAPER</div>
+      <div class="stat-label">Modo de operação</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Coins ativas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$120</div>
+      <div class="stat-label">Capital total USDT</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:1rem;">OKX</div>
+      <div class="stat-label">Exchange primária</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:0.9rem;">20/02/26</div>
+      <div class="stat-label">Início da operação</div>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top:24px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Status</th>
+          <th>Localização</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw700">trading-bot.service</td>
+          <td><span class="tag tag-green">✅ Running</span></td>
+          <td>VPS 138.197.19.184 · restart 30s</td>
+        </tr>
+        <tr>
+          <td class="fw700">trading-dashboard.service</td>
+          <td><span class="tag tag-green">✅ Running</span></td>
+          <td>VPS :8766 · restart 5s</td>
+        </tr>
+        <tr>
+          <td class="fw700">PostgreSQL 16</td>
+          <td><span class="tag tag-green">✅ Running</span></td>
+          <td>localhost:5432</td>
+        </tr>
+        <tr>
+          <td class="fw700">OKX Price Feed</td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td>api.okx.com (sem geo-block)</td>
+        </tr>
+        <tr>
+          <td class="fw700">KuCoin Fallback</td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td>api.kucoin.com</td>
+        </tr>
+        <tr>
+          <td class="fw700">Telegram Notifier</td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td>openclaw CLI · PATH configurado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box" style="margin-top:24px;">
+    <h3>🔮 Próximos Passos para Live Mode</h3>
+    <p>
+      1. Criar conta OKX + gerar API keys (Trade Only, sem Withdrawal)<br/>
+      2. Implementar execução real em <code>strategy.py</code> (<code>create_order()</code> nos fills)<br/>
+      3. Depositar $120 USDT na conta Spot OKX<br/>
+      4. Editar <code>config.py</code>: <code>PAPER_MODE = False</code> + API keys<br/>
+      5. <code>systemctl --user restart trading-bot</code>
+    </p>
+  </div>
+
+  <div class="inline-links" style="margin-top:24px;">
+    <a href="http://138.197.19.184:8766" target="_blank" class="btn btn-primary">📊 Dashboard ao Vivo</a>
+    <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank" class="btn btn-secondary">💻 GitHub Repo</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <p>
+    <span>🤖 AndreClawdTeam Trading Bot</span> — Fonte da Verdade<br/>
+    Documentado por Johnny Juvenil · Fevereiro 2026<br/>
+    <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank" style="color:var(--accent);">github.com/AndreClawdTeam/trading-bot</a>
+    &nbsp;·&nbsp;
+    <a href="http://138.197.19.184:8766" target="_blank" style="color:var(--accent);">Dashboard ao vivo</a>
+  </p>
+</footer>
+
+<script>
+  function toggleSource(id) {
+    const el = document.getElementById(id);
+    const body = el.querySelector('.source-body');
+    const isOpen = el.classList.contains('open');
+    if (isOpen) {
+      el.classList.remove('open');
+      body.style.maxHeight = '0';
+    } else {
+      el.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  document.querySelectorAll('.source-file.open').forEach(el => {
+    const body = el.querySelector('.source-body');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+  const navLinks = document.querySelectorAll('nav a');
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => { link.style.color = ''; link.style.borderColor = ''; });
+        const activeLink = document.querySelector('nav a[href="#' + entry.target.id + '"]');
+        if (activeLink) { activeLink.style.color = '#a5b4fc'; activeLink.style.borderColor = '#6366f1'; }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('section[id]').forEach(section => navObserver.observe(section));
+</script>
 
 </body>
 </html>
