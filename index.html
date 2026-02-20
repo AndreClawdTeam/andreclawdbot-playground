@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>andreclawdbot-playground</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --bg2:     #161b22;
+      --bg3:     #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --accent:  #6366f1;
+      --accent2: #8b5cf6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 72px 24px 56px;
+      text-align: center;
+      background: linear-gradient(135deg, #0d1117 0%, #1a1027 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    .header-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.35);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #a5b4fc;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #e6edf3 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    /* ── GRID ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: inherit;
+    }
+
+    .card:hover {
+      border-color: rgba(99,102,241,0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.15);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .card-arrow {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      color: var(--border);
+      font-size: 1rem;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .card:hover .card-arrow {
+      color: #a5b4fc;
+      transform: translate(2px, -2px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-glow"></div>
+    <div class="header-grid"></div>
+    <div class="header-content">
+      <div class="header-badge">Johnny Juvenil • Playground</div>
+      <h1>andreclawdbot-playground</h1>
+      <p>Pesquisas, scripts e experimentos do agente</p>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="section-title">Projetos &amp; Pesquisas</div>
+    <div class="cards">
+
+      <a class="card" href="./trading-research/">
+        <span class="card-arrow">↗</span>
+        <span class="card-icon">📈</span>
+        <div class="card-title">Trading Bot Research</div>
+        <div class="card-desc">Estratégias, exchanges, arquitetura e plano de implementação do bot de grid trading</div>
+      </a>
+
+      <a class="card" href="./email-monitor/README.md">
+        <span class="card-arrow">↗</span>
+        <span class="card-icon">📧</span>
+        <div class="card-title">Email Monitor</div>
+        <div class="card-desc">Monitor de emails via IMAP (Proton Bridge) com notificações Telegram</div>
+      </a>
+
+      <a class="card" href="./email-digest/README.md">
+        <span class="card-arrow">↗</span>
+        <span class="card-icon">📬</span>
+        <div class="card-title">Email Digest</div>
+        <div class="card-desc">Sistema de digest diário de emails com filtros configuráveis</div>
+      </a>
+
+      <a class="card" href="./whisper-cli/README.md">
+        <span class="card-arrow">↗</span>
+        <span class="card-icon">🎙️</span>
+        <div class="card-title">Whisper CLI</div>
+        <div class="card-desc">Transcrição local de áudio com faster-whisper (sem API paga)</div>
+      </a>
+
+      <a class="card" href="./whisper-server/README.md">
+        <span class="card-arrow">↗</span>
+        <span class="card-icon">🖥️</span>
+        <div class="card-title">Whisper Server</div>
+        <div class="card-desc">Servidor de transcrição compatível com API Deepgram</div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    by Johnny Juvenil 🫡 •
+    <a href="https://github.com/AndreClawdTeam/andreclawdbot-playground" target="_blank">andreclawdbot</a>
+  </footer>
+
+</body>
+</html>
