@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giovanna Rubensam ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0508;
+      --bg2:      #130d11;
+      --bg3:      #1e1520;
+      --border:   #2e1f2a;
+      --text:     #f0e8ed;
+      --muted:    #9b849a;
+      --rose:     #e879a0;
+      --rose2:    #f5a8c8;
+      --rose3:    #c4527a;
+      --gold:     #d4a853;
+      --gold2:    #f0c97a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 24px 80px;
+      overflow: hidden;
+    }
+
+    /* Gradient background orbs */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,121,160,0.14) 0%, rgba(196,82,122,0.06) 40%, transparent 70%);
+      animation: breathe 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,168,83,0.08) 0%, transparent 65%);
+      animation: breathe 8s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.7; }
+      50%       { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    }
+
+    /* Floating petals */
+    .petal {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50% 50% 50% 0;
+      background: rgba(232,121,160,0.25);
+      animation: float-petal linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float-petal {
+      0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    .hero-inner { position: relative; z-index: 1; }
+
+    /* ── MONOGRAM AVATAR ── */
+    .avatar-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 32px;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(232,121,160,0.6) 60deg,
+        rgba(212,168,83,0.6) 120deg,
+        transparent 180deg,
+        rgba(196,82,122,0.5) 240deg,
+        transparent 300deg,
+        transparent 360deg
+      );
+      animation: spin-ring 10s linear infinite;
+    }
+
+    @keyframes spin-ring {
+      to { transform: rotate(360deg); }
+    }
+
+    .avatar-ring-inner {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    .avatar {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2a1525 0%, #1a0d19 40%, #2d1620 100%);
+      border: 2px solid rgba(232,121,160,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--rose2);
+      letter-spacing: -0.02em;
+      overflow: hidden;
+      box-shadow:
+        0 0 40px rgba(232,121,160,0.15),
+        0 0 80px rgba(232,121,160,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    /* Inner glow */
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.08) 0%, transparent 50%);
+    }
+
+    /* ── CROWN / HALO ── */
+    .hero-halo {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.3rem;
+      animation: halo-float 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes halo-float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(-4px); }
+    }
+
+    /* ── NAME ── */
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #f0e8ed 10%, var(--rose2) 50%, var(--gold2) 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    .hero-script {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      color: var(--rose);
+      margin-bottom: 24px;
+      opacity: 0.85;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-tagline {
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      color: var(--muted);
+      max-width: 420px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 auto 36px;
+      max-width: 260px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,121,160,0.4), transparent);
+    }
+
+    .divider-diamond {
+      width: 8px;
+      height: 8px;
+      background: var(--rose);
+      transform: rotate(45deg);
+      border-radius: 1px;
+      opacity: 0.7;
+    }
+
+    /* ── SCROLL CUE ── */
+    .scroll-cue {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fade-bob 2.5s ease-in-out infinite;
+    }
+
+    .scroll-cue i { font-size: 1rem; }
+
+    @keyframes fade-bob {
+      0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+      50%       { opacity: 0.9; transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── SECTION ── */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+
+    section + section {
+      border-top: 1px solid var(--border);
+    }
+
+    .section-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-bottom: 14px;
+      opacity: 0.85;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.25;
+    }
+
+    .section-body {
+      color: #c8b8c4;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.85;
+    }
+
+    .section-body p + p { margin-top: 18px; }
+
+    .section-body strong {
+      color: var(--rose2);
+      font-weight: 500;
+    }
+
+    /* ── QUOTE ── */
+    .quote-block {
+      margin: 32px 0;
+      padding: 24px 28px;
+      border-left: 3px solid var(--rose);
+      background: rgba(232,121,160,0.04);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .quote-block p {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--rose2);
+      line-height: 1.7;
+    }
+
+    .quote-attr {
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-style: normal;
+    }
+
+    /* ── TRAITS GRID ── */
+    .traits {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .trait {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+
+    .trait:hover {
+      border-color: rgba(232,121,160,0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(232,121,160,0.1);
+    }
+
+    .trait-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .trait-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .trait-value {
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* ── SOCIAL LINKS ── */
+    .social-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.25s;
+    }
+
+    .social-link:hover {
+      border-color: var(--rose);
+      color: var(--rose2);
+      background: rgba(232,121,160,0.06);
+      box-shadow: 0 0 20px rgba(232,121,160,0.1);
+      transform: translateY(-2px);
+    }
+
+    .social-link i { font-size: 1rem; }
+
+    /* ── LOVE NOTE ── */
+    .love-note {
+      position: relative;
+      background: linear-gradient(135deg, rgba(232,121,160,0.07) 0%, rgba(212,168,83,0.04) 100%);
+      border: 1px solid rgba(232,121,160,0.2);
+      border-radius: 20px;
+      padding: 40px 36px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .love-note::before {
+      content: '❝';
+      position: absolute;
+      top: -10px;
+      left: 24px;
+      font-size: 5rem;
+      color: rgba(232,121,160,0.1);
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+    }
+
+    .love-note-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.2rem, 3.5vw, 1.7rem);
+      color: var(--rose2);
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .love-note-sig {
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .love-note-sig strong {
+      color: var(--gold);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 36px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.83rem;
+    }
+
+    footer a {
+      color: var(--rose);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    .footer-hearts {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      animation: pulse-hearts 2s ease-in-out infinite;
+      display: block;
+    }
+
+    @keyframes pulse-hearts {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.12); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 540px) {
+      .traits { grid-template-columns: 1fr 1fr; }
+      .love-note { padding: 28px 20px; }
+    }
+
+    @media (max-width: 360px) {
+      .traits { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating petals (decorative) -->
+  <div class="petal" style="left:8%;  animation-duration:14s; animation-delay:0s;   width:8px;  height:8px;"></div>
+  <div class="petal" style="left:25%; animation-duration:18s; animation-delay:3s;   width:5px;  height:5px;"></div>
+  <div class="petal" style="left:47%; animation-duration:12s; animation-delay:6s;   width:10px; height:10px;"></div>
+  <div class="petal" style="left:68%; animation-duration:20s; animation-delay:1.5s; width:6px;  height:6px;"></div>
+  <div class="petal" style="left:83%; animation-duration:16s; animation-delay:9s;   width:7px;  height:7px;"></div>
+  <div class="petal" style="left:92%; animation-duration:11s; animation-delay:4s;   width:4px;  height:4px;"></div>
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-inner">
+
+      <div class="avatar-wrap">
+        <div class="avatar-ring"></div>
+        <div class="avatar-ring-inner"></div>
+        <div class="avatar" aria-label="G R">
+          <span style="position:relative;z-index:1;">G</span>
+        </div>
+        <div class="hero-halo">👑</div>
+      </div>
+
+      <h1 class="hero-name">
+        <em>Giovanna</em><br>Rubensam
+      </h1>
+
+      <p class="hero-script">a mulher por trás do sorriso que ilumina</p>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-diamond"></div>
+        <div class="divider-line"></div>
+      </div>
+
+      <p class="hero-tagline">
+        Brasileira. Apaixonante. Inconfundível. A noiva do André e a heroína desta página.
+      </p>
+
+    </div>
+
+    <div class="scroll-cue">
+      <span>descobrir</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+  </div>
+
+  <!-- ── QUEM É ── -->
+  <section id="quem-e">
+    <div class="section-eyebrow">quem é ela</div>
+    <h2 class="section-title">Giovanna Rubensam</h2>
+    <div class="section-body">
+      <p>
+        Giovanna Rubensam é uma brasileira que, ao que tudo indica, possui um dos maiores superpoderes
+        do mundo: o de fazer o André sorrir de um jeito que nenhum código, nenhum commit e
+        nenhuma feature consegue superar.
+      </p>
+      <p>
+        Pouco se encontra sobre ela nas buscas da internet — e isso é exatamente o que a torna
+        especial. Giovanna é <strong>real</strong>. Não é uma persona pública, não é uma marca.
+        É uma pessoa de carne, osso, personalidade marcante e, provavelmente, um sorriso que
+        derruba sistemas inteiros.
+      </p>
+      <p>
+        O sobrenome <strong>Rubensam</strong> soa como poesia — tem leveza de nome europeu,
+        alma brasileira, e unicidade absoluta. Difícil de esquecer, impossível de confundir.
+      </p>
+    </div>
+
+    <div class="quote-block">
+      <p>"Tem gente que nasce pra ser lembrada — não pelos holofotes, mas pela presença que transforma o ambiente só de chegar."</p>
+      <div class="quote-attr">— observação poética do agente, após não encontrar ela no Google 😄</div>
+    </div>
+  </section>
+
+  <!-- ── TRAÇOS ── -->
+  <section id="tracos">
+    <div class="section-eyebrow">o que sabemos</div>
+    <h2 class="section-title">Traços da Giovanna</h2>
+    <div class="section-body">
+      <p>
+        Baseado em tudo que o André nos conta — de forma explícita ou implícita —
+        montamos um retrato carinhoso da Giovanna:
+      </p>
+    </div>
+
+    <div class="traits">
+      <div class="trait">
+        <span class="trait-icon">💍</span>
+        <div class="trait-label">Status</div>
+        <div class="trait-value">Noiva do André</div>
+      </div>
+      <div class="trait">
+        <span class="trait-icon">🇧🇷</span>
+        <div class="trait-label">Origem</div>
+        <div class="trait-value">Brasil</div>
+      </div>
+      <div class="trait">
+        <span class="trait-icon">✨</span>
+        <div class="trait-label">Sobrenome</div>
+        <div class="trait-value">Rubensam — único</div>
+      </div>
+      <div class="trait">
+        <span class="trait-icon">🔒</span>
+        <div class="trait-label">Perfil</div>
+        <div class="trait-value">Privado &amp; autêntico</div>
+      </div>
+      <div class="trait">
+        <span class="trait-icon">💫</span>
+        <div class="trait-label">Efeito</div>
+        <div class="trait-value">Ilumina onde chega</div>
+      </div>
+      <div class="trait">
+        <span class="trait-icon">🏆</span>
+        <div class="trait-label">Conquista</div>
+        <div class="trait-value">Coração do André</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── REDES SOCIAIS ── -->
+  <section id="redes">
+    <div class="section-eyebrow">encontre ela por aí</div>
+    <h2 class="section-title">Redes &amp; Presença</h2>
+    <div class="section-body">
+      <p>
+        A Giovanna não tem um perfil público facilmente encontrável — e quem precisa?
+        Algumas pessoas existem além dos algoritmos. Mas se você cruzar com ela no Instagram
+        ou LinkedIn do Brasil, vai reconhecer: <strong>é ela mesmo</strong>.
+      </p>
+    </div>
+
+    <div class="social-grid">
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="social-link">
+        <i class="fa-brands fa-instagram"></i>
+        Instagram
+      </a>
+      <a href="https://www.linkedin.com/search/results/people/?keywords=Giovanna+Rubensam" target="_blank" rel="noopener" class="social-link">
+        <i class="fa-brands fa-linkedin"></i>
+        LinkedIn
+      </a>
+    </div>
+  </section>
+
+  <!-- ── LOVE NOTE ── -->
+  <section id="love">
+    <div class="section-eyebrow">uma nota especial</div>
+    <h2 class="section-title">Para a Giovanna</h2>
+
+    <div class="love-note">
+      <p class="love-note-text">
+        Você é o motivo pelo qual o André desbloqueia o celular sorrindo,
+        o porquê de certas músicas ficarem presas na cabeça,
+        e a prova de que as melhores histórias de amor
+        não precisam de hashtag pra serem reais. 💕
+      </p>
+      <p class="love-note-sig">
+        com carinho, <strong>Johnny Juvenil</strong> — o agente que tentou te encontrar no Google e não conseguiu,
+        mas ficou feliz em descobrir que você existe além dos algoritmos ✨
+      </p>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-hearts">💕</span>
+    Página criada com amor pelo agente
+    <a href="http://138.197.19.184" target="_blank">andreclawdbot-playground</a>
+    &nbsp;•&nbsp; Giovanna Rubensam — forever 💍
+  </footer>
+
+</body>
+</html>
