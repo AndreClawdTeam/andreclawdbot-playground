@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Planning — Johnny Juvenil</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --bg2:     #161b22;
+      --bg3:     #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --accent:  #6366f1;
+      --accent2: #8b5cf6;
+      --green:   #3fb950;
+      --yellow:  #d29922;
+      --red:     #f85149;
+      --blue:    #58a6ff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 72px 24px 56px;
+      text-align: center;
+      background: linear-gradient(135deg, #0d1117 0%, #111827 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.16) 0%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.12); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    .header-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.35);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #a5b4fc;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #e6edf3 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── NAV BACK ── */
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      margin: 24px 24px 0;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); border-color: var(--accent); }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 24px 64px;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .section-header h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-header .section-num {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(99,102,241,0.35);
+      background: rgba(99,102,241,0.1);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-left: auto;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    .card ul {
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+
+    .card ul li { margin-bottom: 4px; }
+
+    /* ── OVERVIEW GRID ── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .overview-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .overview-item .ov-icon { font-size: 2rem; margin-bottom: 10px; }
+    .overview-item .ov-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+    .overview-item .ov-desc { color: var(--muted); font-size: 0.85rem; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead tr {
+      background: var(--bg3);
+    }
+
+    thead th {
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg3); }
+
+    tbody td {
+      padding: 14px 16px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .tag-green  { background: rgba(63,185,80,0.15);  color: var(--green);  border: 1px solid rgba(63,185,80,0.3); }
+    .tag-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); border: 1px solid rgba(210,153,34,0.3); }
+    .tag-red    { background: rgba(248,81,73,0.15);  color: var(--red);    border: 1px solid rgba(248,81,73,0.3); }
+    .tag-blue   { background: rgba(88,166,255,0.15); color: var(--blue);   border: 1px solid rgba(88,166,255,0.3); }
+    .tag-purple { background: rgba(99,102,241,0.15); color: #a5b4fc;       border: 1px solid rgba(99,102,241,0.3); }
+
+    /* ── HIGHLIGHT (recomendação) ── */
+    .rec-card {
+      background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08));
+      border: 1px solid rgba(99,102,241,0.4);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .rec-card .rec-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      margin-bottom: 10px;
+    }
+
+    .rec-card .rec-subtitle {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .rec-card .rec-body {
+      color: var(--text);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    .rec-card .rec-body strong { color: #a5b4fc; }
+
+    .rec-detail {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+
+    .rec-detail h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .rec-detail ul {
+      padding-left: 18px;
+    }
+
+    .rec-detail ul li {
+      color: var(--text);
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    /* ── ARCH FLOW ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.88rem;
+    }
+
+    .flow-step .step-icon { font-size: 1.1rem; }
+    .flow-step .step-label { color: var(--text); font-weight: 500; }
+    .flow-step .step-sub { color: var(--muted); font-size: 0.78rem; }
+
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 1.2rem;
+    }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-content .step-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .step-content .step-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .step-content code {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.82rem;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      color: #a5b4fc;
+    }
+
+    /* ── VOICE PROFILE ── */
+    .voice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .voice-attr {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .va-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .va-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .va-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── CONFIG SNIPPET ── */
+    .code-block {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.82rem;
+      color: #a5b4fc;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block .comment { color: var(--muted); }
+    .code-block .key     { color: #58a6ff; }
+    .code-block .val     { color: #3fb950; }
+    .code-block .str     { color: #e6c07b; }
+
+    /* ── INFO BANNER ── */
+    .info-banner {
+      background: rgba(88,166,255,0.08);
+      border: 1px solid rgba(88,166,255,0.25);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.88rem;
+      color: var(--blue);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .flow { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-glow"></div>
+    <div class="header-grid"></div>
+    <div class="header-content">
+      <div class="header-badge">Johnny Juvenil • Voice Planning</div>
+      <h1>🎙️ Sistema de Voz</h1>
+      <p>Planejamento completo para envio de mensagens de áudio (voz masculina) via Telegram</p>
+    </div>
+  </header>
+
+  <a class="nav-back" href="../">← Voltar ao Playground</a>
+
+  <main>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 1. VISÃO GERAL -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🎯</span>
+        <h2>Visão Geral</h2>
+        <span class="section-num">01</span>
+      </div>
+
+      <div class="info-banner">
+        💡 Objetivo: complementar texto com áudio curto e impactante — não substituir. André prefere texto na maioria das vezes.
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-item">
+          <div class="ov-icon">🤖</div>
+          <div class="ov-title">Quem fala</div>
+          <div class="ov-desc">Johnny Juvenil — voz masculina, tom calmo e direto, PT-BR</div>
+        </div>
+        <div class="overview-item">
+          <div class="ov-icon">📱</div>
+          <div class="ov-title">Canal</div>
+          <div class="ov-desc">Telegram — formato OGG/Opus (voice bubble nativo)</div>
+        </div>
+        <div class="overview-item">
+          <div class="ov-icon">⚡</div>
+          <div class="ov-title">Uso</div>
+          <div class="ov-desc">Mensagens curtas e impactantes, sob demanda ou via <code>/tts audio</code></div>
+        </div>
+        <div class="overview-item">
+          <div class="ov-icon">🏗️</div>
+          <div class="ov-title">Infraestrutura</div>
+          <div class="ov-desc">VPS Ubuntu + OpenClaw + ffmpeg 8.0.1 + libopus já disponíveis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 2. COMPARATIVO -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">⚖️</span>
+        <h2>Comparativo de Opções</h2>
+        <span class="section-num">02</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Opção</th>
+              <th>Custo</th>
+              <th>Qualidade</th>
+              <th>Latência</th>
+              <th>Voz PT-BR Masc.</th>
+              <th>Setup</th>
+              <th>Veredicto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Edge TTS (via OpenClaw) -->
+            <tr>
+              <td>
+                <strong>Edge TTS</strong><br>
+                <span style="color:var(--muted);font-size:0.8rem">via OpenClaw nativo</span>
+              </td>
+              <td><span class="tag tag-green">Grátis</span></td>
+              <td><span class="tag tag-yellow">Boa</span><br><span style="color:var(--muted);font-size:0.78rem">Neural, natural</span></td>
+              <td><span class="tag tag-green">~0.5–1s</span></td>
+              <td>
+                <span class="tag tag-green">✓ pt-BR-AntonioNeural</span>
+              </td>
+              <td><span class="tag tag-green">Zero</span><br><span style="color:var(--muted);font-size:0.78rem">Já integrado</span></td>
+              <td><span class="tag tag-purple">⭐ Recomendado</span></td>
+            </tr>
+            <!-- ElevenLabs -->
+            <tr>
+              <td>
+                <strong>ElevenLabs</strong><br>
+                <span style="color:var(--muted);font-size:0.8rem">API externa</span>
+              </td>
+              <td>
+                <span class="tag tag-yellow">Free: 20K cr/mês</span><br>
+                <span style="color:var(--muted);font-size:0.78rem">Pago: $5+/mês</span>
+              </td>
+              <td><span class="tag tag-green">Excelente</span><br><span style="color:var(--muted);font-size:0.78rem">Melhor qualidade</span></td>
+              <td><span class="tag tag-yellow">~1–2s</span></td>
+              <td>
+                <span class="tag tag-yellow">✓ Multilingual v2</span><br>
+                <span style="color:var(--muted);font-size:0.78rem">Vozes masculinas</span>
+              </td>
+              <td><span class="tag tag-yellow">Médio</span><br><span style="color:var(--muted);font-size:0.78rem">API key + voiceId</span></td>
+              <td><span class="tag tag-blue">Upgrade futuro</span></td>
+            </tr>
+            <!-- OpenAI TTS -->
+            <tr>
+              <td>
+                <strong>OpenAI TTS</strong><br>
+                <span style="color:var(--muted);font-size:0.8rem">tts-1 / tts-1-hd</span>
+              </td>
+              <td>
+                <span class="tag tag-yellow">$0.015/1K chars</span><br>
+                <span style="color:var(--muted);font-size:0.78rem">~$0.03 p/ 2K chars</span>
+              </td>
+              <td><span class="tag tag-green">Muito boa</span><br><span style="color:var(--muted);font-size:0.78rem">Onyx = voz grave</span></td>
+              <td><span class="tag tag-yellow">~1s</span></td>
+              <td>
+                <span class="tag tag-yellow">Parcial</span><br>
+                <span style="color:var(--muted);font-size:0.78rem">onyx/echo EN, PT ok</span>
+              </td>
+              <td><span class="tag tag-green">Fácil</span><br><span style="color:var(--muted);font-size:0.78rem">Já tem key OpenAI</span></td>
+              <td><span class="tag tag-blue">Alternativa paga</span></td>
+            </tr>
+            <!-- Piper TTS -->
+            <tr>
+              <td>
+                <strong>Piper TTS</strong><br>
+                <span style="color:var(--muted);font-size:0.8rem">local, offline</span>
+              </td>
+              <td><span class="tag tag-green">Grátis forever</span></td>
+              <td><span class="tag tag-yellow">Razoável</span><br><span style="color:var(--muted);font-size:0.78rem">Neural, menos natural</span></td>
+              <td><span class="tag tag-green">&lt;0.5s local</span></td>
+              <td>
+                <span class="tag tag-yellow">✓ pt-BR models</span><br>
+                <span style="color:var(--muted);font-size:0.78rem">faber, edresson</span>
+              </td>
+              <td><span class="tag tag-yellow">Médio</span><br><span style="color:var(--muted);font-size:0.78rem">pip + modelo (~50MB)</span></td>
+              <td><span class="tag tag-yellow">Opção offline</span></td>
+            </tr>
+            <!-- Coqui TTS -->
+            <tr>
+              <td>
+                <strong>Coqui TTS</strong><br>
+                <span style="color:var(--muted);font-size:0.8rem">local, open source</span>
+              </td>
+              <td><span class="tag tag-green">Grátis</span></td>
+              <td><span class="tag tag-yellow">Boa</span><br><span style="color:var(--muted);font-size:0.78rem">XTTS v2 ótimo</span></td>
+              <td><span class="tag tag-red">~3–8s (CPU)</span></td>
+              <td>
+                <span class="tag tag-yellow">✓ XTTS v2 PT-BR</span>
+              </td>
+              <td><span class="tag tag-red">Complexo</span><br><span style="color:var(--muted);font-size:0.78rem">⚠️ Projeto arquivado 2024</span></td>
+              <td><span class="tag tag-red">Não recomendado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:16px; padding:12px 16px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; font-size:0.82rem; color:var(--muted);">
+        💻 <strong style="color:var(--text)">Infraestrutura atual:</strong> ffmpeg 8.0.1 (com libopus) ✓ | 3.8GB RAM / 2 CPUs | Piper viável, Coqui XTTS pesado para 2 CPUs
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 3. RECOMENDAÇÃO -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🏆</span>
+        <h2>Recomendação</h2>
+        <span class="section-num">03</span>
+      </div>
+
+      <div class="rec-card">
+        <div class="rec-title">🥇 Fase 1: Edge TTS nativo (pt-BR-AntonioNeural)</div>
+        <div class="rec-subtitle">Zero setup · Zero custo · Já integrado no OpenClaw · Voz masculina PT-BR disponível</div>
+        <div class="rec-body">
+          O OpenClaw já tem TTS nativo com suporte ao <strong>Edge TTS</strong> (Microsoft Neural) via <code>node-edge-tts</code>.
+          A voz <strong>pt-BR-AntonioNeural</strong> é masculina, neural e soa natural para PT-BR.
+          Não requer API key. O formato de saída para Telegram é automaticamente <strong>OGG/Opus</strong> — perfeito para o voice bubble.
+          Ativar leva <strong>menos de 5 minutos</strong>: apenas editar <code>openclaw.json</code>.
+          <br><br>
+          Se a qualidade não satisfizer (Edge TTS é "best-effort", sem SLA), o próximo passo natural é
+          <strong>OpenAI TTS com voz onyx</strong> (pago, mas barato) ou <strong>ElevenLabs</strong> (tier free = 20K cr/mês ≈ ~400 msgs de 50 chars).
+        </div>
+
+        <div class="rec-detail">
+          <h4>Estratégia de evolução</h4>
+          <ul>
+            <li>✅ <strong>Agora:</strong> Edge TTS — pt-BR-AntonioNeural, zero custo, 5 min de setup</li>
+            <li>🔄 <strong>Se quiser mais qualidade:</strong> OpenAI TTS (onyx) — ~$0.015/1K chars, excelente qualidade</li>
+            <li>🌟 <strong>Se quiser o melhor:</strong> ElevenLabs — voz clonada ou modelo multilingual, free tier generoso</li>
+            <li>🏠 <strong>Se quiser 100% offline:</strong> Piper TTS — modelo faber (pt-BR), latência mínima</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 4. ARQUITETURA PROPOSTA -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🏗️</span>
+        <h2>Arquitetura Proposta</h2>
+        <span class="section-num">04</span>
+      </div>
+
+      <!-- 4.1 Decisão voz vs texto -->
+      <div class="card">
+        <div class="card-title">🤔 Quando usar voz vs texto?</div>
+        <ul>
+          <li>André prefere texto na maioria das vezes — <strong>voz é opt-in por padrão</strong></li>
+          <li>Usar voz quando: humor/tom importa, mensagem emocional, resultado surpreendente, storytelling</li>
+          <li>Gatilhos: André pede explicitamente (<em>"me fala isso em áudio"</em>) ou Johnny julga que vai impactar mais</li>
+          <li>Modo <code>tagged</code>: Johnny decide emitir <code>[[tts:...]]</code> na reply para TTS pontual sem ligar modo global</li>
+          <li>Comando manual: <code>/tts audio &lt;texto&gt;</code> ou <code>/tts always</code> para ativar automático</li>
+        </ul>
+      </div>
+
+      <!-- 4.2 Fluxo técnico -->
+      <div class="card">
+        <div class="card-title">⚙️ Fluxo técnico</div>
+        <div class="flow">
+          <div class="flow-step">
+            <span class="step-icon">💬</span>
+            <div>
+              <div class="step-label">Johnny responde</div>
+              <div class="step-sub">texto normal</div>
+            </div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step">
+            <span class="step-icon">🏷️</span>
+            <div>
+              <div class="step-label">Emite [[tts:...]]</div>
+              <div class="step-sub">directive na reply</div>
+            </div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step">
+            <span class="step-icon">🔊</span>
+            <div>
+              <div class="step-label">OpenClaw gera áudio</div>
+              <div class="step-sub">Edge/OpenAI/ElevenLabs</div>
+            </div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step">
+            <span class="step-icon">🎵</span>
+            <div>
+              <div class="step-label">OGG/Opus</div>
+              <div class="step-sub">Telegram voice bubble</div>
+            </div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-step">
+            <span class="step-icon">📱</span>
+            <div>
+              <div class="step-label">André ouve</div>
+              <div class="step-sub">🫡</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.3 Skill vs config -->
+      <div class="card">
+        <div class="card-title">🛠️ Skill ou configuração simples?</div>
+        <p>
+          Para <strong>Fase 1 (Edge TTS nativo)</strong>: <strong>só config</strong> — editar <code>openclaw.json</code> com o bloco TTS e pronto.
+          O OpenClaw já cuida de tudo (geração, conversão, envio OGG).<br><br>
+          Para <strong>Fase 2+ (ElevenLabs/OpenAI)</strong>: criar uma <strong>skill <code>sag-voice</code></strong>
+          que encapsula o provedor TTS, voz, e emite diretivas <code>[[tts:...]]</code> automaticamente quando Johnny decide usar voz.
+          A skill pode ter regras de quando usar (por contexto, palavra-chave, tipo de mensagem).
+        </p>
+      </div>
+
+      <!-- 4.4 Config snippet -->
+      <div class="card">
+        <div class="card-title">📋 Config para ativar Edge TTS (pt-BR-AntonioNeural)</div>
+        <div class="code-block">
+          <pre><span class="comment">// openclaw.json — adicionar em messages.tts:</span>
+{
+  <span class="key">"messages"</span>: {
+    <span class="key">"tts"</span>: {
+      <span class="key">"auto"</span>: <span class="str">"tagged"</span>,          <span class="comment">// só quando Johnny emitir [[tts:...]]</span>
+      <span class="key">"provider"</span>: <span class="str">"edge"</span>,
+      <span class="key">"edge"</span>: {
+        <span class="key">"enabled"</span>: <span class="val">true</span>,
+        <span class="key">"voice"</span>: <span class="str">"pt-BR-AntonioNeural"</span>,
+        <span class="key">"lang"</span>: <span class="str">"pt-BR"</span>,
+        <span class="key">"rate"</span>: <span class="str">"-5%"</span>,              <span class="comment">// ligeiramente mais lento = mais grave</span>
+        <span class="key">"pitch"</span>: <span class="str">"-8%"</span>             <span class="comment">// tom mais baixo = mais masculino</span>
+      }
+    }
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 5. PLANO DE IMPLEMENTAÇÃO -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">📋</span>
+        <h2>Plano de Implementação</h2>
+        <span class="section-num">05</span>
+      </div>
+
+      <div class="steps">
+
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Ativar Edge TTS no openclaw.json</div>
+            <div class="step-desc">
+              Adicionar bloco <code>messages.tts</code> com <code>provider: "edge"</code>, voz <code>pt-BR-AntonioNeural</code>,
+              modo <code>auto: "tagged"</code> (Johnny controla quando usar). Reiniciar OpenClaw gateway.
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Testar com /tts audio</div>
+            <div class="step-desc">
+              Rodar <code>/tts audio Oi André, aqui é o Johnny!</code> no Telegram para validar que o voice bubble chega
+              como OGG/Opus com a voz masculina correta.
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Calibrar voz (rate/pitch)</div>
+            <div class="step-desc">
+              Ajustar <code>rate</code> e <code>pitch</code> no config para encontrar o tom ideal do Johnny.
+              Testar variações até soar natural e condizente com a personalidade.
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Atualizar SOUL.md com instruções de voz</div>
+            <div class="step-desc">
+              Adicionar seção em <code>SOUL.md</code> descrevendo quando Johnny deve usar voz: contextos emocionais,
+              surpresas, humor, storytelling. Incluir diretiva <code>[[tts:provider=edge]]</code> de exemplo.
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">(Opcional) Upgrade para OpenAI TTS — voz onyx</div>
+            <div class="step-desc">
+              Se Edge TTS não satisfizer: trocar <code>provider: "openai"</code>, voz <code>onyx</code>
+              (mais grave, EN/PT ok), modelo <code>tts-1</code>. Custo: ~$0.015/1K chars.
+              Para 50 msgs de 200 chars = ~$0.15/mês.
+            </div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">(Opcional) ElevenLabs — clonar voz ou usar multilingual</div>
+            <div class="step-desc">
+              Para máxima qualidade: criar conta ElevenLabs, obter API key, configurar
+              <code>voiceId</code> de uma voz masculina PT-BR do marketplace (ex: "Nicolas").
+              Free tier = 20K créditos/mês ≈ suficiente para uso leve do Johnny.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────────── -->
+    <!-- 6. PERFIL DE VOZ -->
+    <!-- ─────────────────────────────────────── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🎭</span>
+        <h2>Perfil de Voz do Johnny</h2>
+        <span class="section-num">06</span>
+      </div>
+
+      <div class="voice-grid">
+        <div class="voice-attr">
+          <div class="va-label">Gênero</div>
+          <div class="va-value">Masculino</div>
+          <div class="va-note">Voz grave e firme</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Tom</div>
+          <div class="va-value">Calmo · Direto</div>
+          <div class="va-note">Sem afetação, sem drama</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Ritmo</div>
+          <div class="va-value">Moderado</div>
+          <div class="va-note">Ligeiramente mais lento que normal (rate -5%)</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Sotaque</div>
+          <div class="va-value">PT-BR principal</div>
+          <div class="va-note">Pode alternar EN quando contexto pedir</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Pitch</div>
+          <div class="va-value">Levemente baixo</div>
+          <div class="va-note">-8% do padrão, mais grave = mais confiança</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Personalidade</div>
+          <div class="va-value">Jovem · Claro · Eficiente</div>
+          <div class="va-note">Condizente com "Johnny Juvenil"</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Voz target (Edge)</div>
+          <div class="va-value">pt-BR-AntonioNeural</div>
+          <div class="va-note">Masculina neural, sem API key</div>
+        </div>
+        <div class="voice-attr">
+          <div class="va-label">Voz target (OpenAI)</div>
+          <div class="va-value">onyx</div>
+          <div class="va-note">Grave, profissional, EN/PT</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;" class="card">
+        <div class="card-title">📝 Quando Johnny usa voz</div>
+        <ul>
+          <li>Surpresa ou resultado inesperado que merece celebração</li>
+          <li>Humor — piada, ironia, timing que texto não captura</li>
+          <li>Mensagem emocional — parabéns, motivação, apoio</li>
+          <li>Storytelling curto (resumo de filme, notícia importante)</li>
+          <li>Quando André pede explicitamente áudio</li>
+          <li><strong>Nunca</strong> em listas, código, tabelas, instruções técnicas</li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    by Johnny Juvenil 🫡 •
+    <a href="https://github.com/AndreClawdTeam/andreclawdbot-playground" target="_blank">andreclawdbot</a>
+    • voice planning v1.0
+  </footer>
+
+</body>
+</html>
