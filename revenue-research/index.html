@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revenue Research — Johnny Juvenil</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d1117;
+      --bg2:     #161b22;
+      --bg3:     #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --accent:  #6366f1;
+      --accent2: #8b5cf6;
+      --green:   #3fb950;
+      --yellow:  #d29922;
+      --red:     #f85149;
+      --cyan:    #39d0d8;
+      --gold:    #f0b429;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 72px 24px 56px;
+      text-align: center;
+      background: linear-gradient(135deg, #0d1117 0%, #1a1027 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,180,41,0.12) 0%, rgba(99,102,241,0.10) 40%, transparent 70%);
+      animation: pulse-glow 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.1); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(240,180,41,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,180,41,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    .header-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      background: rgba(240,180,41,0.12);
+      border: 1px solid rgba(240,180,41,0.35);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #f0b429;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #e6edf3 0%, #f0b429 60%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto 8px;
+    }
+
+    .header-meta {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon { font-size: 1.6rem; }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── INTRO CARD ── */
+    .intro-card {
+      background: linear-gradient(135deg, #161b22, #1a1327);
+      border: 1px solid rgba(240,180,41,0.25);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-card::before {
+      content: '💰';
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      font-size: 4rem;
+      opacity: 0.08;
+    }
+
+    .intro-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    .intro-card p:last-child { margin-bottom: 0; }
+
+    .intro-card strong { color: var(--gold); }
+
+    /* ── STRATEGY TABLE ── */
+    .strategy-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .strategy-table thead th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--bg3);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .strategy-table thead th:first-child { border-radius: 8px 0 0 0; }
+    .strategy-table thead th:last-child  { border-radius: 0 8px 0 0; }
+
+    .strategy-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .strategy-table tbody tr:hover { background: rgba(99,102,241,0.04); }
+
+    .strategy-table tbody td {
+      padding: 14px 16px;
+      vertical-align: middle;
+    }
+
+    .strategy-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .strategy-cat {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-green  { background: rgba(63,185,80,0.15);  color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+    .badge-yellow { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+    .badge-red    { background: rgba(248,81,73,0.15);  color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+    .badge-purple { background: rgba(139,92,246,0.15); color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); }
+    .badge-cyan   { background: rgba(57,208,216,0.15); color: #39d0d8; border: 1px solid rgba(57,208,216,0.3); }
+    .badge-gold   { background: rgba(240,180,41,0.15); color: #f0b429; border: 1px solid rgba(240,180,41,0.3); }
+
+    /* score bar */
+    .score-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-bar-bg {
+      width: 80px;
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #6366f1, #f0b429);
+    }
+
+    .score-num {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--gold);
+    }
+
+    /* ── TOP 5 CARDS ── */
+    .top-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .top-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .top-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .top-card.rank-1 { border-color: rgba(240,180,41,0.4); }
+    .top-card.rank-1:hover { border-color: rgba(240,180,41,0.7); box-shadow: 0 8px 32px rgba(240,180,41,0.15); }
+    .top-card.rank-2 { border-color: rgba(192,192,192,0.3); }
+    .top-card.rank-3 { border-color: rgba(180,120,60,0.3); }
+
+    .rank-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .rank-1 .rank-badge { background: rgba(240,180,41,0.2); color: #f0b429; border: 1px solid rgba(240,180,41,0.4); }
+    .rank-2 .rank-badge { background: rgba(192,192,192,0.1); color: #aaa; border: 1px solid rgba(192,192,192,0.3); }
+    .rank-3 .rank-badge { background: rgba(180,120,60,0.1); color: #c87840; border: 1px solid rgba(180,120,60,0.3); }
+    .rank-4 .rank-badge, .rank-5 .rank-badge { background: rgba(99,102,241,0.1); color: #6366f1; border: 1px solid rgba(99,102,241,0.3); }
+
+    .top-card-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+    .top-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      padding-right: 40px;
+    }
+
+    .top-card-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    .top-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .top-card-plan {
+      background: var(--bg3);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+    }
+
+    .top-card-plan-title {
+      font-weight: 600;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .top-card-plan ol, .top-card-plan ul {
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .top-card-plan li { margin-bottom: 3px; }
+
+    /* ── ANALYSIS ── */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .analysis-grid { grid-template-columns: 1fr; }
+    }
+
+    .analysis-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .analysis-card-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    .analysis-card.good { border-color: rgba(63,185,80,0.2); }
+    .analysis-card.good .analysis-card-title { color: var(--green); }
+    .analysis-card.improve { border-color: rgba(210,153,34,0.2); }
+    .analysis-card.improve .analysis-card-title { color: var(--yellow); }
+
+    .check-list {
+      list-style: none;
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .check-list li::before {
+      margin-right: 8px;
+    }
+
+    .good .check-list li::before  { content: '✅'; }
+    .improve .check-list li::before { content: '⚡'; }
+
+    /* ── ROADMAP ── */
+    .roadmap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .roadmap-item {
+      display: flex;
+      gap: 20px;
+      padding-bottom: 28px;
+      position: relative;
+    }
+
+    .roadmap-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    .roadmap-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .roadmap-content {
+      flex: 1;
+      padding-top: 6px;
+    }
+
+    .roadmap-phase {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .roadmap-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .roadmap-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── RISKS ── */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .risk-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 3px solid var(--red);
+    }
+
+    .risk-card.warn { border-left-color: var(--yellow); }
+    .risk-card.info { border-left-color: var(--cyan); }
+
+    .risk-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .risk-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── TABLE WRAPPER ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer a { color: #a5b4fc; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .top-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-glow"></div>
+    <div class="header-grid"></div>
+    <div class="header-content">
+      <div class="header-badge">💰 Revenue Research • Johnny Juvenil</div>
+      <h1>O Agente Gera Valor Enquanto Dorme</h1>
+      <p>Estratégias para transformar infraestrutura de IA em receita passiva e semi-passiva</p>
+      <p class="header-meta">Pesquisa executada em Fevereiro 2026 — atualizado automaticamente</p>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── 1. FILOSOFIA ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🧠</span>
+        <div>
+          <div class="section-title">Filosofia: O Agente que Nunca Para</div>
+          <div class="section-subtitle">Por que agentes de IA são ideais para receita passiva</div>
+        </div>
+      </div>
+      <div class="intro-card">
+        <p>
+          Um agente de IA tem uma vantagem única sobre humanos: <strong>nunca precisa dormir, não se cansa, e não cobra hora extra</strong>.
+          A questão não é <em>se</em> o agente pode gerar receita, mas <em>qual mecanismo</em> produz o melhor retorno por unidade de risco.
+        </p>
+        <p>
+          Nossa infraestrutura atual — VPS com Python, Node.js, PostgreSQL, Whisper, acesso a exchanges via API — já é um
+          <strong>motor de receita esperando ser conectado</strong>. O trading bot de grid é a prova: ele executa centenas de micro-trades
+          sem precisar prever direção de mercado, apenas capturando spread.
+        </p>
+        <p>
+          O framework de avaliação é simples: <strong>Score = (Viabilidade × Retorno) ÷ Risco</strong>. Priorizamos estratégias que
+          rodam 24/7 com mínima intervenção humana, usam capital mínimo no início, e escalam com o tempo.
+        </p>
+        <p>
+          Três princípios guiam as escolhas: <strong>1) Começa paper, vai live aos poucos</strong> (como no trading bot);
+          <strong>2) Diversifica fontes de receita</strong> para não depender de uma só;
+          <strong>3) O agente aprende e otimiza</strong> — cada estratégia deve gerar dados para melhorar a próxima.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 2. TABELA COMPARATIVA ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">📊</span>
+        <div>
+          <div class="section-title">Comparativo Completo de Estratégias</div>
+          <div class="section-subtitle">Ordenado por Score (Viabilidade × Retorno ÷ Risco) — maior = melhor</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="strategy-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Estratégia</th>
+              <th>Capital</th>
+              <th>Risco</th>
+              <th>Retorno/mês</th>
+              <th>Setup</th>
+              <th>Automação</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- CRYPTO -->
+            <tr>
+              <td><strong style="color:var(--gold)">1</strong></td>
+              <td>
+                <div class="strategy-name">Funding Rate Arbitrage</div>
+                <div class="strategy-cat">Crypto · Spot + Perp delta-neutral</div>
+              </td>
+              <td><span class="badge badge-yellow">Médio (≥$500)</span></td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><strong style="color:var(--green)">5–20%</strong></td>
+              <td><span class="badge badge-cyan">3–7 dias</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:88%"></div></div>
+                  <span class="score-num">8.8</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>2</strong></td>
+              <td>
+                <div class="strategy-name">Grid Trading (atual)</div>
+                <div class="strategy-cat">Crypto · Meme coins (PEPE, DOGE…)</div>
+              </td>
+              <td><span class="badge badge-yellow">Médio (≥$200)</span></td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><strong style="color:var(--green)">3–15%</strong></td>
+              <td><span class="badge badge-green">Já pronto</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:82%"></div></div>
+                  <span class="score-num">8.2</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>3</strong></td>
+              <td>
+                <div class="strategy-name">Whisper API como Serviço</div>
+                <div class="strategy-cat">Serviços de IA · Transcrição de áudio</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-green">Baixo</span></td>
+              <td><strong style="color:var(--yellow)">$50–500</strong></td>
+              <td><span class="badge badge-cyan">2–5 dias</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:80%"></div></div>
+                  <span class="score-num">8.0</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>4</strong></td>
+              <td>
+                <div class="strategy-name">Bot Telegram Especializado (pago)</div>
+                <div class="strategy-cat">Serviços de IA · Subscription SaaS</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-green">Baixo</span></td>
+              <td><strong style="color:var(--yellow)">$100–1000</strong></td>
+              <td><span class="badge badge-yellow">1–3 semanas</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:78%"></div></div>
+                  <span class="score-num">7.8</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>5</strong></td>
+              <td>
+                <div class="strategy-name">Arbitragem Triangular (CEX)</div>
+                <div class="strategy-cat">Crypto · 3 pares na mesma exchange</div>
+              </td>
+              <td><span class="badge badge-yellow">Médio (≥$1000)</span></td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><strong style="color:var(--green)">5–25%</strong></td>
+              <td><span class="badge badge-yellow">1–2 semanas</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:75%"></div></div>
+                  <span class="score-num">7.5</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>6</strong></td>
+              <td>
+                <div class="strategy-name">Newsletter de IA Curada (paga)</div>
+                <div class="strategy-cat">Conteúdo · Substack / Beehiiv</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-green">Baixo</span></td>
+              <td><strong style="color:var(--yellow)">$200–2000</strong></td>
+              <td><span class="badge badge-yellow">2–4 semanas</span></td>
+              <td><span class="badge badge-yellow">Semi-auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:70%"></div></div>
+                  <span class="score-num">7.0</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>7</strong></td>
+              <td>
+                <div class="strategy-name">Price Monitoring as a Service</div>
+                <div class="strategy-cat">Dados · Alertas de preço para e-commerce</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-green">Baixo</span></td>
+              <td><strong style="color:var(--yellow)">$50–300</strong></td>
+              <td><span class="badge badge-cyan">3–5 dias</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:68%"></div></div>
+                  <span class="score-num">6.8</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>8</strong></td>
+              <td>
+                <div class="strategy-name">Yield Farming / Staking DeFi</div>
+                <div class="strategy-cat">Crypto · DeFi protocols automatizados</div>
+              </td>
+              <td><span class="badge badge-red">Alto (≥$1000+)</span></td>
+              <td><span class="badge badge-red">Alto</span></td>
+              <td><strong style="color:var(--green)">5–40% APY</strong></td>
+              <td><span class="badge badge-yellow">1–2 semanas</span></td>
+              <td><span class="badge badge-yellow">Semi-auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:62%"></div></div>
+                  <span class="score-num">6.2</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>9</strong></td>
+              <td>
+                <div class="strategy-name">YouTube Automation (faceless)</div>
+                <div class="strategy-cat">Conteúdo · Canais temáticos com IA</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-yellow">Médio</span></td>
+              <td><strong style="color:var(--yellow)">$100–2000</strong></td>
+              <td><span class="badge badge-red">2–3 meses</span></td>
+              <td><span class="badge badge-yellow">Semi-auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:58%"></div></div>
+                  <span class="score-num">5.8</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>10</strong></td>
+              <td>
+                <div class="strategy-name">Arbitragem Cross-Exchange</div>
+                <div class="strategy-cat">Crypto · Diferença de preço entre exchanges</div>
+              </td>
+              <td><span class="badge badge-red">Alto (≥$2000+)</span></td>
+              <td><span class="badge badge-red">Alto</span></td>
+              <td><strong style="color:var(--green)">10–50%</strong></td>
+              <td><span class="badge badge-yellow">2–4 semanas</span></td>
+              <td><span class="badge badge-green">Full Auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:55%"></div></div>
+                  <span class="score-num">5.5</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>11</strong></td>
+              <td>
+                <div class="strategy-name">Automação de Freelance (relatórios)</div>
+                <div class="strategy-cat">Serviços · Data processing para clientes</div>
+              </td>
+              <td><span class="badge badge-green">Zero</span></td>
+              <td><span class="badge badge-green">Baixo</span></td>
+              <td><strong style="color:var(--yellow)">$200–1500</strong></td>
+              <td><span class="badge badge-yellow">1–3 semanas</span></td>
+              <td><span class="badge badge-yellow">Semi-auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:52%"></div></div>
+                  <span class="score-num">5.2</span>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td><strong>12</strong></td>
+              <td>
+                <div class="strategy-name">AMM Liquidity Providing (DEX)</div>
+                <div class="strategy-cat">Crypto · Market making em DEX</div>
+              </td>
+              <td><span class="badge badge-red">Alto (≥$2000+)</span></td>
+              <td><span class="badge badge-red">Alto</span></td>
+              <td><strong style="color:var(--yellow)">5–30% APY</strong></td>
+              <td><span class="badge badge-yellow">1–2 semanas</span></td>
+              <td><span class="badge badge-yellow">Semi-auto</span></td>
+              <td>
+                <div class="score-wrap">
+                  <div class="score-bar-bg"><div class="score-bar-fill" style="width:45%"></div></div>
+                  <span class="score-num">4.5</span>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 3. TOP 5 ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🏆</span>
+        <div>
+          <div class="section-title">Top 5 Recomendações com Plano de Implementação</div>
+          <div class="section-subtitle">Estratégias selecionadas por score, viabilidade na nossa infra e legalidade</div>
+        </div>
+      </div>
+
+      <div class="top-cards">
+
+        <!-- #1 FUNDING RATE -->
+        <div class="top-card rank-1">
+          <div class="rank-badge">1</div>
+          <span class="top-card-icon">⚡</span>
+          <div class="top-card-title">Funding Rate Arbitrage</div>
+          <div class="top-card-desc">
+            Mantém posição long no spot e short no perp (ou vice-versa), capturando o funding rate
+            que é pago de 8 em 8 horas. Delta-neutral: não importa se o mercado sobe ou desce.
+            Estudos mostram retornos de até 115.9% em 6 meses com perdas máximas de 1.92%.
+          </div>
+          <div class="top-card-meta">
+            <span class="badge badge-yellow">Capital: ~$500+</span>
+            <span class="badge badge-yellow">Risco: Médio</span>
+            <span class="badge badge-green">Retorno: 5–20%/mês</span>
+            <span class="badge badge-cyan">Setup: 3–7 dias</span>
+          </div>
+          <div class="top-card-plan">
+            <div class="top-card-plan-title">📋 Plano de Implementação</div>
+            <ol>
+              <li>Monitorar funding rates via API Binance/OKX (CoinGlass API)</li>
+              <li>Quando rate &gt; 0.1%/8h: abrir long spot + short perp no mesmo ativo</li>
+              <li>Calcular tamanho da posição para delta-zero</li>
+              <li>Coletar funding a cada 8 horas automaticamente</li>
+              <li>Fechar quando rate cai abaixo do threshold ou risco aumenta</li>
+              <li>Começar em paper mode por 1 semana antes de ir live</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- #2 GRID TRADING -->
+        <div class="top-card rank-2">
+          <div class="rank-badge">2</div>
+          <span class="top-card-icon">📈</span>
+          <div class="top-card-title">Grid Trading (Evoluir o Atual)</div>
+          <div class="top-card-desc">
+            Já temos! Porém em paper mode. O grid trading captura spread em mercados laterais
+            sem prever direção — ideal para meme coins com alta volatilidade lateral.
+            A evolução é ir para live com capital real e otimizar parâmetros.
+          </div>
+          <div class="top-card-meta">
+            <span class="badge badge-yellow">Capital: $200–500</span>
+            <span class="badge badge-yellow">Risco: Médio</span>
+            <span class="badge badge-green">Retorno: 3–15%/mês</span>
+            <span class="badge badge-green">Setup: Já pronto!</span>
+          </div>
+          <div class="top-card-plan">
+            <div class="top-card-plan-title">📋 Plano de Evolução</div>
+            <ol>
+              <li>Analisar 1 mês de dados do paper mode atual</li>
+              <li>Identificar os 2 pares com melhor P&L simulado</li>
+              <li>Configurar live trading com $100–200 por par (teste)</li>
+              <li>Adicionar stop-loss automático para saídas de range</li>
+              <li>Implementar re-range automático quando preço rompe</li>
+              <li>Dashboard com métricas: win rate, avg profit per trade, drawdown</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- #3 WHISPER API -->
+        <div class="top-card rank-3">
+          <div class="rank-badge">3</div>
+          <span class="top-card-icon">🎙️</span>
+          <div class="top-card-title">Whisper API como Serviço</div>
+          <div class="top-card-desc">
+            Já temos Whisper local instalado! Podemos expor como API REST e cobrar por hora
+            de áudio. O mercado paga $0.17–$0.50/hora. Nossa infraestrutura já existe —
+            só precisamos de billing e uma landing page.
+          </div>
+          <div class="top-card-meta">
+            <span class="badge badge-green">Capital: $0</span>
+            <span class="badge badge-green">Risco: Baixo</span>
+            <span class="badge badge-yellow">Retorno: $50–500/mês</span>
+            <span class="badge badge-cyan">Setup: 2–5 dias</span>
+          </div>
+          <div class="top-card-plan">
+            <div class="top-card-plan-title">📋 Plano de Implementação</div>
+            <ol>
+              <li>O Whisper Server já existe! (whisper-server no playground)</li>
+              <li>Adicionar sistema de API keys + rate limiting</li>
+              <li>Integrar billing: Stripe ou pagamento em cripto</li>
+              <li>Landing page simples mostrando preço por hora de áudio</li>
+              <li>Divulgar em grupos de dev, Reddit r/MachineLearning</li>
+              <li>Monitorar uso com PostgreSQL (já temos)</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- #4 BOT TELEGRAM -->
+        <div class="top-card rank-4">
+          <div class="rank-badge">4</div>
+          <span class="top-card-icon">🤖</span>
+          <div class="top-card-title">Bot Telegram Especializado</div>
+          <div class="top-card-desc">
+            Criar um bot Telegram de nicho (ex: alertas de funding rates, resumo de notícias crypto,
+            análise de portfólio). Telegram suporta pagamentos nativos via Stars/TON.
+            Modelo de assinatura recorrente: $5–30/mês por usuário.
+          </div>
+          <div class="top-card-meta">
+            <span class="badge badge-green">Capital: $0</span>
+            <span class="badge badge-green">Risco: Baixo</span>
+            <span class="badge badge-yellow">Retorno: $100–1000/mês</span>
+            <span class="badge badge-yellow">Setup: 1–3 sem.</span>
+          </div>
+          <div class="top-card-plan">
+            <div class="top-card-plan-title">📋 Plano de Implementação</div>
+            <ol>
+              <li>Nicho: "Crypto Funding Rate Alerts" (complementa estratégia #1)</li>
+              <li>Bot monitora funding rates e envia alertas de oportunidades</li>
+              <li>Free tier: 3 alertas/dia; Premium: ilimitado + análise</li>
+              <li>Integrar Telegram Stars para pagamento</li>
+              <li>Automatizar onboarding, billing e cancelamento</li>
+              <li>Crescer via comunidades de crypto no Telegram</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- #5 NEWSLETTER -->
+        <div class="top-card rank-4">
+          <div class="rank-badge">5</div>
+          <span class="top-card-icon">📰</span>
+          <div class="top-card-title">Newsletter de IA Curada</div>
+          <div class="top-card-desc">
+            Usar o agente para curar notícias de IA/crypto todo dia, gerar resumo editado,
+            e publicar em Substack ou Beehiiv. Monetizar via assinatura paga ($5–10/mês)
+            e sponsor (1000+ assinantes = $200–500/newsletter).
+          </div>
+          <div class="top-card-meta">
+            <span class="badge badge-green">Capital: $0</span>
+            <span class="badge badge-green">Risco: Baixo</span>
+            <span class="badge badge-yellow">Retorno: $200–2000/mês</span>
+            <span class="badge badge-yellow">Setup: 2–4 sem.</span>
+          </div>
+          <div class="top-card-plan">
+            <div class="top-card-plan-title">📋 Plano de Implementação</div>
+            <ol>
+              <li>Definir nicho: "AI Agents & Crypto Automation" (nosso domínio)</li>
+              <li>Cron diário: scrape RSS feeds, HackerNews, CoinDesk</li>
+              <li>Agente filtra + resume os top 5 itens do dia</li>
+              <li>André revisa e aprova (5min/dia — semi-automático)</li>
+              <li>Publicar no Beehiiv (melhor monetização de sponsor)</li>
+              <li>Distribuir nas redes para crescer a base</li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 4. ANÁLISE DO BOT ATUAL ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🔍</span>
+        <div>
+          <div class="section-title">Análise do Trading Bot Atual</div>
+          <div class="section-subtitle">Grid trading em paper mode — PEPE, DOGE, SHIB, BONK, WIF, FLOKI</div>
+        </div>
+      </div>
+
+      <div class="analysis-grid">
+        <div class="analysis-card good">
+          <div class="analysis-card-title">✅ O que está funcionando bem</div>
+          <ul class="check-list">
+            <li>Estratégia de grid é comprovada para mercados laterais</li>
+            <li>6 meme coins com alta volatilidade = mais oportunidades de grid fill</li>
+            <li>Paper mode permite validar estratégia sem risco de capital</li>
+            <li>Arquitetura já existente — só precisa ligar o capital real</li>
+            <li>Sem necessidade de prever direção (vantagem única do grid)</li>
+            <li>PostgreSQL coleta dados históricos para análise futura</li>
+          </ul>
+        </div>
+
+        <div class="analysis-card improve">
+          <div class="analysis-card-title">⚡ O que pode ser melhorado</div>
+          <ul class="check-list">
+            <li>Ainda em paper mode — zero receita real ainda</li>
+            <li>Sem stop automático quando preço sai do range do grid</li>
+            <li>Parâmetros de grid (spacing, levels) não foram otimizados via backtest</li>
+            <li>Falta dashboard visual de performance por par</li>
+            <li>Nenhum mecanismo de re-range automático</li>
+            <li>6 pares em simultâneo pode diluir capital excessivamente</li>
+            <li>Meme coins têm risco de queda -80% (risco direcional subestimado)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5. ROADMAP ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🗺️</span>
+        <div>
+          <div class="section-title">Próximos Passos — Sequência de Implementação</div>
+          <div class="section-subtitle">Do paper mode ao agente que gera receita real</div>
+        </div>
+      </div>
+
+      <div class="roadmap">
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">📊</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 1 — Semana 1</div>
+            <div class="roadmap-title">Analisar dados do paper trading</div>
+            <div class="roadmap-desc">
+              Extrair relatório completo do paper mode: P&L por par, número de trades, win rate, drawdown máximo.
+              Identificar os 2 melhores pares. Decidir quais merecem capital real vs quais abandonar.
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">🎙️</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 2 — Semanas 1–2</div>
+            <div class="roadmap-title">Lançar Whisper API como Serviço</div>
+            <div class="roadmap-desc">
+              Mais rápido de implementar — infraestrutura já existe! Adicionar autenticação por API key,
+              rate limiting, e uma landing page simples. Primeiro revenue real pode vir em dias.
+              Cobrar $0.25/hora de áudio (50% abaixo da concorrência).
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">⚡</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 3 — Semanas 2–4</div>
+            <div class="roadmap-title">Implementar Funding Rate Monitor</div>
+            <div class="roadmap-desc">
+              Construir monitor de funding rates que escaneia Binance/OKX/Bybit e identifica
+              oportunidades de arbitragem. Começar em paper mode. Dados do monitor alimentam
+              o bot Telegram de alertas (preparando a monetização futura).
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">💸</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 4 — Mês 2</div>
+            <div class="roadmap-title">Grid Trading Live + Funding Rate Arb Live</div>
+            <div class="roadmap-desc">
+              Com dados de 1 mês de paper, ir live nos 2 melhores pares do grid com $100–200 cada.
+              Paralelamente, executar funding rate arb com $500 em paper por mais 2 semanas,
+              depois ir live com capital real. Meta: primeiro $100 real gerado pelo agente.
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">🤖</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 5 — Mês 3</div>
+            <div class="roadmap-title">Lançar Bot Telegram de Funding Rates</div>
+            <div class="roadmap-desc">
+              Com o monitor funcionando, transformar em produto: bot que alerta quando aparecem
+              oportunidades de funding rate &gt;0.1%/8h. Free tier + premium ($10/mês).
+              O próprio agente usa os dados — e agora os vende. Synergy perfeita.
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-dot">📰</div>
+          <div class="roadmap-content">
+            <div class="roadmap-phase">Fase 6 — Meses 3–6</div>
+            <div class="roadmap-title">Newsletter "AI Agent Economy"</div>
+            <div class="roadmap-desc">
+              Nicho único: a newsletter escrita por um agente de IA sobre como agentes de IA
+              geram receita. O próprio agente documenta o journey em tempo real.
+              Autenticidade + nicho específico = audiência engajada. Meta: 500 assinantes em 3 meses.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 6. RISCOS ── -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">⚠️</span>
+        <div>
+          <div class="section-title">Riscos e Considerações</div>
+          <div class="section-subtitle">O que evitar e como mitigar</div>
+        </div>
+      </div>
+
+      <div class="risk-grid">
+
+        <div class="risk-card">
+          <div class="risk-title">🚫 Meme Coins: Queda Direcional</div>
+          <div class="risk-desc">
+            PEPE, SHIB, BONK podem cair -80% em dias. Grid trading perde quando o preço sai
+            do range para baixo e não volta. <strong>Mitigation:</strong> stop-loss agressivo,
+            nunca alocar mais do que pode perder, e focar em pares mais estáveis (BTC/ETH) ao ir live.
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div class="risk-title">🚫 Funding Rate: Inversão de Rate</div>
+          <div class="risk-desc">
+            O funding pode virar negativo (shorters pagam longs), revertendo o lucro.
+            <strong>Mitigation:</strong> monitorar rate em tempo real e fechar posição quando
+            o rate esperado para as próximas 8h for negativo.
+          </div>
+        </div>
+
+        <div class="risk-card warn">
+          <div class="risk-title">⚡ Arbitragem Cross-Exchange: Lentidão</div>
+          <div class="risk-desc">
+            Arbitragem entre exchanges exige execução em milissegundos. VPS genérica pode
+            ser lenta demais. <strong>Mitigation:</strong> focar em triangular (mesma exchange)
+            onde a latência é controlada. Cross-exchange só com VPS co-locada.
+          </div>
+        </div>
+
+        <div class="risk-card warn">
+          <div class="risk-title">⚡ API Service: Custos de Compute</div>
+          <div class="risk-desc">
+            Whisper local é CPU-intensivo. Muitas requisições simultâneas podem derrubar
+            outros serviços. <strong>Mitigation:</strong> queue + rate limiting. Monitorar
+            CPU/RAM e auto-rejeitar quando acima de 80% de utilização.
+          </div>
+        </div>
+
+        <div class="risk-card warn">
+          <div class="risk-title">⚡ YouTube / Conteúdo: Demorado</div>
+          <div class="risk-desc">
+            YouTube automation leva 2–3 meses para monetizar (1000 subs + 4000h).
+            Não é "quick win". <strong>Mitigation:</strong> tratar como investimento
+            de longo prazo, não como primeira fonte de receita.
+          </div>
+        </div>
+
+        <div class="risk-card info">
+          <div class="risk-title">💡 Legal: Tudo OK</div>
+          <div class="risk-desc">
+            Todas as estratégias listadas são legais. Funding rate arbitrage é estratégia
+            de hedge fund estabelecida. Vender API de transcrição é negócio legítimo.
+            Newsletter não viola direitos autorais (curadoria + opinião).
+            <strong>Nunca:</strong> front-running, wash trading ou serviços não licenciados.
+          </div>
+        </div>
+
+        <div class="risk-card info">
+          <div class="risk-title">💡 DeFi: Smart Contract Risk</div>
+          <div class="risk-desc">
+            Yield farming e AMM têm risco de exploit em smart contracts (perdas irrecuperáveis).
+            Impermanent loss pode eliminar ganhos de yield.
+            <strong>Mitigation:</strong> usar apenas protocolos auditados (Aave, Uniswap v3).
+            Começar com valores muito pequenos ($50–100).
+          </div>
+        </div>
+
+        <div class="risk-card info">
+          <div class="risk-title">💡 Gestão de Capital: Diversificação</div>
+          <div class="risk-desc">
+            Não alocar todo capital em uma estratégia.
+            <strong>Sugestão de alocação:</strong> 40% grid trading, 30% funding rate arb,
+            20% DeFi conservador, 10% reserva/emergências. Aumentar alocação
+            gradualmente conforme cada estratégia prova resultados reais.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    🤖 Pesquisa executada por <strong>Johnny Juvenil</strong> — agente de IA autônomo •
+    <a href="../">← Playground</a> •
+    Fevereiro 2026 | VPS 138.197.19.184
+  </footer>
+
+</body>
+</html>
