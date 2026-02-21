@@ -294,7 +294,7 @@
   <!-- COINS & GRID -->
   <section id="coins">
     <h2>🪙 Coins & Configuração de Grid</h2>
-    <p>Capital por coin = <code>order_size × grid_levels × 2</code> → <strong>$1 × 10 × 2 = $20/coin → $120 total</strong></p>
+    <p>Capital por coin = <code>order_size × grid_levels × 2</code> → <strong>$16.67 × 10 × 2 = $333.40/coin → $2.000 total</strong></p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Coin</th><th>Tipo</th><th>Spacing</th><th>Fee round-trip</th><th>Margem líquida</th></tr></thead>
@@ -333,7 +333,7 @@ Com spacing 0.7%  →  $1 × (0.7% − 0.2%) = $0.005   ✅ 0.5%/ciclo</code></p
       <div class="math-row"><span class="math-label">Trades executados</span><span class="math-value">992</span></div>
       <div class="math-row"><span class="math-label">Lucro paper (sem fees)</span><span class="math-value text-yellow">+ $1.42</span></div>
       <div class="math-row"><span class="math-label">Fees estimadas (OKX 0.1%/trade × 992)</span><span class="math-value text-red">− $0.99</span></div>
-      <div class="math-row"><span class="math-label">Capital inicial</span><span class="math-value">$120.00</span></div>
+      <div class="math-row"><span class="math-label">Capital inicial (paper)</span><span class="math-value text-muted">$120.00</span></div>
       <div class="math-row"><span class="math-label">Lucro real estimado após fees</span><span class="math-value text-green">$0.43</span></div>
     </div>
 
@@ -350,7 +350,7 @@ Com spacing 0.7%  →  $1 × (0.7% − 0.2%) = $0.005   ✅ 0.5%/ciclo</code></p
       </table>
     </div>
 
-    <h3>Projeção com capital real ($2.000)</h3>
+    <h3>Capital atual: $2.000 — Projeção de lucro</h3>
     <pre><code>order_size    = ($2.000 / 6 coins) / (10 × 2) = $16.67/ordem
 Lucro/ciclo   = $16.67 × 0.5% = $0.083
 Fee/ciclo     = $16.67 × 0.2% = $0.033
