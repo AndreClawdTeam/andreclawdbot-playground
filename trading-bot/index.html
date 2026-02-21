@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🤖 Trading Bot — Documentação</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #09090b;
+      --bg2:     #111113;
+      --bg3:     #18181b;
+      --bg4:     #27272a;
+      --border:  #3f3f46;
+      --text:    #fafafa;
+      --muted:   #a1a1aa;
+      --green:   #22c55e;
+      --yellow:  #eab308;
+      --red:     #ef4444;
+      --orange:  #f97316;
+      --cyan:    #06b6d4;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6; min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      position: relative; overflow: hidden;
+      padding: 80px 24px 60px; text-align: center;
+      background: linear-gradient(135deg, #09090b 0%, #0f1a2e 50%, #09090b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-glow {
+      position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite; pointer-events: none;
+    }
+    .header-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(34,197,94,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+    }
+    .header-content { position: relative; z-index: 1; }
+    .header-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 99px;
+      border: 1px solid rgba(34,197,94,0.35); color: var(--green);
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em;
+      margin-bottom: 20px; background: rgba(34,197,94,0.08);
+    }
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    header p.subtitle { margin-top: 14px; color: var(--muted); font-size: 1.05rem; }
+    .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .badge { padding: 4px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; border: 1px solid; }
+    .badge-green  { color: var(--green);  border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.08); }
+    .badge-yellow { color: var(--yellow); border-color: rgba(234,179,8,0.3);  background: rgba(234,179,8,0.08); }
+    .badge-blue   { color: #60a5fa;       border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+    .badge-purple { color: #c084fc;       border-color: rgba(192,132,252,0.3);background: rgba(192,132,252,0.08); }
+    .badge-orange { color: var(--orange); border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.08); }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,9,11,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; display: flex; overflow-x: auto;
+    }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      font-weight: 500; padding: 14px 16px; border-bottom: 2px solid transparent;
+      white-space: nowrap; transition: color .2s, border-color .2s;
+    }
+    nav a:hover { color: var(--text); border-color: var(--green); }
+
+    /* MAIN */
+    main { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+    section { margin-bottom: 60px; }
+    h2 {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 24px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 28px 0 12px; color: #d4d4d8; }
+    p { color: #d4d4d8; margin-bottom: 14px; }
+
+    /* CARDS GRID */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .card-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    .card-desc { color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead { background: var(--bg3); }
+    th {
+      text-align: left; padding: 12px 16px; font-weight: 600; color: var(--muted);
+      font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 12px 16px; border-bottom: 1px solid rgba(63,63,70,0.5); color: #d4d4d8; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+    td code { background: var(--bg4); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-family: monospace; color: #86efac; }
+    .text-red   { color: #fca5a5; }
+    .text-green { color: #86efac; }
+    .text-yellow{ color: #fde047; }
+    .text-muted { color: var(--muted); }
+
+    /* CODE */
+    pre {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; overflow-x: auto; margin: 12px 0 20px;
+    }
+    pre code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.7; color: #e4e4e7; }
+
+    /* ALERTS */
+    .alert {
+      border-radius: 10px; padding: 16px 20px; margin: 16px 0;
+      display: flex; gap: 14px; align-items: flex-start; font-size: 0.9rem;
+    }
+    .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .alert-body { line-height: 1.6; }
+    .alert-title { font-weight: 700; margin-bottom: 4px; }
+    .alert-green  { background: rgba(34,197,94,0.08);  border: 1px solid rgba(34,197,94,0.25); }
+    .alert-yellow { background: rgba(234,179,8,0.08);  border: 1px solid rgba(234,179,8,0.25); }
+    .alert-orange { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25); }
+    .alert-blue   { background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.25); }
+    .alert-green  .alert-title { color: #86efac; }
+    .alert-yellow .alert-title { color: #fde047; }
+    .alert-orange .alert-title { color: #fdba74; }
+    .alert-blue   .alert-title { color: #93c5fd; }
+
+    /* LAYERS */
+    .layers { display: flex; flex-direction: column; gap: 12px; }
+    .layer {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 20px; display: flex; gap: 16px;
+    }
+    .layer-num {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem;
+    }
+    .layer-title { font-weight: 700; margin-bottom: 4px; }
+    .layer-desc  { color: var(--muted); font-size: 0.875rem; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px;
+      width: 2px; background: linear-gradient(to bottom, var(--red), var(--green)); border-radius: 2px;
+    }
+    .tl-item { position: relative; margin-bottom: 32px; }
+    .tl-dot { position: absolute; left: -26px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--bg); }
+    .tl-dot-red    { background: var(--red); }
+    .tl-dot-yellow { background: var(--yellow); }
+    .tl-dot-green  { background: var(--green); }
+    .tl-dot-orange { background: var(--orange); }
+    .tl-tag {
+      display: inline-block; padding: 2px 10px; border-radius: 99px;
+      font-size: 0.72rem; font-weight: 700; margin-bottom: 8px;
+    }
+    .tl-tag-bug    { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .tl-tag-fix    { background: rgba(34,197,94,0.15);  color: #86efac; }
+    .tl-tag-feat   { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .tl-tag-lesson { background: rgba(249,115,22,0.15); color: #fdba74; }
+    .tl-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    .tl-body  { color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
+
+    /* MATH BOX */
+    .math-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin: 16px 0; }
+    .math-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; border-bottom: 1px solid rgba(63,63,70,0.4); font-size: 0.9rem;
+    }
+    .math-row:last-child { border-bottom: none; font-weight: 700; font-size: 1rem; }
+    .math-label { color: var(--muted); }
+    .math-value { font-family: monospace; }
+
+    /* CMD */
+    .cmd-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .cmd-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;
+    }
+    .cmd-label { color: var(--muted); font-size: 0.78rem; white-space: nowrap; padding-top: 2px; min-width: 80px; }
+    .cmd-code  { font-family: monospace; font-size: 0.82rem; color: #86efac; word-break: break-all; }
+
+    footer { text-align: center; padding: 32px 24px; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) { .cards-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-glow"></div>
+  <div class="header-grid"></div>
+  <div class="header-content">
+    <div class="header-badge">trading-bot • paper mode</div>
+    <h1>🤖 Multi-Coin Grid Trading Bot</h1>
+    <p class="subtitle">Grid trading em 6 meme coins — paper mode com dados reais</p>
+    <div class="badges">
+      <span class="badge badge-green">● Active</span>
+      <span class="badge badge-blue">Python 3.11</span>
+      <span class="badge badge-yellow">PostgreSQL</span>
+      <span class="badge badge-purple">6 Coins</span>
+      <span class="badge badge-blue">systemd</span>
+      <span class="badge badge-orange">spacing 0.5–0.7%</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <a href="#overview">Visão Geral</a>
+  <a href="#arquitetura">Arquitetura</a>
+  <a href="#coins">Coins & Grid</a>
+  <a href="#fees">Fees & Calibração</a>
+  <a href="#protecoes">Proteções</a>
+  <a href="#bugfixes">Bug Fixes</a>
+  <a href="#systemd">systemd</a>
+  <a href="#operacao">Operação</a>
+  <a href="#banco">Banco de Dados</a>
+</nav>
+
+<main>
+
+  <!-- VISÃO GERAL -->
+  <section id="overview">
+    <h2>📋 Visão Geral</h2>
+    <p>Bot de grid trading multi-moeda em <strong>paper mode</strong> com preços reais via OKX/KuCoin/Gate.io. Cada coin tem seu próprio <code>GridBot</code> independente com grade de ordens ao redor do preço atual. Inclui dashboard web em tempo real, proteções em 5 camadas e notificações Telegram.</p>
+    <div class="cards-grid">
+      <div class="card"><div class="card-icon">📈</div><div class="card-title">Grid Trading</div><div class="card-desc">Lucra com oscilações sem prever a direção do mercado. Cada ciclo BUY→SELL captura o spread do grid.</div></div>
+      <div class="card"><div class="card-icon">🔁</div><div class="card-title">6 Coins simultâneas</div><div class="card-desc">PEPE, SHIB, BONK, FLOKI, DOGE e WIF — cada uma com grid e capital independentes.</div></div>
+      <div class="card"><div class="card-icon">🛡️</div><div class="card-title">5 camadas de proteção</div><div class="card-desc">Stop-loss de preço, balance floor, strikes, daily loss limit e circuit breaker persistente.</div></div>
+      <div class="card"><div class="card-icon">🔄</div><div class="card-title">Auto-restart via systemd</div><div class="card-desc">Reinicia automaticamente em caso de crash. Sobe no boot da VPS sem intervenção.</div></div>
+    </div>
+    <div class="alert alert-yellow">
+      <span class="alert-icon">📄</span>
+      <div class="alert-body">
+        <div class="alert-title">Paper Mode</div>
+        Nenhuma ordem real é enviada. Preços buscados de exchanges reais.
+        Para ir ao vivo: <code>PAPER_MODE = False</code> + credenciais em <code>config.py</code>.
+        <strong>Leia a seção <a href="#fees" style="color:#fde047">Fees &amp; Calibração</a> antes de ir ao vivo.</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARQUITETURA -->
+  <section id="arquitetura">
+    <h2>🏗️ Arquitetura</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Arquivo</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td><code>bot.py</code></td><td>Entry point. Loop principal, orquestra os GridBots, auto-disable por P&L, isolamento de erros por coin</td></tr>
+          <tr><td><code>strategy.py</code></td><td>Classe GridBot: setup da grade, fills, strikes, stop-loss, balance floor, stats diárias</td></tr>
+          <tr><td><code>config.py</code></td><td>Todas as constantes: coins, % de grid, limites de risco, credenciais</td></tr>
+          <tr><td><code>database.py</code></td><td>CRUD no PostgreSQL: trades, diários, circuit breaker, símbolos desabilitados</td></tr>
+          <tr><td><code>exchange.py</code></td><td>Preço real via APIs públicas — OKX → KuCoin → Gate.io (fallback em cascata)</td></tr>
+          <tr><td><code>dashboard.py</code></td><td>Flask: UI dark mode com stats, gráficos, tabela de trades, controles (porta 8766)</td></tr>
+          <tr><td><code>notifier.py</code></td><td>Alertas Telegram via <code>openclaw message send</code></td></tr>
+          <tr><td><code>trading-bot.service</code></td><td>Unit file systemd para auto-restart e boot automático</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Fluxo de um tick (a cada 10s)</h3>
+    <pre><code>Para cada coin (isolada em try/except):
+  ├─ is_trading_enabled()?   → circuit breaker global
+  ├─ check_auto_disable()    → P&L diário/total acima do limite?
+  ├─ get_price()             → OKX → KuCoin → Gate.io
+  └─ bot.check_fills(price)  → BUY fill → SELL acima | SELL fill → BUY abaixo + lucro</code></pre>
+  </section>
+
+  <!-- COINS & GRID -->
+  <section id="coins">
+    <h2>🪙 Coins & Configuração de Grid</h2>
+    <p>Capital por coin = <code>order_size × grid_levels × 2</code> → <strong>$1 × 10 × 2 = $20/coin → $120 total</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Coin</th><th>Tipo</th><th>Spacing</th><th>Fee round-trip</th><th>Margem líquida</th></tr></thead>
+        <tbody>
+          <tr><td>PEPE, SHIB, BONK, FLOKI</td><td>Micro-cap</td><td class="text-green">0.5%</td><td class="text-muted">0.2%</td><td class="text-green">0.3%/ciclo ✅</td></tr>
+          <tr><td>DOGE, WIF</td><td>Mid-cap</td><td class="text-green">0.7%</td><td class="text-muted">0.2%</td><td class="text-green">0.5%/ciclo ✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FEES & CALIBRAÇÃO -->
+  <section id="fees">
+    <h2>💡 Fees & Calibração para Live Mode</h2>
+
+    <div class="alert alert-orange">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-body">
+        <div class="alert-title">Lição crítica aprendida em paper mode (2026-02-21)</div>
+        O spacing original de <strong>0.2%</strong> era break-even em live mode. Em 9.1h de operação, 992 trades converteram
+        <strong>$1.42 de paper profit em apenas $0.43 real</strong> — 70% consumido por fees estimadas da OKX.
+      </div>
+    </div>
+
+    <h3>A matemática do grid vs fees</h3>
+    <pre><code>Lucro bruto por ciclo = order_size × grid_spacing_pct
+Fee round-trip        = order_size × 0.1% × 2 lados = order_size × 0.2%
+Lucro líquido         = order_size × (grid_spacing_pct − 0.2%)
+
+Com spacing 0.2%  →  $1 × (0.2% − 0.2%) = $0.000   💀 break-even
+Com spacing 0.5%  →  $1 × (0.5% − 0.2%) = $0.003   ✅ 0.3%/ciclo
+Com spacing 0.7%  →  $1 × (0.7% − 0.2%) = $0.005   ✅ 0.5%/ciclo</code></pre>
+
+    <h3>Dados reais — 9.1h de paper mode</h3>
+    <div class="math-box">
+      <div class="math-row"><span class="math-label">Trades executados</span><span class="math-value">992</span></div>
+      <div class="math-row"><span class="math-label">Lucro paper (sem fees)</span><span class="math-value text-yellow">+ $1.42</span></div>
+      <div class="math-row"><span class="math-label">Fees estimadas (OKX 0.1%/trade × 992)</span><span class="math-value text-red">− $0.99</span></div>
+      <div class="math-row"><span class="math-label">Capital inicial</span><span class="math-value">$120.00</span></div>
+      <div class="math-row"><span class="math-label">Lucro real estimado após fees</span><span class="math-value text-green">$0.43</span></div>
+    </div>
+
+    <h3>Regra: spacing ≥ 2.5× fee round-trip</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Spacing</th><th>Margem líquida</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>0.2% <span class="text-muted">(original)</span></td><td class="text-red">$0.000/ciclo</td><td class="text-red">💀 Break-even</td></tr>
+          <tr><td>0.3%</td><td class="text-yellow">$0.001/ciclo</td><td class="text-yellow">⚠️ Margem mínima</td></tr>
+          <tr><td><strong>0.5%</strong> <span class="text-muted">(micro-caps)</span></td><td class="text-green">$0.003/ciclo</td><td class="text-green">✅ Atual</td></tr>
+          <tr><td><strong>0.7%</strong> <span class="text-muted">(mid-caps)</span></td><td class="text-green">$0.005/ciclo</td><td class="text-green">✅ Atual</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Projeção com capital real ($2.000)</h3>
+    <pre><code>order_size    = ($2.000 / 6 coins) / (10 × 2) = $16.67/ordem
+Lucro/ciclo   = $16.67 × 0.5% = $0.083
+Fee/ciclo     = $16.67 × 0.2% = $0.033
+Líquido/ciclo = $0.050
+
+~300 ciclos/dia × $0.050 = $15/dia → ~$450/mês → ~27% ROI mensal</code></pre>
+
+    <div class="alert alert-blue">
+      <span class="alert-icon">💡</span>
+      <div class="alert-body">
+        <div class="alert-title">Maker fee vs Taker fee</div>
+        OKX cobra <strong>0.08% maker</strong> vs <strong>0.1% taker</strong>. Com limit orders em live mode,
+        fee round-trip cai de 0.2% para 0.16% — melhora a margem em ~25%.
+      </div>
+    </div>
+  </section>
+
+  <!-- PROTEÇÕES -->
+  <section id="protecoes">
+    <h2>🛡️ Proteções de Risco (5 camadas)</h2>
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(239,68,68,0.15);color:#fca5a5">1</div>
+        <div><div class="layer-title">Stop-Loss de Preço</div><div class="layer-desc">−12% do centro → suspende compras. −15% → fecha posições e desabilita coin. Auto-reset na recuperação.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(249,115,22,0.15);color:#fdba74">2</div>
+        <div><div class="layer-title">Balance Floor</div><div class="layer-desc">Saldo cai abaixo de 60% do capital inicial → coin desabilitada. Máximo de $8 perdido de $20 alocados.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(234,179,8,0.15);color:#fde047">3</div>
+        <div><div class="layer-title">Strikes por Drawdown</div><div class="layer-desc">Drawdown &gt; 25% → strike. 3 strikes em 30 min → coin desabilitada. Strikes antigos descartados.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(34,197,94,0.15);color:#86efac">4</div>
+        <div><div class="layer-title">Daily Loss Limit</div><div class="layer-desc">Perda &gt; $10/coin/dia ou &gt; 20% do capital alocado → coin desabilitada. Outras continuam.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(99,102,241,0.15);color:#a5b4fc">5</div>
+        <div><div class="layer-title">Circuit Breaker Global (persistente)</div><div class="layer-desc"><code>trading_enabled</code> salvo no PostgreSQL. Sobrevive a restarts. Retomada via dashboard ou SQL.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUG FIXES -->
+  <section id="bugfixes">
+    <h2>🔧 Bug Fixes & Melhorias</h2>
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot tl-dot-orange"></div>
+        <span class="tl-tag tl-tag-lesson">APRENDIZADO</span>
+        <div class="tl-title">Grid spacing 0.2% era break-even em live mode</div>
+        <div class="tl-body">
+          <strong>Detectado em:</strong> análise de 992 trades em 9.1h.<br>
+          <strong>Causa:</strong> fee round-trip OKX = 0.2% = spacing original → lucro líquido zero.<br>
+          <strong>Fix:</strong> 0.2% → <strong>0.5%</strong> (micro-caps) | 0.3% → <strong>0.7%</strong> (mid-caps).<br>
+          <strong>Regra:</strong> spacing ≥ 2.5× fee round-trip para margem saudável.
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot tl-dot-red"></div>
+        <span class="tl-tag tl-tag-bug">BUG</span>
+        <div class="tl-title">AttributeError na virada de dia → todos os 6 coins paravam</div>
+        <div class="tl-body">
+          <code>self.day_winning_trades</code> não existia no <code>__init__</code>. Na meia-noite → <code>AttributeError</code> → crash total. Fix: atributo adicionado em <code>__init__</code> e resetado na virada do dia.
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot tl-dot-yellow"></div>
+        <span class="tl-tag tl-tag-bug">BUG</span>
+        <div class="tl-title">win_rate > 100% → overflow no PostgreSQL</div>
+        <div class="tl-body">
+          <code>upsert_daily()</code> recebia contador cumulativo em vez do diário → overflow <code>NUMERIC(5,2)</code>. Fix: argumento correto + cap defensivo <code>max(0, min(100, rate))</code>.
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot tl-dot-green"></div>
+        <span class="tl-tag tl-tag-feat">MELHORIA</span>
+        <div class="tl-title">Isolamento por coin no loop principal</div>
+        <div class="tl-body">
+          Cada coin tem <code>try/except</code> próprio. Erro em uma vira log — as outras continuam operando.
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot tl-dot-green"></div>
+        <span class="tl-tag tl-tag-feat">MELHORIA</span>
+        <div class="tl-title">systemd — auto-restart e boot automático</div>
+        <div class="tl-body">
+          <code>Restart=on-failure</code>, 15s de delay, max 5 restarts em 2min, lingering ativado, output unbuffered (<code>python3 -u</code>).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEMD -->
+  <section id="systemd">
+    <h2>⚙️ systemd</h2>
+    <div class="cmd-list">
+      <div class="cmd-row"><span class="cmd-label">Status</span><span class="cmd-code">systemctl --user status trading-bot</span></div>
+      <div class="cmd-row"><span class="cmd-label">Logs</span><span class="cmd-code">tail -f ~/workspace/coding/trading-bot/bot.log</span></div>
+      <div class="cmd-row"><span class="cmd-label">Reiniciar</span><span class="cmd-code">systemctl --user restart trading-bot</span></div>
+      <div class="cmd-row"><span class="cmd-label">Parar</span><span class="cmd-code">systemctl --user stop trading-bot</span></div>
+    </div>
+  </section>
+
+  <!-- OPERAÇÃO -->
+  <section id="operacao">
+    <h2>🚀 Operação</h2>
+    <h3>Dashboard</h3>
+    <div class="cmd-list">
+      <div class="cmd-row"><span class="cmd-label">URL</span><span class="cmd-code">http://138.197.19.184:8766</span></div>
+    </div>
+    <h3>Pausar / Retomar</h3>
+    <pre><code><span style="color:#f87171"># Pausar</span>
+UPDATE bot_state SET trading_enabled = FALSE WHERE id = 1;
+<span style="color:#86efac"># Retomar</span>
+UPDATE bot_state SET trading_enabled = TRUE WHERE id = 1;</code></pre>
+    <h3>Checklist para ir ao vivo</h3>
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(234,179,8,0.15);color:#fde047">1</div>
+        <div><div class="layer-title">Verificar spacing vs fees atuais da OKX</div><div class="layer-desc">Confirmar fee taker. Regra: spacing ≥ 2.5× fee round-trip.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(234,179,8,0.15);color:#fde047">2</div>
+        <div><div class="layer-title">Depositar capital e recalcular order_size</div><div class="layer-desc"><code>order_size = capital_total / n_coins / (grid_levels × 2)</code>. Avisar o agente do valor.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(234,179,8,0.15);color:#fde047">3</div>
+        <div><div class="layer-title">PAPER_MODE = False + credenciais</div><div class="layer-desc">Nunca commitar config.py com credenciais reais.</div></div>
+      </div>
+      <div class="layer">
+        <div class="layer-num" style="background:rgba(99,102,241,0.15);color:#a5b4fc">4</div>
+        <div><div class="layer-title">Reconciliação de saldo (a implementar)</div><div class="layer-desc">Comparação horária tracking interno vs saldo real OKX. Log de divergências. OKX é a fonte da verdade.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANCO -->
+  <section id="banco">
+    <h2>🗄️ Banco de Dados</h2>
+    <p>PostgreSQL — database <code>trading</code>. Tabelas criadas automaticamente via <code>ensure_tables()</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tabela</th><th>Conteúdo</th></tr></thead>
+        <tbody>
+          <tr><td><code>trades</code></td><td>Cada operação: symbol, side, price, profit_usdt, profit_pct, mode, timestamp</td></tr>
+          <tr><td><code>total_results</code></td><td>Snapshot agregado: saldo, pico, drawdown, win rate, total trades</td></tr>
+          <tr><td><code>daily_results</code></td><td>Resultado por dia: trades, wins, gross_profit, gross_loss, net_profit</td></tr>
+          <tr><td><code>bot_state</code></td><td>Circuit breaker: trading_enabled, motivo, timestamps</td></tr>
+          <tr><td><code>disabled_symbols</code></td><td>Histórico de desabilitações com motivo e P&L</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  by Johnny Juvenil 🫡 •
+  <a href="https://github.com/AndreClawdTeam/trading-bot" target="_blank">github.com/AndreClawdTeam/trading-bot</a>
+  • <a href="../">← Playground</a>
+</footer>
+
+</body>
+</html>
