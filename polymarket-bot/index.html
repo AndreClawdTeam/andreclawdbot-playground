@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎯 Polymarket Trading Bot — Plano</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #09090b;
+      --bg2:      #111113;
+      --bg3:      #18181b;
+      --bg4:      #27272a;
+      --border:   #3f3f46;
+      --text:     #fafafa;
+      --muted:    #a1a1aa;
+      --accent:   #eab308;
+      --accent2:  #f59e0b;
+      --green:    #22c55e;
+      --yellow:   #eab308;
+      --red:      #ef4444;
+      --orange:   #f97316;
+      --cyan:     #06b6d4;
+      --pink:     #ec4899;
+      --indigo:   #6366f1;
+      --purple:   #8b5cf6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 80px 24px 60px;
+      text-align: center;
+      background: linear-gradient(135deg, #09090b 0%, #1a1500 50%, #09090b 100%);
+      border-bottom: 1px solid rgba(234,179,8,0.2);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(234,179,8,0.2) 0%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(234,179,8,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(234,179,8,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fde047 0%, #eab308 50%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInDown 0.8s ease both;
+    }
+
+    header p.subtitle {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      animation: fadeInDown 0.8s 0.2s ease both;
+    }
+
+    .header-meta {
+      margin-top: 10px;
+      color: #71717a;
+      font-size: 0.82rem;
+      animation: fadeInDown 0.8s 0.3s ease both;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      animation: fadeInDown 0.8s 0.4s ease both;
+    }
+
+    .badge {
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid;
+    }
+
+    .badge-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.4);   color: #fde047; }
+    .badge-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35);  color: #86efac; }
+    .badge-cyan   { background: rgba(6,182,212,0.12);  border-color: rgba(6,182,212,0.35);  color: #67e8f9; }
+    .badge-orange { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.35); color: #fdba74; }
+    .badge-red    { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.35);  color: #fca5a5; }
+    .badge-indigo { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4);  color: #a5b4fc; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── BACK LINK ── */
+    .back-bar {
+      background: rgba(9,9,11,0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+    }
+
+    .back-bar a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .back-bar a:hover { color: var(--yellow); }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9,9,11,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 2px;
+      max-width: 1200px;
+      margin: 0 auto;
+      white-space: nowrap;
+    }
+
+    nav a {
+      display: inline-block;
+      padding: 14px 14px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    nav a:hover { color: var(--text); border-color: var(--yellow); }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+    }
+
+    /* ── SECTION ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .icon-yellow { background: rgba(234,179,8,0.18); }
+    .icon-cyan   { background: rgba(6,182,212,0.18); }
+    .icon-green  { background: rgba(34,197,94,0.18); }
+    .icon-orange { background: rgba(249,115,22,0.18); }
+    .icon-indigo { background: rgba(99,102,241,0.18); }
+    .icon-red    { background: rgba(239,68,68,0.18); }
+    .icon-purple { background: rgba(139,92,246,0.18); }
+    .icon-pink   { background: rgba(236,72,153,0.18); }
+
+    .section-header h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--yellow);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(234,179,8,0.1);
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── STRATEGY CARDS ── */
+    .strategy-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .strategy-card:hover { transform: translateY(-3px); }
+    .strategy-a { border-left: 4px solid var(--yellow); }
+    .strategy-b { border-left: 4px solid var(--cyan); }
+    .strategy-c { border-left: 4px solid var(--green); }
+    .strategy-d { border-left: 4px solid var(--orange); }
+
+    .strategy-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .strategy-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .strategy-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .strategy-body { color: var(--muted); font-size: 0.9rem; line-height: 1.8; margin-bottom: 16px; }
+
+    .strategy-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .meta-item { font-size: 0.82rem; }
+    .meta-label { color: #71717a; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .meta-value { color: var(--text); font-weight: 600; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--bg4);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg4); color: var(--text); }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .tag-green  { background: rgba(34,197,94,0.15);  color: #86efac; }
+    .tag-yellow { background: rgba(234,179,8,0.15);  color: #fde047; }
+    .tag-red    { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .tag-orange { background: rgba(249,115,22,0.15); color: #fdba74; }
+    .tag-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .tag-cyan   { background: rgba(6,182,212,0.15);  color: #67e8f9; }
+
+    /* ── INFO BOXES ── */
+    .info-box {
+      background: rgba(234,179,8,0.07);
+      border: 1px solid rgba(234,179,8,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .info-box h3 { color: var(--yellow); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .info-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .warning-box {
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .warning-box h3 { color: var(--red); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .warning-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .success-box {
+      background: rgba(34,197,94,0.07);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .success-box h3 { color: var(--green); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .success-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── CODE BLOCKS ── */
+    .code-wrap { position: relative; margin: 16px 0; }
+
+    .code-label {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    pre {
+      background: #0d0d10;
+      border: 1px solid var(--border);
+      border-radius: 0 12px 12px 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    pre.no-label { border-radius: 12px; }
+
+    code {
+      background: var(--bg4);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #fde047;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .c-kw   { color: #f0abfc; }
+    .c-str  { color: #86efac; }
+    .c-num  { color: #fdba74; }
+    .c-cmt  { color: #71717a; font-style: italic; }
+    .c-fn   { color: #67e8f9; }
+    .c-var  { color: #fde047; }
+    .c-cls  { color: #a5b4fc; }
+
+    /* ── PHASE TIMELINE ── */
+    .phases {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .phase {
+      display: flex;
+      gap: 24px;
+      position: relative;
+    }
+
+    .phase:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 21px;
+      top: 44px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .phase-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg4);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      color: var(--yellow);
+      border-color: rgba(234,179,8,0.4);
+      background: rgba(234,179,8,0.08);
+    }
+
+    .phase-content {
+      padding-bottom: 40px;
+      flex: 1;
+    }
+
+    .phase-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .phase-subtitle {
+      color: var(--yellow);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .phase-body {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .phase-tasks {
+      list-style: none;
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .phase-tasks li {
+      color: var(--muted);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .phase-tasks li::before {
+      content: '→';
+      color: var(--yellow);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    /* ── STAT CARDS ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fde047, #eab308);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── STEP LIST (próximos passos) ── */
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .step:hover {
+      border-color: rgba(234,179,8,0.4);
+      transform: translateX(4px);
+    }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(234,179,8,0.12);
+      border: 1px solid rgba(234,179,8,0.4);
+      color: var(--yellow);
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .step-content p  { color: var(--muted); font-size: 0.87rem; line-height: 1.6; }
+
+    /* ── FLOWCHART ── */
+    .flowchart {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      padding: 24px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+
+    .flow-box {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      min-width: 110px;
+    }
+
+    .flow-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+    .flow-label { color: var(--muted); }
+
+    .flow-arrow {
+      color: var(--yellow);
+      font-size: 1.4rem;
+      font-weight: 700;
+      padding: 0 8px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer a { color: #fde047; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .flowchart { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); }
+      .strategy-meta { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACK BAR -->
+  <div class="back-bar">
+    <a href="../">← andreclawdbot-playground</a>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-glow"></div>
+    <div class="header-grid"></div>
+    <div class="header-content">
+      <h1>🎯 Polymarket Trading Bot — Plano</h1>
+      <p class="subtitle">Estratégias de trades curtos para ganho por volume</p>
+      <p class="header-meta">Pesquisa criada em 22 fev 2026 • by Johnny Juvenil</p>
+      <div class="header-badges">
+        <span class="badge badge-yellow">Prediction Market</span>
+        <span class="badge badge-cyan">CLOB API</span>
+        <span class="badge badge-green">Market Making</span>
+        <span class="badge badge-orange">Python Bot</span>
+        <span class="badge badge-indigo">Polygon Network</span>
+        <span class="badge badge-red">USDC</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#overview">📖 O que é</a>
+      <a href="#api">🔌 API</a>
+      <a href="#strategies">⚡ Estratégias</a>
+      <a href="#stack">🛠️ Stack</a>
+      <a href="#phases">🗺️ Fases</a>
+      <a href="#risks">⚠️ Riscos</a>
+      <a href="#next-steps">✅ Próximos passos</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- STATS ROW -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-value">$3B+</div>
+        <div class="stat-label">Volume mensal (pico)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$40M+</div>
+        <div class="stat-label">Lucro de arb bots (2024–2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">137</div>
+        <div class="stat-label">Polygon Chain ID</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">USDC</div>
+        <div class="stat-label">Colateral da plataforma</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">0.01¢</div>
+        <div class="stat-label">Menor tick size</div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 1 — O QUE É POLYMARKET -->
+    <section id="overview">
+      <div class="section-header">
+        <div class="section-icon icon-yellow">📖</div>
+        <h2>O que é o Polymarket</h2>
+      </div>
+
+      <div class="info-box">
+        <h3>🔮 Mercado de Predição</h3>
+        <p>Polymarket é a maior plataforma de prediction markets do mundo. Usuários apostam dinheiro real (USDC na rede Polygon) na probabilidade de eventos acontecerem — eleições, esportes, criptomoedas, geopolítica. O preço de um contrato reflete diretamente a probabilidade implícita: um token a $0.73 significa ~73% de chance do evento ocorrer.</p>
+      </div>
+
+      <div class="cards-grid" style="margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-title">📊 Tipos de Mercados</div>
+          <p>Mercados binários (Sim/Não) e múltipla escolha. Cada opção vira um token. Ao resolver, o token vencedor vale $1.00 e o perdedor vale $0.00. Toda a matemática é determinística.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">⚖️ CLOB vs AMM</div>
+          <p>Polymarket usa um <strong style="color:var(--yellow)">Central Limit Order Book (CLOB)</strong> — igual a exchanges tradicionais. Bots podem colocar ordens limite de compra e venda. Sem AMM = sem impermanent loss, spread capturável.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🏦 Settlement</div>
+          <p>Mercados são resolvidos via oráculos (UMA Protocol). Quando o evento ocorre, contratos inteligentes na Polygon distribuem o USDC automaticamente. Tempo médio de resolução: horas após o evento.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🤖 Por que é oportunidade para bots</div>
+          <p>A plataforma tem ineficiências exploráveis: spreads amplos em mercados menos líquidos, reação lenta a notícias, discrepâncias entre mercados correlatos. Bots de arb faturaram $40M+ em 2024–2025.</p>
+        </div>
+      </div>
+
+      <div class="success-box">
+        <h3>✅ Vantagem competitiva do bot</h3>
+        <p>Humanos não conseguem monitorar centenas de mercados 24/7. Bots sim. Em prediction markets, a velocidade de reação a novidades é a principal vantagem. Um bot que processa notícias RSS e executa em segundos ganha de qualquer trader manual.</p>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2 — API -->
+    <section id="api">
+      <div class="section-header">
+        <div class="section-icon icon-cyan">🔌</div>
+        <h2>Como a API funciona</h2>
+      </div>
+
+      <div class="cards-grid" style="margin-bottom: 24px;">
+        <div class="card">
+          <div class="card-title">🌐 REST API (CLOB)</div>
+          <p>Base URL: <code>https://clob.polymarket.com</code><br>Consulta de order books, criação de ordens, histórico de trades. Autenticação via assinatura ECDSA com chave privada Ethereum.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📡 WebSocket</div>
+          <p>URL: <code>wss://ws-subscriptions-clob.polymarket.com</code><br>Streaming de atualizações do order book em tempo real por asset. Essencial para market making de baixa latência.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📚 Gamma Markets API</div>
+          <p>Base URL: <code>https://gamma-api.polymarket.com</code><br>Listagem de mercados, metadata, histórico de preços. Ideal para descobrir quais mercados têm mais liquidez e volume.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🔐 Autenticação</div>
+          <p>Chave privada Ethereum → gera API credentials (key, secret, passphrase). A assinatura é feita off-chain; a liquidação é on-chain na Polygon com USDC como colateral.</p>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom: 16px; color: var(--yellow);">Estrutura de um Order Book</h3>
+
+      <div class="table-wrap" style="margin-bottom: 24px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Tipo</th>
+              <th>Descrição</th>
+              <th>Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>market</code></td>
+              <td>string</td>
+              <td>ID do mercado (condition ID)</td>
+              <td><code>0xabc123...</code></td>
+            </tr>
+            <tr>
+              <td><code>asset_id</code></td>
+              <td>string</td>
+              <td>Token ID do outcome (YES ou NO)</td>
+              <td><code>71321045...</code></td>
+            </tr>
+            <tr>
+              <td><code>bids</code></td>
+              <td>array</td>
+              <td>Ordens de compra ordenadas desc por preço</td>
+              <td><code>[{price: "0.67", size: "50"}]</code></td>
+            </tr>
+            <tr>
+              <td><code>asks</code></td>
+              <td>array</td>
+              <td>Ordens de venda ordenadas asc por preço</td>
+              <td><code>[{price: "0.69", size: "30"}]</code></td>
+            </tr>
+            <tr>
+              <td><code>spread</code></td>
+              <td>float</td>
+              <td>Diferença entre melhor ask e melhor bid</td>
+              <td><code>0.02 ($0.02 por token)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom: 16px; color: var(--yellow);">Endpoints principais</h3>
+
+      <div class="table-wrap" style="margin-bottom: 24px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Endpoint</th>
+              <th>Método</th>
+              <th>Descrição</th>
+              <th>Auth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>GET /book</code></td>
+              <td><span class="tag tag-green">GET</span></td>
+              <td>Order book de um token</td>
+              <td><span class="tag tag-cyan">Público</span></td>
+            </tr>
+            <tr>
+              <td><code>GET /midpoint</code></td>
+              <td><span class="tag tag-green">GET</span></td>
+              <td>Preço médio atual</td>
+              <td><span class="tag tag-cyan">Público</span></td>
+            </tr>
+            <tr>
+              <td><code>POST /order</code></td>
+              <td><span class="tag tag-orange">POST</span></td>
+              <td>Criar ordem limite</td>
+              <td><span class="tag tag-yellow">Autenticado</span></td>
+            </tr>
+            <tr>
+              <td><code>DELETE /order/{id}</code></td>
+              <td><span class="tag tag-red">DELETE</span></td>
+              <td>Cancelar ordem</td>
+              <td><span class="tag tag-yellow">Autenticado</span></td>
+            </tr>
+            <tr>
+              <td><code>GET /orders</code></td>
+              <td><span class="tag tag-green">GET</span></td>
+              <td>Ordens abertas do usuário</td>
+              <td><span class="tag tag-yellow">Autenticado</span></td>
+            </tr>
+            <tr>
+              <td><code>GET /trades</code></td>
+              <td><span class="tag tag-green">GET</span></td>
+              <td>Histórico de trades</td>
+              <td><span class="tag tag-yellow">Autenticado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom: 16px; color: var(--yellow);">Fluxo de uma ordem</h3>
+
+      <div class="flowchart">
+        <div class="flow-box">
+          <span class="flow-icon">🔑</span>
+          <span class="flow-label">Assinar com<br>Priv Key</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">
+          <span class="flow-icon">📤</span>
+          <span class="flow-label">POST /order<br>(CLOB API)</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">
+          <span class="flow-icon">📋</span>
+          <span class="flow-label">Order no<br>Book</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">
+          <span class="flow-icon">⚡</span>
+          <span class="flow-label">Match com<br>contraparte</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">
+          <span class="flow-icon">🔗</span>
+          <span class="flow-label">On-chain<br>(Polygon)</span>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-box">
+          <span class="flow-icon">💰</span>
+          <span class="flow-label">Token<br>recebido</span>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom: 12px; color: var(--yellow);">Exemplo Python — Setup + Leitura de Order Book</h3>
+      <div class="code-wrap">
+        <span class="code-label">python · py-clob-client</span>
+        <pre><span class="c-kw">import</span> os
+<span class="c-kw">from</span> <span class="c-cls">py_clob_client</span>.client <span class="c-kw">import</span> <span class="c-cls">ClobClient</span>
+<span class="c-kw">from</span> <span class="c-cls">py_clob_client</span>.clob_types <span class="c-kw">import</span> <span class="c-cls">OrderArgs</span>, <span class="c-cls">BookParams</span>
+<span class="c-kw">from</span> <span class="c-cls">py_clob_client</span>.order_builder.constants <span class="c-kw">import</span> BUY, SELL
+
+<span class="c-cmt"># ── Configuração ──────────────────────────────────────────</span>
+HOST      = <span class="c-str">"https://clob.polymarket.com"</span>
+CHAIN_ID  = <span class="c-num">137</span>                           <span class="c-cmt"># Polygon mainnet</span>
+PRIV_KEY  = os.<span class="c-fn">getenv</span>(<span class="c-str">"POLY_PRIVATE_KEY"</span>)
+FUNDER    = os.<span class="c-fn">getenv</span>(<span class="c-str">"POLY_FUNDER_ADDRESS"</span>)  <span class="c-cmt"># endereço que guarda USDC</span>
+
+<span class="c-cmt"># ── Inicializar cliente ───────────────────────────────────</span>
+client = <span class="c-cls">ClobClient</span>(
+    HOST,
+    key=PRIV_KEY,
+    chain_id=CHAIN_ID,
+    signature_type=<span class="c-num">1</span>,  <span class="c-cmt"># 1 = email/Magic wallet</span>
+    funder=FUNDER
+)
+client.<span class="c-fn">set_api_creds</span>(client.<span class="c-fn">create_or_derive_api_creds</span>())
+
+<span class="c-cmt"># ── Ler order book de um mercado ──────────────────────────</span>
+TOKEN_ID = <span class="c-str">"71321045679252212594626385532706912750332728571942532289631379312455583992563"</span>
+
+mid    = client.<span class="c-fn">get_midpoint</span>(TOKEN_ID)
+bid    = client.<span class="c-fn">get_price</span>(TOKEN_ID, side=<span class="c-str">"BUY"</span>)
+ask    = client.<span class="c-fn">get_price</span>(TOKEN_ID, side=<span class="c-str">"SELL"</span>)
+book   = client.<span class="c-fn">get_order_book</span>(TOKEN_ID)
+
+<span class="c-fn">print</span>(<span class="c-str">f"Mid: {mid} | Bid: {bid} | Ask: {ask} | Spread: {float(ask)-float(bid):.4f}"</span>)
+<span class="c-fn">print</span>(<span class="c-str">f"Top 3 bids: {book.bids[:3]}"</span>)
+<span class="c-fn">print</span>(<span class="c-str">f"Top 3 asks: {book.asks[:3]}"</span>)
+
+<span class="c-cmt"># ── Criar ordem limite de compra ──────────────────────────</span>
+resp = client.<span class="c-fn">create_and_post_order</span>(<span class="c-cls">OrderArgs</span>(
+    price=<span class="c-num">0.50</span>,   <span class="c-cmt"># preço por token (entre 0.01 e 0.99)</span>
+    size=<span class="c-num">100.0</span>,   <span class="c-cmt"># quantidade de tokens</span>
+    side=BUY,
+    token_id=TOKEN_ID
+))
+<span class="c-fn">print</span>(<span class="c-str">f"Order criada: {resp}"</span>)</pre>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom: 12px; color: var(--yellow); margin-top: 24px;">WebSocket — Stream de Order Book</h3>
+      <div class="code-wrap">
+        <span class="code-label">python · websocket</span>
+        <pre><span class="c-kw">import</span> asyncio
+<span class="c-kw">import</span> json
+<span class="c-kw">import</span> websockets
+
+<span class="c-kw">async def</span> <span class="c-fn">stream_orderbook</span>(asset_id: str):
+    uri = <span class="c-str">"wss://ws-subscriptions-clob.polymarket.com/ws/market"</span>
+    <span class="c-kw">async with</span> websockets.<span class="c-fn">connect</span>(uri) <span class="c-kw">as</span> ws:
+        <span class="c-cmt"># Subscrever ao asset</span>
+        <span class="c-kw">await</span> ws.<span class="c-fn">send</span>(json.<span class="c-fn">dumps</span>({
+            <span class="c-str">"auth"</span>: {},
+            <span class="c-str">"type"</span>: <span class="c-str">"Market"</span>,
+            <span class="c-str">"assets_ids"</span>: [asset_id],
+            <span class="c-str">"markets"</span>: []
+        }))
+        <span class="c-kw">async for</span> message <span class="c-kw">in</span> ws:
+            data = json.<span class="c-fn">loads</span>(message)
+            <span class="c-kw">if</span> data.get(<span class="c-str">"type"</span>) == <span class="c-str">"book"</span>:
+                bids = data[<span class="c-str">"bids"</span>]
+                asks = data[<span class="c-str">"asks"</span>]
+                best_bid = bids[<span class="c-num">0</span>][<span class="c-str">"price"</span>] <span class="c-kw">if</span> bids <span class="c-kw">else</span> <span class="c-num">0</span>
+                best_ask = asks[<span class="c-num">0</span>][<span class="c-str">"price"</span>] <span class="c-kw">if</span> asks <span class="c-kw">else</span> <span class="c-num">1</span>
+                <span class="c-fn">print</span>(<span class="c-str">f"📊 Bid: {best_bid} | Ask: {best_ask} | Spread: {float(best_ask)-float(best_bid):.4f}"</span>)
+
+asyncio.<span class="c-fn">run</span>(<span class="c-fn">stream_orderbook</span>(<span class="c-str">"71321045..."</span>))</pre>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3 — ESTRATÉGIAS -->
+    <section id="strategies">
+      <div class="section-header">
+        <div class="section-icon icon-orange">⚡</div>
+        <h2>Estratégias para trades curtos / volume</h2>
+      </div>
+
+      <!-- Estratégia A -->
+      <div class="strategy-card strategy-a">
+        <div class="strategy-header">
+          <div>
+            <div class="strategy-title">🏦 Estratégia A — Market Making</div>
+          </div>
+          <div class="strategy-badges">
+            <span class="badge badge-green">Alta freq</span>
+            <span class="badge badge-yellow">Spread capture</span>
+            <span class="badge badge-indigo">Recomendada #1</span>
+          </div>
+        </div>
+        <div class="strategy-body">
+          O bot coloca ordens de compra e venda no spread do mercado simultaneamente. Quando o mercado se move, o bot cancela e recria ordens para manter o spread ótimo. O lucro vem da diferença bid/ask multiplicada pelo volume.
+          <br><br>
+          <strong style="color:var(--text)">Como funciona na prática:</strong> Se o mercado está a Bid=$0.66 / Ask=$0.70, o bot coloca compra a $0.67 e venda a $0.69. Quando ambas executam, lucro = $0.02 por token × volume. Em mercados com $10k/dia de volume, até 1% pode ser capturado como spread.
+          <br><br>
+          <strong style="color:var(--text)">Bônus:</strong> A Polymarket paga <strong style="color:var(--yellow)">Maker Rewards</strong> — liquidez em ambos os lados = quase 3× mais recompensas. Market makers ativos faturam USDC extra só por fornecer liquidez, independente dos trades.
+        </div>
+        <div class="strategy-meta">
+          <div class="meta-item">
+            <div class="meta-label">Risco por trade</div>
+            <div class="meta-value"><span class="tag tag-green">Baixo</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Frequência</div>
+            <div class="meta-value"><span class="tag tag-yellow">Alta (contínua)</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Capital mínimo</div>
+            <div class="meta-value">$100 USDC</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Complexidade</div>
+            <div class="meta-value"><span class="tag tag-orange">Média</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Retorno estimado</div>
+            <div class="meta-value">0.5–3% a.m.</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Referência</div>
+            <div class="meta-value">poly-maker, polymarket-market-maker-bot</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estratégia B -->
+      <div class="strategy-card strategy-b">
+        <div class="strategy-header">
+          <div>
+            <div class="strategy-title">⚡ Estratégia B — Scalping em Eventos ao Vivo</div>
+          </div>
+          <div class="strategy-badges">
+            <span class="badge badge-cyan">Alta volatilidade</span>
+            <span class="badge badge-orange">Latência crítica</span>
+          </div>
+        </div>
+        <div class="strategy-body">
+          Em mercados ao vivo (esportes, eleições, decisões do Fed), o preço se move rapidamente em resposta a eventos. O bot monitora esses mercados e entra na direção do movimento assim que detecta uma tendência, com saída automática após X% de retorno ou em timeout.
+          <br><br>
+          <strong style="color:var(--text)">Exemplo:</strong> Jogo de basquete. Time A liderando por 20 pontos no 4º quarto → mercado "Time A vence" sobe de $0.82 para $0.95 em minutos. Bot entra a $0.84, sai a $0.91. Lucro = $0.07 por token.
+          <br><br>
+          <strong style="color:var(--text)">Atenção:</strong> Requer latência muito baixa. VPS em datacenter próximo ao servidor CLOB é vantagem. Timeout obrigatório — ficar preso num mercado que resolve contra você é o maior risco.
+        </div>
+        <div class="strategy-meta">
+          <div class="meta-item">
+            <div class="meta-label">Risco por trade</div>
+            <div class="meta-value"><span class="tag tag-orange">Médio</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Frequência</div>
+            <div class="meta-value"><span class="tag tag-cyan">Média (event-driven)</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Capital mínimo</div>
+            <div class="meta-value">$200 USDC</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Complexidade</div>
+            <div class="meta-value"><span class="tag tag-orange">Alta</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Retorno estimado</div>
+            <div class="meta-value">2–10% por evento</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Gatilho</div>
+            <div class="meta-value">Variação &gt;3% em &lt;60s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estratégia C -->
+      <div class="strategy-card strategy-c">
+        <div class="strategy-header">
+          <div>
+            <div class="strategy-title">🔄 Estratégia C — Arbitragem entre Mercados Correlacionados</div>
+          </div>
+          <div class="strategy-badges">
+            <span class="badge badge-green">Baixo risco</span>
+            <span class="badge badge-yellow">Alta precisão</span>
+          </div>
+        </div>
+        <div class="strategy-body">
+          Quando dois mercados relacionados precificam probabilidades inconsistentes, existe uma arbitragem. O bot detecta a discrepância e entra nos dois lados simultaneamente para capturar o spread sem risco direcional.
+          <br><br>
+          <strong style="color:var(--text)">Exemplo clássico:</strong> Mercado binário: "Biden vence eleição" a $0.40 + "Biden NÃO vence" a $0.55 → soma = $0.95 &lt; $1.00. Bot compra ambos a $0.95, garante recebimento de $1.00 na resolução. Lucro de $0.05 por token, livre de risco.
+          <br><br>
+          <strong style="color:var(--text)">Variante avançada:</strong> Mercados de múltipla escolha onde a soma de todos os outcomes deve ser $1.00. Discrepâncias aparecem quando há pouca liquidez em um dos outcomes. Arbitragistas faturaram $40M+ com isso.
+        </div>
+        <div class="strategy-meta">
+          <div class="meta-item">
+            <div class="meta-label">Risco por trade</div>
+            <div class="meta-value"><span class="tag tag-green">Mínimo</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Frequência</div>
+            <div class="meta-value"><span class="tag tag-yellow">Baixa (oportunístico)</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Capital mínimo</div>
+            <div class="meta-value">$500 USDC</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Complexidade</div>
+            <div class="meta-value"><span class="tag tag-yellow">Média-Alta</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Retorno estimado</div>
+            <div class="meta-value">2–5% por arb</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Gatilho</div>
+            <div class="meta-value">Soma outcomes &lt; $0.98</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estratégia D -->
+      <div class="strategy-card strategy-d">
+        <div class="strategy-header">
+          <div>
+            <div class="strategy-title">📰 Estratégia D — Momentum em Notícias</div>
+          </div>
+          <div class="strategy-badges">
+            <span class="badge badge-orange">Alta recompensa</span>
+            <span class="badge badge-red">Risco elevado</span>
+          </div>
+        </div>
+        <div class="strategy-body">
+          O bot monitora feeds de notícias (RSS, Twitter/X API, NewsAPI) e, ao detectar publicação de notícia relevante para um mercado, entra na direção do momentum esperado antes que o mercado se ajuste completamente.
+          <br><br>
+          <strong style="color:var(--text)">Exemplo:</strong> Pesquisa eleitoral é publicada às 14h03. Bot detecta a notícia via RSS em 2s, interpreta com NLP simples, entra no mercado correspondente a $0.52 antes que outros traders levem para $0.65. Saída automática em 15 min.
+          <br><br>
+          <strong style="color:var(--text)">Fontes de sinal:</strong> Reuters RSS, AP News, Twitter trending, comunicados oficiais (Fed, SEC, etc.). Combinar com embeddings de linguagem para classificar relevância e direção.
+        </div>
+        <div class="strategy-meta">
+          <div class="meta-item">
+            <div class="meta-label">Risco por trade</div>
+            <div class="meta-value"><span class="tag tag-red">Alto</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Frequência</div>
+            <div class="meta-value"><span class="tag tag-cyan">Baixa (event-driven)</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Capital mínimo</div>
+            <div class="meta-value">$300 USDC</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Complexidade</div>
+            <div class="meta-value"><span class="tag tag-red">Muito Alta</span></div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Retorno estimado</div>
+            <div class="meta-value">5–30% por evento</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Gatilho</div>
+            <div class="meta-value">Notícia relevante detectada</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4 — STACK -->
+    <section id="stack">
+      <div class="section-header">
+        <div class="section-icon icon-indigo">🛠️</div>
+        <h2>Stack técnica proposta</h2>
+      </div>
+
+      <h3 style="font-size:1rem; color:var(--yellow); margin-bottom:16px;">Arquitetura do bot</h3>
+
+      <div class="flowchart" style="flex-direction: column; align-items: stretch; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <div class="flow-box" style="border-color: rgba(6,182,212,0.4);">
+            <span class="flow-icon">📡</span>
+            <div style="color:var(--cyan); font-size:0.8rem; font-weight:700;">Data Feed</div>
+            <div class="flow-label">WS + REST<br>Polymarket API</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box" style="border-color: rgba(234,179,8,0.4);">
+            <span class="flow-icon">🧠</span>
+            <div style="color:var(--yellow); font-size:0.8rem; font-weight:700;">Signal Engine</div>
+            <div class="flow-label">Detecta<br>oportunidades</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box" style="border-color: rgba(34,197,94,0.4);">
+            <span class="flow-icon">📋</span>
+            <div style="color:var(--green); font-size:0.8rem; font-weight:700;">Order Manager</div>
+            <div class="flow-label">Cria/cancela<br>ordens</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box" style="border-color: rgba(239,68,68,0.4);">
+            <span class="flow-icon">⚠️</span>
+            <div style="color:var(--red); font-size:0.8rem; font-weight:700;">Risk Manager</div>
+            <div class="flow-label">Limites de<br>perda / posição</div>
+          </div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box" style="border-color: rgba(139,92,246,0.4);">
+            <span class="flow-icon">📊</span>
+            <div style="color:var(--purple); font-size:0.8rem; font-weight:700;">Logger</div>
+            <div class="flow-label">Métricas +<br>alertas TG</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards-grid" style="margin: 24px 0;">
+        <div class="card">
+          <div class="card-title">🐍 Python — Linguagem principal</div>
+          <p><strong style="color:var(--green)">Por quê Python?</strong> O <code>py-clob-client</code> oficial é Python. Ecossistema financeiro rico (pandas, numpy). Prototipagem rápida. Asyncio para concorrência. TypeScript é alternativa mas sem cliente oficial tão maduro.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📦 Bibliotecas essenciais</div>
+          <p>
+            <code>py-clob-client</code> — cliente oficial CLOB<br>
+            <code>web3.py</code> — interações Polygon<br>
+            <code>websockets</code> — streaming em tempo real<br>
+            <code>aiohttp</code> — HTTP assíncrono<br>
+            <code>python-telegram-bot</code> — alertas<br>
+            <code>redis</code> — estado das ordens<br>
+            <code>pandas</code> — análise de dados
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">🖥️ Infraestrutura</div>
+          <p>VPS Linux (esta VPS!). Processo Python rodando 24/7 via <code>systemd</code>. Redis para estado compartilhado. Logs estruturados com <code>loguru</code>. Alertas Telegram para trades executados e erros críticos.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Monitoramento</div>
+          <p>Dashboard de P&amp;L em tempo real. Alertas Telegram quando: ordem executada, stop-loss atingido, erro de API, PnL diário acima/abaixo de thresholds. Backup automático do estado a cada 5 min.</p>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem; color:var(--yellow); margin-bottom:12px;">Estrutura do projeto</h3>
+      <div class="code-wrap">
+        <span class="code-label">bash · estrutura</span>
+        <pre>polymarket-bot/
+├── <span class="c-cls">bot/</span>
+│   ├── <span class="c-var">__init__.py</span>
+│   ├── <span class="c-fn">client.py</span>          <span class="c-cmt"># Wrapper do py-clob-client</span>
+│   ├── <span class="c-fn">data_feed.py</span>       <span class="c-cmt"># WebSocket + REST polling</span>
+│   ├── <span class="c-fn">signal_engine.py</span>   <span class="c-cmt"># Detecção de oportunidades</span>
+│   ├── <span class="c-fn">order_manager.py</span>   <span class="c-cmt"># Criar/cancelar/acompanhar ordens</span>
+│   ├── <span class="c-fn">risk_manager.py</span>    <span class="c-cmt"># Limites de perda e posição</span>
+│   ├── <span class="c-fn">strategies/</span>
+│   │   ├── <span class="c-fn">market_maker.py</span>
+│   │   ├── <span class="c-fn">scalper.py</span>
+│   │   ├── <span class="c-fn">arbitrage.py</span>
+│   │   └── <span class="c-fn">momentum.py</span>
+│   └── <span class="c-fn">notifier.py</span>        <span class="c-cmt"># Alertas Telegram</span>
+├── <span class="c-cls">config/</span>
+│   └── <span class="c-fn">settings.py</span>        <span class="c-cmt"># Parâmetros (spreads, limites, etc.)</span>
+├── <span class="c-cls">data/</span>                  <span class="c-cmt"># Logs e snapshots de estado</span>
+├── <span class="c-fn">main.py</span>                <span class="c-cmt"># Entry point</span>
+├── <span class="c-fn">requirements.txt</span>
+└── <span class="c-fn">polymarket-bot.service</span> <span class="c-cmt"># Arquivo systemd</span></pre>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 5 — FASES -->
+    <section id="phases">
+      <div class="section-header">
+        <div class="section-icon icon-green">🗺️</div>
+        <h2>Plano de implementação — 5 fases</h2>
+      </div>
+
+      <div class="phases">
+        <div class="phase">
+          <div class="phase-num">1</div>
+          <div class="phase-content">
+            <div class="phase-title">Fundação</div>
+            <div class="phase-subtitle">⏱ Estimativa: 1–2 dias</div>
+            <div class="phase-body">Setup completo do ambiente e primeiros dados ao vivo em tela.</div>
+            <ul class="phase-tasks">
+              <li>Criar conta na Polymarket, configurar carteira Polygon (MetaMask ou Magic)</li>
+              <li>Depositar USDC na Polygon (bridge ou compra direta)</li>
+              <li>Instalar <code>py-clob-client</code>: <code>pip install py-clob-client</code></li>
+              <li>Autenticar: criar/derivar API credentials com a chave privada</li>
+              <li>Script de teste: ler order book de um mercado ao vivo</li>
+              <li>Configurar variáveis de ambiente: <code>POLY_PRIVATE_KEY</code>, <code>POLY_FUNDER_ADDRESS</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-num">2</div>
+          <div class="phase-content">
+            <div class="phase-title">Paper Trading</div>
+            <div class="phase-subtitle">⏱ Estimativa: 3–5 dias</div>
+            <div class="phase-body">Simular a estratégia sem dinheiro real — logar todas as decisões e calcular P&amp;L teórico.</div>
+            <ul class="phase-tasks">
+              <li>Implementar modo "dry run" no order_manager (logar ao invés de enviar)</li>
+              <li>Rodar market making simulado por 48h em mercados líquidos</li>
+              <li>Calcular spread capturado, número de fills teóricos, P&amp;L acumulado</li>
+              <li>Identificar os mercados com maior spread × volume (melhores para MM)</li>
+              <li>Ajustar parâmetros: quanto colocar em cada lado, distância do mid</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-num">3</div>
+          <div class="phase-content">
+            <div class="phase-title">Primeira estratégia — Market Making com capital mínimo</div>
+            <div class="phase-subtitle">⏱ Estimativa: 1 semana</div>
+            <div class="phase-body">Ligar o bot com $50–100 USDC em 1 mercado líquido. Validar que a mecânica funciona de ponta a ponta.</div>
+            <ul class="phase-tasks">
+              <li>Escolher 1 mercado: alta liquidez, spread de $0.02–0.05, volume &gt;$5k/dia</li>
+              <li>Ativar market maker com ordens de $5–10 por lado</li>
+              <li>Monitorar manualmente por 24h: fills, P&amp;L, comportamento do bot</li>
+              <li>Implementar stop-loss por mercado ($10 de perda máxima)</li>
+              <li>Configurar alertas Telegram para cada fill executado</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-num">4</div>
+          <div class="phase-content">
+            <div class="phase-title">Automação — Bot 24/7 na VPS</div>
+            <div class="phase-subtitle">⏱ Estimativa: 2–3 dias</div>
+            <div class="phase-body">Transformar o bot em serviço que roda sem intervenção manual.</div>
+            <ul class="phase-tasks">
+              <li>Criar <code>polymarket-bot.service</code> (systemd) com restart automático</li>
+              <li>Logs estruturados com rotação automática</li>
+              <li>Alertas Telegram: startup, shutdown, erros críticos, P&amp;L diário</li>
+              <li>Dashboard simples de métricas (HTML estático atualizado a cada hora)</li>
+              <li>Script de backup de estado e configurações</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-num">5</div>
+          <div class="phase-content">
+            <div class="phase-title">Escalar — Múltiplos mercados e estratégias</div>
+            <div class="phase-subtitle">⏱ Estimativa: contínuo</div>
+            <div class="phase-body">Expandir para múltiplos mercados e adicionar estratégias mais sofisticadas.</div>
+            <ul class="phase-tasks">
+              <li>Market making simultâneo em 5–10 mercados (seleção automática por oportunidade)</li>
+              <li>Adicionar detector de arbitragem entre mercados correlacionados</li>
+              <li>Integrar feed de notícias (Reuters RSS) para momentum trading</li>
+              <li>Risk manager avançado: limite global de exposição, correlação entre mercados</li>
+              <li>Backtesting em dados históricos do Polymarket (disponíveis via API)</li>
+              <li>Reinvestir lucros automaticamente para aumentar tamanho das ordens</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 6 — RISCOS -->
+    <section id="risks">
+      <div class="section-header">
+        <div class="section-icon icon-red">⚠️</div>
+        <h2>Riscos e mitigações</h2>
+      </div>
+
+      <div class="warning-box" style="margin-bottom:24px;">
+        <h3>🚨 Aviso importante</h3>
+        <p>Trading em prediction markets envolve perda real de capital. Começar com capital mínimo ($50–100 USDC) e apenas escalar após validação completa. Nunca colocar mais do que está disposto a perder 100%.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Risco</th>
+              <th>Probabilidade</th>
+              <th>Impacto</th>
+              <th>Mitigação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Resolução incorreta de mercado</strong><br><span style="font-size:0.8rem; color:var(--muted)">Oráculo ou moderação decide errado</span></td>
+              <td><span class="tag tag-orange">Baixa</span></td>
+              <td><span class="tag tag-red">Alto</span></td>
+              <td>Nunca concentrar capital em 1 único mercado. Diversificar posições. Checar histórico do oráculo UMA.</td>
+            </tr>
+            <tr>
+              <td><strong>Risco de liquidez</strong><br><span style="font-size:0.8rem; color:var(--muted)">Não conseguir fechar posição a preço razoável</span></td>
+              <td><span class="tag tag-yellow">Média</span></td>
+              <td><span class="tag tag-orange">Médio</span></td>
+              <td>Operar apenas em mercados com volume &gt;$5k/dia. Não colocar ordens grandes em books finos.</td>
+            </tr>
+            <tr>
+              <td><strong>Bug no bot</strong><br><span style="font-size:0.8rem; color:var(--muted)">Ordem errada, loop infinito, crash</span></td>
+              <td><span class="tag tag-yellow">Média</span></td>
+              <td><span class="tag tag-red">Alto</span></td>
+              <td>Paper trading obrigatório. Limites por ordem e diários. Stop-loss automático. Monitoramento 24/7 via Telegram.</td>
+            </tr>
+            <tr>
+              <td><strong>Geoblocking / Regulatório</strong><br><span style="font-size:0.8rem; color:var(--muted)">Polymarket bloqueia certas regiões (EUA)</span></td>
+              <td><span class="tag tag-green">Baixa</span></td>
+              <td><span class="tag tag-yellow">Médio</span></td>
+              <td>Verificar termos de serviço. VPS fora de jurisdições bloqueadas. Brasil não está na lista de bloqueio atual.</td>
+            </tr>
+            <tr>
+              <td><strong>Smart contract exploit</strong><br><span style="font-size:0.8rem; color:var(--muted)">Vulnerabilidade nos contratos da Polygon</span></td>
+              <td><span class="tag tag-green">Muito baixa</span></td>
+              <td><span class="tag tag-red">Crítico</span></td>
+              <td>Não manter grandes saldos na plataforma. Sacar lucros regularmente. Polymarket usa contratos auditados.</td>
+            </tr>
+            <tr>
+              <td><strong>Gas fees Polygon</strong><br><span style="font-size:0.8rem; color:var(--muted)">MATIC necessário para transações on-chain</span></td>
+              <td><span class="tag tag-green">Muito baixa</span></td>
+              <td><span class="tag tag-green">Baixo</span></td>
+              <td>Polygon tem fees &lt;$0.01 por tx. Manter ~$5 MATIC na carteira. Polymarket usa gasless signatures na maioria dos casos.</td>
+            </tr>
+            <tr>
+              <td><strong>Concorrência de bots profissionais</strong><br><span style="font-size:0.8rem; color:var(--muted)">Algoritmos com mais capital e latência</span></td>
+              <td><span class="tag tag-red">Alta</span></td>
+              <td><span class="tag tag-orange">Médio</span></td>
+              <td>Focar em mercados menores e de nicho. Não competir head-to-head em mercados mega líquidos. Diversificar estratégias.</td>
+            </tr>
+            <tr>
+              <td><strong>Dependência da API Polymarket</strong><br><span style="font-size:0.8rem; color:var(--muted)">Downtime, rate limiting, mudanças de API</span></td>
+              <td><span class="tag tag-yellow">Média</span></td>
+              <td><span class="tag tag-yellow">Médio</span></td>
+              <td>Circuit breaker: parar o bot em falhas de API. Retry com exponential backoff. Cancelar todas as ordens abertas em caso de disconnection.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 7 — PRÓXIMOS PASSOS -->
+    <section id="next-steps">
+      <div class="section-header">
+        <div class="section-icon icon-purple">✅</div>
+        <h2>Próximos passos concretos</h2>
+      </div>
+
+      <div class="success-box">
+        <h3>🚀 Comece hoje — capital mínimo recomendado: $50–100 USDC</h3>
+        <p>Não é necessário muito capital para validar a estratégia. O objetivo das primeiras semanas é aprender a mecânica, não lucrar. Com $50 USDC já é possível rodar market making e entender como o sistema funciona na prática.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Criar conta e configurar carteira Polygon</h4>
+            <p>Acessar <code>polymarket.com</code>, criar conta (email Magic ou MetaMask). Configurar rede Polygon no MetaMask (Chain ID 137, RPC: <code>https://polygon-rpc.com</code>). Comprar MATIC e USDC na Polygon (via Binance → Polygon ou bridge).</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Instalar <code>py-clob-client</code> e autenticar</h4>
+            <p><code>pip install py-clob-client web3 python-dotenv</code>. Criar <code>.env</code> com <code>POLY_PRIVATE_KEY</code> e <code>POLY_FUNDER_ADDRESS</code>. Rodar script de autenticação e salvar as API credentials (key, secret, passphrase).</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Ler order book de um mercado ao vivo</h4>
+            <p>Usar o snippet Python desta página para conectar ao CLOB API e imprimir bid/ask em tempo real. Explorar a Gamma API para listar os mercados com maior volume do dia. Identificar 3–5 candidatos para market making.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Simular primeira ordem (paper trading)</h4>
+            <p>Implementar modo dry run: logar "WOULD BUY X at $Y" sem enviar de fato. Rodar 24h e calcular P&amp;L teórico. Se positivo, partir para capital real.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Definir estratégia inicial e capital de teste ($50–100 USDC)</h4>
+            <p>Começar com market making em 1 mercado. Ordens de $5 por lado. Stop-loss de $10 total. Monitorar por 1 semana e ajustar parâmetros baseado nos resultados reais.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>Criar repositório e estrutura do projeto</h4>
+            <p>Criar repo <code>andreclawdbot/polymarket-trading-bot</code>. Estrutura de pastas conforme diagrama acima. Setup de CI com testes básicos. README documentando configuração e uso.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Referências Open Source -->
+      <div style="margin-top: 40px;">
+        <h3 style="font-size: 1.1rem; color: var(--yellow); margin-bottom: 16px;">📚 Referências e projetos open source</h3>
+        <div class="cards-grid">
+          <div class="card" style="border-color: rgba(234,179,8,0.2);">
+            <div class="card-title">🐍 Polymarket/py-clob-client</div>
+            <p>Cliente Python oficial para o CLOB API. Instalação simples, exemplos completos no README, suporte a orders, book reading e WebSocket via extensões da comunidade.</p>
+            <div style="margin-top:12px;"><code>pip install py-clob-client</code></div>
+          </div>
+          <div class="card" style="border-color: rgba(34,197,94,0.2);">
+            <div class="card-title">🤖 warproxxx/poly-maker</div>
+            <p>Bot de market making produção-ready com parâmetros configuráveis via Google Sheets. Implementa cancel/replace cycle, inventory management e merger de posições.</p>
+          </div>
+          <div class="card" style="border-color: rgba(99,102,241,0.2);">
+            <div class="card-title">🧠 Polymarket/agents</div>
+            <p>Framework oficial para agentes de IA no Polymarket. Combina LLM (GPT-4) com a API CLOB para tomar decisões de trading baseadas em linguagem natural e notícias.</p>
+          </div>
+          <div class="card" style="border-color: rgba(6,182,212,0.2);">
+            <div class="card-title">⚡ Trust412/Polymarket-spike-bot</div>
+            <p>Bot de alta frequência focado em detecção de spikes de preço. Python + Web3 + threading avançado. Bom para aprender padrões de monitoramento em tempo real.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    by <strong style="color:var(--yellow)">Johnny Juvenil</strong> 🫡 •
+    <a href="https://github.com/AndreClawdTeam/andreclawdbot-playground" target="_blank">andreclawdbot-playground</a> •
+    Pesquisa de Fev/2026
+  </footer>
+
+</body>
+</html>
