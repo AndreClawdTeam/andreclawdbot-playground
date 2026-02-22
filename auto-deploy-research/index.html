@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚀 Auto Deploy na VPS — Pesquisa Completa</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #09090b;
+      --bg2:      #111113;
+      --bg3:      #18181b;
+      --bg4:      #27272a;
+      --border:   #3f3f46;
+      --text:     #fafafa;
+      --muted:    #a1a1aa;
+      --accent:   #6366f1;
+      --accent2:  #8b5cf6;
+      --green:    #22c55e;
+      --yellow:   #eab308;
+      --red:      #ef4444;
+      --orange:   #f97316;
+      --cyan:     #06b6d4;
+      --blue:     #3b82f6;
+      --pink:     #ec4899;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 80px 24px 60px;
+      text-align: center;
+      background: linear-gradient(135deg, #09090b 0%, #0a1a12 50%, #09090b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34,197,94,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,197,94,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    .header-content { position: relative; z-index: 1; }
+
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #86efac 0%, #22c55e 50%, #4ade80 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInDown 0.8s ease both;
+    }
+
+    header p.subtitle {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      animation: fadeInDown 0.8s 0.2s ease both;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      animation: fadeInDown 0.8s 0.4s ease both;
+    }
+
+    .badge {
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid;
+    }
+
+    .badge-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35);  color: #86efac; }
+    .badge-indigo { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+    .badge-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.35);  color: #fde047; }
+    .badge-cyan   { background: rgba(6,182,212,0.12);  border-color: rgba(6,182,212,0.35);  color: #67e8f9; }
+    .badge-orange { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.35); color: #fdba74; }
+    .badge-red    { background: rgba(239,68,68,0.12);  border-color: rgba(239,68,68,0.35);  color: #fca5a5; }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9,9,11,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      overflow-x: auto;
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 2px;
+      max-width: 1200px;
+      margin: 0 auto;
+      white-space: nowrap;
+    }
+
+    nav a {
+      display: inline-block;
+      padding: 14px 14px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    nav a:hover { color: var(--text); border-color: var(--green); }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+    }
+
+    /* ── SECTION ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .icon-green  { background: rgba(34,197,94,0.2); }
+    .icon-indigo { background: rgba(99,102,241,0.2); }
+    .icon-yellow { background: rgba(234,179,8,0.2); }
+    .icon-cyan   { background: rgba(6,182,212,0.2); }
+    .icon-orange { background: rgba(249,115,22,0.2); }
+    .icon-red    { background: rgba(239,68,68,0.2); }
+    .icon-blue   { background: rgba(59,130,246,0.2); }
+    .icon-purple { background: rgba(139,92,246,0.2); }
+
+    .section-header h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      border-color: var(--green);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(34,197,94,0.1);
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--bg4);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th:first-child { border-radius: 10px 0 0 0; }
+    th:last-child  { border-radius: 0 10px 0 0; }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    tr:hover td { background: var(--bg4); color: var(--text); }
+
+    tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+    tr:last-child td:last-child  { border-radius: 0 0 10px 0; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .tag-green  { background: rgba(34,197,94,0.15);  color: #86efac; }
+    .tag-yellow { background: rgba(234,179,8,0.15);  color: #fde047; }
+    .tag-red    { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .tag-indigo { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .tag-cyan   { background: rgba(6,182,212,0.15);  color: #67e8f9; }
+    .tag-orange { background: rgba(249,115,22,0.15); color: #fdba74; }
+
+    /* ── BOXES ── */
+    .warning-box {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .warning-box h3 { color: var(--red); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .warning-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .info-box {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .info-box h3 { color: var(--accent); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .info-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .success-box {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .success-box h3 { color: var(--green); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .success-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .yellow-box {
+      background: rgba(234,179,8,0.08);
+      border: 1px solid rgba(234,179,8,0.3);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .yellow-box h3 { color: var(--yellow); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .yellow-box p  { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── CODE BLOCKS ── */
+    .code-wrap { position: relative; margin: 16px 0; }
+
+    .code-label {
+      display: inline-block;
+      padding: 4px 12px;
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    pre {
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 0 12px 12px 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    pre.no-label { border-radius: 12px; }
+
+    code {
+      background: var(--bg4);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #86efac;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    /* syntax colors */
+    .kw   { color: #c084fc; }   /* keyword — purple */
+    .fn   { color: #67e8f9; }   /* function — cyan */
+    .str  { color: #86efac; }   /* string — green */
+    .cm   { color: #52525b; }   /* comment — gray */
+    .num  { color: #fde047; }   /* number — yellow */
+    .var  { color: #fca5a5; }   /* variable — red */
+
+    /* ── OPTION BLOCKS ── */
+    .option-block {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .option-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .option-id {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .option-letter {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .letter-a { background: rgba(99,102,241,0.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+    .letter-b { background: rgba(6,182,212,0.2);  color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+    .letter-c { background: rgba(249,115,22,0.2); color: #fdba74; border: 1px solid rgba(249,115,22,0.3); }
+    .letter-d { background: rgba(34,197,94,0.2);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .letter-e { background: rgba(234,179,8,0.2);  color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
+
+    .option-title { font-size: 1.3rem; font-weight: 700; }
+    .option-subtitle { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+
+    .ratings-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .rating-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .rp-green  { background: rgba(34,197,94,0.12); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+    .rp-yellow { background: rgba(234,179,8,0.12); color: #fde047; border: 1px solid rgba(234,179,8,0.3); }
+    .rp-red    { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .rp-cyan   { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+
+    /* ── PROS/CONS ── */
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 640px) { .pros-cons { grid-template-columns: 1fr; } }
+
+    .pros, .cons {
+      background: var(--bg4);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .pros { border-left: 3px solid var(--green); }
+    .cons { border-left: 3px solid var(--red); }
+
+    .pros h4, .cons h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .pros h4 { color: var(--green); }
+    .cons h4 { color: var(--red); }
+
+    .pros ul, .cons ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pros li, .cons li {
+      font-size: 0.87rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .pros li::before { content: '✓'; color: var(--green); flex-shrink: 0; font-weight: 700; }
+    .cons li::before { content: '✗'; color: var(--red);   flex-shrink: 0; font-weight: 700; }
+
+    /* ── ASCII DIAGRAM ── */
+    .arch-ascii {
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: #86efac;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    /* ── STEP LIST ── */
+    .step-list { counter-reset: steps; display: flex; flex-direction: column; gap: 16px; }
+
+    .step { counter-increment: steps; display: flex; gap: 16px; align-items: flex-start; }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.2);
+      border: 1px solid rgba(34,197,94,0.4);
+      color: var(--green);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .step-content p  { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    /* ── RECOMMENDATION ── */
+    .rec-block {
+      background: linear-gradient(135deg, rgba(34,197,94,0.06) 0%, rgba(6,182,212,0.04) 100%);
+      border: 2px solid rgba(34,197,94,0.3);
+      border-radius: 20px;
+      padding: 40px;
+    }
+
+    .rec-block h3 { font-size: 1.2rem; font-weight: 700; color: var(--green); margin-bottom: 16px; }
+
+    /* ── STAT ROW ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #86efac, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── MISC ── */
+    .text-green  { color: var(--green); }
+    .text-yellow { color: var(--yellow); }
+    .text-red    { color: var(--red); }
+    .text-cyan   { color: var(--cyan); }
+    .text-accent { color: var(--accent); }
+    .text-muted  { color: var(--muted); }
+    .fw700       { font-weight: 700; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    .inline-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary   { background: var(--green); color: #000; }
+    .btn-secondary { background: var(--bg4); color: var(--text); border: 1px solid var(--border); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* Scroll animation */
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .animate-on-scroll.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    ul.styled { padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.8; }
+    ul.styled li { margin-bottom: 4px; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    footer span { color: var(--green); }
+    footer a { color: var(--green); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header>
+  <div class="header-grid"></div>
+  <div class="header-glow"></div>
+  <div class="header-content">
+    <h1>🚀 Auto Deploy na VPS</h1>
+    <p class="subtitle">Comparativo completo de estratégias de deploy automático por push na main — para projetos mistos na DigitalOcean</p>
+    <div class="header-badges">
+      <span class="badge badge-green">5 Opções Analisadas</span>
+      <span class="badge badge-indigo">DigitalOcean Ubuntu 24.04</span>
+      <span class="badge badge-cyan">Node.js · Next.js · Python · HTML</span>
+      <span class="badge badge-yellow">GitHub como host</span>
+      <span class="badge badge-orange">Fevereiro 2026</span>
+    </div>
+    <div class="inline-links" style="justify-content:center;margin-top:24px;">
+      <a href="../" class="btn btn-secondary">← Playground</a>
+      <a href="https://github.com/andreclawdbot/andreclawdbot-playground" target="_blank" class="btn btn-secondary">💻 GitHub</a>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#contexto">Contexto</a>
+    <a href="#comparativo">Comparativo</a>
+    <a href="#opcao-a">Opção A</a>
+    <a href="#opcao-b">Opção B</a>
+    <a href="#opcao-c">Opção C</a>
+    <a href="#opcao-d">Opção D</a>
+    <a href="#opcao-e">Opção E</a>
+    <a href="#recomendacao">Recomendação</a>
+    <a href="#deploy-sh">deploy.sh</a>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<main>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 1 — CONTEXTO
+═══════════════════════════════════════════════════════ -->
+<section id="contexto" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">🎯</div>
+    <h2>O Problema</h2>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Projetos na VPS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Stacks diferentes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Auto-deploys hoje</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Opções avaliadas</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <h3>📍 Infraestrutura atual</h3>
+    <p>
+      VPS DigitalOcean — Ubuntu 24.04 — IP <code>138.197.19.184</code><br/>
+      Código hospedado no GitHub (não self-hosted)<br/>
+      Projetos gerenciados por systemd services<br/>
+      Deploy manual hoje: SSH + comandos manuais por projeto
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Projeto</th>
+          <th>Stack</th>
+          <th>Serviço systemd</th>
+          <th>Comando de deploy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw700">andreclawdbot-playground</td>
+          <td><span class="tag tag-cyan">HTML Estático</span></td>
+          <td><code>playground.service</code></td>
+          <td><code>git pull && systemctl restart playground</code></td>
+        </tr>
+        <tr>
+          <td class="fw700">voxa-api</td>
+          <td><span class="tag tag-green">Node.js</span></td>
+          <td><code>voxa-api.service</code></td>
+          <td><code>git pull && npm ci && systemctl restart voxa-api</code></td>
+        </tr>
+        <tr>
+          <td class="fw700">voxa-web</td>
+          <td><span class="tag tag-indigo">Next.js</span></td>
+          <td><code>voxa-web.service</code></td>
+          <td><code>git pull && npm ci && npm run build && systemctl restart voxa-web</code></td>
+        </tr>
+        <tr>
+          <td class="fw700">voxa-logs</td>
+          <td><span class="tag tag-green">Node.js</span></td>
+          <td><code>voxa-logs.service</code></td>
+          <td><code>git pull && npm ci && systemctl restart voxa-logs</code></td>
+        </tr>
+        <tr>
+          <td class="fw700">trading-bot</td>
+          <td><span class="tag tag-yellow">Python</span></td>
+          <td><code>trading-bot.service</code></td>
+          <td><code>git pull && pip install -r requirements.txt && systemctl restart trading-bot</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:24px;" class="cards-grid">
+    <div class="card">
+      <div class="card-title">❓ O que queremos</div>
+      <p>Ao fazer <code>git push</code> na branch principal de qualquer projeto, o deploy na VPS deve acontecer <strong>automaticamente</strong>, sem intervenção manual.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ Complicação</div>
+      <p>Cada projeto tem um comando de deploy diferente. Uma solução única precisa ser <strong>genérica o suficiente</strong> para lidar com HTML, Node.js, Next.js e Python.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔒 Restrições</div>
+      <p>A VPS tem serviços críticos rodando (PostgreSQL, trading-bot). Qualquer solução <strong>não pode derrubar serviços não relacionados</strong> ao deploy em curso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SEÇÃO 2 — COMPARATIVO RÁPIDO
+═══════════════════════════════════════════════════════ -->
+<section id="comparativo" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">⚡</div>
+    <h2>Comparativo Rápido</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Opção</th>
+          <th>Abordagem</th>
+          <th>Complexidade</th>
+          <th>Robustez</th>
+          <th>Latência deploy</th>
+          <th>Segurança</th>
+          <th>Projetos mistos</th>
+          <th>Custo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw700" style="color:#a5b4fc;">A — Webhook + Script</td>
+          <td>Endpoint HTTP na VPS recebe push event</td>
+          <td><span class="tag tag-yellow">Médio (3/5)</span></td>
+          <td><span class="tag tag-yellow">Boa (4/5)</span></td>
+          <td><span class="tag tag-green">&lt; 5s</span></td>
+          <td><span class="tag tag-yellow">Médio</span></td>
+          <td><span class="tag tag-green">✓ Excelente</span></td>
+          <td><span class="tag tag-green">Grátis</span></td>
+        </tr>
+        <tr>
+          <td class="fw700" style="color:#67e8f9;">B — Cron Polling</td>
+          <td>Cron faz git fetch periodicamente</td>
+          <td><span class="tag tag-green">Fácil (2/5)</span></td>
+          <td><span class="tag tag-yellow">Boa (3/5)</span></td>
+          <td><span class="tag tag-yellow">1–5 min</span></td>
+          <td><span class="tag tag-green">Alto</span></td>
+          <td><span class="tag tag-green">✓ Excelente</span></td>
+          <td><span class="tag tag-green">Grátis</span></td>
+        </tr>
+        <tr>
+          <td class="fw700" style="color:#fdba74;">C — GH Actions SSH</td>
+          <td>CI/CD conecta via SSH na VPS</td>
+          <td><span class="tag tag-yellow">Médio (3/5)</span></td>
+          <td><span class="tag tag-green">Muito boa (5/5)</span></td>
+          <td><span class="tag tag-green">&lt; 30s</span></td>
+          <td><span class="tag tag-yellow">Médio</span></td>
+          <td><span class="tag tag-green">✓ Excelente</span></td>
+          <td><span class="tag tag-green">Grátis*</span></td>
+        </tr>
+        <tr>
+          <td class="fw700" style="color:#86efac;">D — adnanh/webhook</td>
+          <td>Binary Go dedicado p/ webhooks</td>
+          <td><span class="tag tag-yellow">Médio (3/5)</span></td>
+          <td><span class="tag tag-green">Muito boa (5/5)</span></td>
+          <td><span class="tag tag-green">&lt; 5s</span></td>
+          <td><span class="tag tag-green">Alto</span></td>
+          <td><span class="tag tag-green">✓ Excelente</span></td>
+          <td><span class="tag tag-green">Grátis</span></td>
+        </tr>
+        <tr>
+          <td class="fw700" style="color:#fde047;">E — Self-hosted Runner</td>
+          <td>Runner GitHub Actions na VPS</td>
+          <td><span class="tag tag-red">Alto (4/5)</span></td>
+          <td><span class="tag tag-green">Muito boa (5/5)</span></td>
+          <td><span class="tag tag-yellow">1–2 min</span></td>
+          <td><span class="tag tag-yellow">Médio</span></td>
+          <td><span class="tag tag-green">✓ Excelente</span></td>
+          <td><span class="tag tag-yellow">Grátis*</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-muted" style="font-size:0.82rem;margin-top:12px;">* GitHub Actions é gratuito para repositórios públicos. Para repos privados: 2.000 min/mês grátis no plano Free. Self-hosted runners a partir de março/2026 têm taxa de plataforma em alguns planos.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPÇÃO A — GitHub Webhooks + Script
+═══════════════════════════════════════════════════════ -->
+<section id="opcao-a" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-indigo">A</div>
+    <h2>Opção A — GitHub Webhooks + Script na VPS</h2>
+  </div>
+
+  <div class="option-block">
+    <div class="option-header">
+      <div class="option-id">
+        <div class="option-letter letter-a">A</div>
+        <div>
+          <div class="option-title">GitHub Webhooks + Script</div>
+          <div class="option-subtitle">Endpoint HTTP na VPS recebe o evento de push do GitHub e executa o deploy</div>
+          <div class="ratings-row">
+            <span class="rating-pill rp-yellow">⚙️ Complexidade: 3/5</span>
+            <span class="rating-pill rp-cyan">🛡️ Robustez: 4/5</span>
+            <span class="rating-pill rp-green">⚡ Latência: &lt;5s</span>
+            <span class="rating-pill rp-yellow">🔒 Segurança: Média</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">Como funciona</h3>
+
+    <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#86efac;">
+  Desenvolvedor                  GitHub                      VPS
+       │                            │                          │
+       │──── git push ──────────────►                          │
+       │                            │                          │
+       │                            │──── POST /webhook ──────►│
+       │                            │   (X-Hub-Signature-256)  │
+       │                            │                          │ valida HMAC
+       │                            │                          │ identifica repo
+       │                            │                          │──── executa deploy.sh
+       │                            │                          │      git pull
+       │                            │                          │      npm ci / pip install
+       │                            │                          │      systemctl restart
+       │                            │                          │
+       │                            │◄─── 200 OK ─────────────│
+</pre>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;margin-top:20px;">Setup — servidor webhook simples em Node.js</h3>
+    <div class="code-wrap">
+      <span class="code-label">webhook-server.js</span>
+      <pre><span class="cm">// Servidor webhook simples — Node.js puro, sem dependências externas</span>
+<span class="kw">const</span> http = <span class="fn">require</span>(<span class="str">'http'</span>);
+<span class="kw">const</span> crypto = <span class="fn">require</span>(<span class="str">'crypto'</span>);
+<span class="kw">const</span> { execSync } = <span class="fn">require</span>(<span class="str">'child_process'</span>);
+
+<span class="kw">const</span> SECRET = process.env.<span class="var">WEBHOOK_SECRET</span>;  <span class="cm">// mesmo secret configurado no GitHub</span>
+<span class="kw">const</span> PORT = <span class="num">9000</span>;
+
+<span class="kw">const</span> DEPLOY_MAP = {
+  <span class="str">'andreclawdbot-playground'</span>: <span class="str">'/home/clawdbot/.openclaw/workspace/coding/andreclawdbot-playground'</span>,
+  <span class="str">'voxa-api'</span>:                 <span class="str">'/home/clawdbot/.openclaw/workspace/coding/voxa-api'</span>,
+  <span class="str">'voxa-web'</span>:                 <span class="str">'/home/clawdbot/.openclaw/workspace/coding/voxa-web'</span>,
+  <span class="str">'trading-bot'</span>:              <span class="str">'/home/clawdbot/.openclaw/workspace/coding/trading-bot'</span>,
+};
+
+http.<span class="fn">createServer</span>((req, res) => {
+  <span class="kw">if</span> (req.method !== <span class="str">'POST'</span>) { res.<span class="fn">end</span>(); <span class="kw">return</span>; }
+
+  <span class="kw">let</span> body = <span class="str">''</span>;
+  req.<span class="fn">on</span>(<span class="str">'data'</span>, chunk => body += chunk);
+  req.<span class="fn">on</span>(<span class="str">'end'</span>, () => {
+    <span class="cm">// Verificar assinatura HMAC</span>
+    <span class="kw">const</span> sig = <span class="str">'sha256='</span> + crypto.<span class="fn">createHmac</span>(<span class="str">'sha256'</span>, SECRET)
+      .<span class="fn">update</span>(body).<span class="fn">digest</span>(<span class="str">'hex'</span>);
+    <span class="kw">if</span> (req.headers[<span class="str">'x-hub-signature-256'</span>] !== sig) {
+      res.statusCode = <span class="num">401</span>; res.<span class="fn">end</span>(<span class="str">'Unauthorized'</span>); <span class="kw">return</span>;
+    }
+
+    <span class="kw">const</span> payload = JSON.<span class="fn">parse</span>(body);
+    <span class="kw">const</span> repo = payload?.repository?.name;
+    <span class="kw">const</span> branch = payload?.ref?.replace(<span class="str">'refs/heads/'</span>, <span class="str">''</span>);
+
+    <span class="kw">if</span> (branch !== <span class="str">'main'</span> &amp;&amp; branch !== <span class="str">'master'</span>) { res.<span class="fn">end</span>(); <span class="kw">return</span>; }
+
+    <span class="kw">const</span> dir = DEPLOY_MAP[repo];
+    <span class="kw">if</span> (!dir) { res.statusCode = <span class="num">404</span>; res.<span class="fn">end</span>(); <span class="kw">return</span>; }
+
+    res.statusCode = <span class="num">200</span>; res.<span class="fn">end</span>(<span class="str">'Deploying...'</span>);
+
+    <span class="cm">// Deploy em background (não bloqueia o servidor)</span>
+    <span class="fn">setImmediate</span>(() => {
+      <span class="kw">try</span> {
+        <span class="fn">execSync</span>(`bash ${dir}/deploy.sh`, { cwd: dir, stdio: <span class="str">'inherit'</span> });
+      } <span class="kw">catch</span> (e) { console.error(<span class="str">'Deploy failed:'</span>, e.message); }
+    });
+  });
+}).<span class="fn">listen</span>(PORT, () => console.log(<span class="str">`Webhook server on :${PORT}`</span>));</pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">GitHub Settings → Webhooks</span>
+      <pre><span class="cm">• Payload URL:    http://138.197.19.184:9000/</span>
+<span class="cm">• Content type:   application/json</span>
+<span class="cm">• Secret:         (string aleatória, ex: openssl rand -hex 32)</span>
+<span class="cm">• Which events:   Just the push event</span>
+<span class="cm">• Active:         ✓</span></pre>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✓ Prós</h4>
+        <ul>
+          <li>Deploy quase instantâneo (&lt;5s após push)</li>
+          <li>Sem dependências externas — Node.js puro</li>
+          <li>Controle total sobre o processo de deploy</li>
+          <li>Verificação de assinatura HMAC nativa do GitHub</li>
+          <li>Fácil de adaptar para projetos mistos via deploy.sh</li>
+          <li>Log completo do que aconteceu</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Contras</h4>
+        <ul>
+          <li>A VPS precisa ter uma porta aberta (9000) para o GitHub</li>
+          <li>Não há retry automático se o servidor estiver down</li>
+          <li>Precisa de um servidor HTTP adicional rodando</li>
+          <li>Deploy falho não tem UI visual — precisa de logs</li>
+          <li>Se o webhook cair, não há mecanismo de fallback</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="yellow-box" style="margin-top:20px;">
+      <h3>⚠️ Quando usar</h3>
+      <p>
+        Bom quando você quer controle total, latência mínima e não quer depender de serviços externos.
+        Ideal se você já tem Node.js disponível na VPS e quer algo simples sem ferramentas extras.
+        <strong>Não recomendado se a VPS pode ficar indisponível frequentemente</strong> — os push events do GitHub têm um timeout curto.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPÇÃO B — Cron Polling
+═══════════════════════════════════════════════════════ -->
+<section id="opcao-b" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">B</div>
+    <h2>Opção B — Polling via Cron (git fetch + diff)</h2>
+  </div>
+
+  <div class="option-block">
+    <div class="option-header">
+      <div class="option-id">
+        <div class="option-letter letter-b">B</div>
+        <div>
+          <div class="option-title">Cron Polling</div>
+          <div class="option-subtitle">Um cron job periódico detecta mudanças no repo remoto e faz o deploy</div>
+          <div class="ratings-row">
+            <span class="rating-pill rp-green">⚙️ Complexidade: 2/5</span>
+            <span class="rating-pill rp-yellow">🛡️ Robustez: 3/5</span>
+            <span class="rating-pill rp-yellow">⚡ Latência: 1-5 min</span>
+            <span class="rating-pill rp-green">🔒 Segurança: Alta</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">Como funciona</h3>
+
+    <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#67e8f9;">
+  VPS (cron, a cada 2 min)
+       │
+       │──── git fetch origin main ──► GitHub API
+       │
+       │     Diferença?
+       │     ├── NÃO → nada a fazer, aguarda próximo ciclo
+       │     └── SIM → executar deploy.sh
+       │                   git pull
+       │                   (npm ci / pip install / build)
+       │                   systemctl restart &lt;service&gt;
+       │
+  (repete a cada 2 min)
+</pre>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;margin-top:20px;">Setup — script de polling</h3>
+    <div class="code-wrap">
+      <span class="code-label">poll-deploy.sh</span>
+      <pre><span class="cm">#!/bin/bash</span>
+<span class="cm"># Executado pelo cron a cada 2 minutos</span>
+<span class="cm"># Detecta mudanças no remoto e faz deploy se houver</span>
+
+PROJECTS=(
+  <span class="str">"/home/clawdbot/.openclaw/workspace/coding/andreclawdbot-playground:master"</span>
+  <span class="str">"/home/clawdbot/.openclaw/workspace/coding/voxa-api:main"</span>
+  <span class="str">"/home/clawdbot/.openclaw/workspace/coding/voxa-web:main"</span>
+  <span class="str">"/home/clawdbot/.openclaw/workspace/coding/trading-bot:main"</span>
+)
+
+<span class="kw">for</span> entry <span class="kw">in</span> <span class="str">"${PROJECTS[@]}"</span>; do
+  DIR=<span class="var">${entry%%:*}</span>
+  BRANCH=<span class="var">${entry##*:}</span>
+
+  <span class="kw">cd</span> <span class="str">"$DIR"</span> || <span class="kw">continue</span>
+
+  <span class="cm"># Buscar estado remoto sem fazer merge</span>
+  git fetch origin <span class="var">"$BRANCH"</span> --quiet 2>/dev/null
+
+  LOCAL=<span class="var">$(git rev-parse HEAD)</span>
+  REMOTE=<span class="var">$(git rev-parse origin/"$BRANCH")</span>
+
+  <span class="kw">if</span> [ <span class="str">"$LOCAL"</span> != <span class="str">"$REMOTE"</span> ]; then
+    <span class="fn">echo</span> <span class="str">"[$(date)] Mudança detectada em $DIR — iniciando deploy..."</span>
+    bash <span class="str">"$DIR/deploy.sh"</span> >> <span class="str">"/var/log/deploy-$(basename $DIR).log"</span> 2>&1
+  fi
+<span class="kw">done</span></pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">crontab -e</span>
+      <pre><span class="cm"># Rodar poll-deploy.sh a cada 2 minutos</span>
+*/2 * * * * /home/clawdbot/scripts/poll-deploy.sh</pre>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✓ Prós</h4>
+        <ul>
+          <li>Mais simples de implementar — só um script bash + cron</li>
+          <li>Não expõe nenhuma porta nova na VPS</li>
+          <li>Funciona mesmo se o GitHub estiver temporariamente lento</li>
+          <li>Se a VPS ficou offline, o próximo cron detecta as mudanças</li>
+          <li>Zero ferramentas extras — bash puro</li>
+          <li>Seguro: a VPS é quem busca o código (push model invertido)</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Contras</h4>
+        <ul>
+          <li>Latência: deploy pode demorar até 5 minutos para disparar</li>
+          <li>Usa requests contínuos à API do GitHub (rate limits)</li>
+          <li>Se vários repos mudaram ao mesmo tempo, deploys em série</li>
+          <li>Sem webhook = sem retry real — falha silenciosa</li>
+          <li>Polling é "wasteful" — verifica mesmo quando não há mudanças</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="yellow-box" style="margin-top:20px;">
+      <h3>⚠️ Quando usar</h3>
+      <p>
+        Melhor opção quando a <strong>simplicidade é prioridade absoluta</strong> e a latência de alguns minutos é aceitável.
+        Excelente como <strong>fallback ou complemento</strong> de outra solução. Também funciona bem em ambientes
+        onde abrir portas adicionais é problemático ou o firewall é restrito.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPÇÃO C — GitHub Actions com SSH Deploy
+═══════════════════════════════════════════════════════ -->
+<section id="opcao-c" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-orange">C</div>
+    <h2>Opção C — GitHub Actions com SSH Deploy</h2>
+  </div>
+
+  <div class="option-block">
+    <div class="option-header">
+      <div class="option-id">
+        <div class="option-letter letter-c">C</div>
+        <div>
+          <div class="option-title">GitHub Actions SSH Deploy</div>
+          <div class="option-subtitle">O CI/CD do GitHub Actions conecta via SSH na VPS e executa o deploy remotamente</div>
+          <div class="ratings-row">
+            <span class="rating-pill rp-yellow">⚙️ Complexidade: 3/5</span>
+            <span class="rating-pill rp-green">🛡️ Robustez: 5/5</span>
+            <span class="rating-pill rp-green">⚡ Latência: &lt;30s</span>
+            <span class="rating-pill rp-yellow">🔒 Segurança: Média</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">Como funciona</h3>
+
+    <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#fdba74;">
+  Desenvolvedor      GitHub (Actions runner)            VPS
+       │                       │                          │
+       │──── git push ─────────►                          │
+       │                       │                          │
+       │              workflow dispara                     │
+       │              (ubuntu-latest)                      │
+       │                       │                          │
+       │                       │──── SSH conecta ─────────►│
+       │                       │     (chave privada        │
+       │                       │      em secrets)          │ git pull
+       │                       │                          │ npm ci / build
+       │                       │                          │ systemctl restart
+       │                       │                          │
+       │                       │◄──── SSH encerra ─────────│
+       │                       │                          │
+       │              ✅ Deploy concluído                  │
+       │              (log no GitHub UI)                   │
+</pre>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;margin-top:20px;">Setup — workflow YAML</h3>
+    <div class="code-wrap">
+      <span class="code-label">.github/workflows/deploy.yml</span>
+      <pre><span class="var">name</span>: <span class="str">Deploy to VPS</span>
+
+<span class="var">on</span>:
+  <span class="var">push</span>:
+    <span class="var">branches</span>: [ <span class="str">"main"</span>, <span class="str">"master"</span> ]
+
+<span class="var">jobs</span>:
+  <span class="var">deploy</span>:
+    <span class="var">runs-on</span>: <span class="str">ubuntu-latest</span>
+
+    <span class="var">steps</span>:
+      - <span class="var">name</span>: <span class="str">Configure SSH</span>
+        <span class="var">run</span>: |
+          mkdir -p ~/.ssh
+          echo "<span class="var">${{ secrets.VPS_SSH_PRIVATE_KEY }}</span>" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H <span class="var">${{ secrets.VPS_HOST }}</span> >> ~/.ssh/known_hosts
+
+      - <span class="var">name</span>: <span class="str">Deploy</span>
+        <span class="var">run</span>: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              <span class="var">${{ secrets.VPS_USER }}</span>@<span class="var">${{ secrets.VPS_HOST }}</span> \
+              "cd /home/clawdbot/.openclaw/workspace/coding/<span class="var">${{ github.event.repository.name }}</span> && bash deploy.sh"
+
+<span class="cm"># GitHub Secrets necessários:
+# VPS_SSH_PRIVATE_KEY → chave privada SSH (gerada com: ssh-keygen -t ed25519)
+# VPS_HOST            → 138.197.19.184
+# VPS_USER            → clawdbot</span>
+
+<span class="cm"># Adicionar chave pública ao servidor:
+# echo "PUBLIC_KEY" >> ~/.ssh/authorized_keys</span></pre>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✓ Prós</h4>
+        <ul>
+          <li>Deploy visível no GitHub UI com logs completos</li>
+          <li>Retry automático nativo do GitHub Actions</li>
+          <li>Notificações de falha por email do GitHub</li>
+          <li>Histórico de todos os deploys com status</li>
+          <li>Pode incluir testes antes do deploy</li>
+          <li>Não precisa de porta extra aberta na VPS (usa SSH porta 22)</li>
+          <li>Suporte a environments e approvals (produção protegida)</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Contras</h4>
+        <ul>
+          <li>Chave SSH privada precisa ser armazenada em GitHub Secrets</li>
+          <li>Dependente da disponibilidade do GitHub Actions</li>
+          <li>Overhead de ~30s para spinup do runner ubuntu-latest</li>
+          <li>Minutos de uso (2000/mês grátis em repos privados)</li>
+          <li>Porta 22 aberta ao GitHub IP range (amplo)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="success-box" style="margin-top:20px;">
+      <h3>✓ Quando usar</h3>
+      <p>
+        <strong>Melhor escolha quando você quer visibilidade total</strong> do processo de deploy via interface do GitHub,
+        com logs, histórico, notificações automáticas de falha e possibilidade de adicionar testes antes do deploy.
+        Ideal para projetos em equipe ou quando o rastreamento de "quem deployou o quê" importa.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPÇÃO D — adnanh/webhook
+═══════════════════════════════════════════════════════ -->
+<section id="opcao-d" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">D</div>
+    <h2>Opção D — Webhook Tool (adnanh/webhook)</h2>
+  </div>
+
+  <div class="option-block" style="border-color: rgba(34,197,94,0.25);">
+    <div class="option-header">
+      <div class="option-id">
+        <div class="option-letter letter-d">D</div>
+        <div>
+          <div class="option-title">adnanh/webhook — Binary Go dedicado</div>
+          <div class="option-subtitle">Ferramenta leve em Go que escuta webhooks e dispara scripts automaticamente</div>
+          <div class="ratings-row">
+            <span class="rating-pill rp-yellow">⚙️ Complexidade: 3/5</span>
+            <span class="rating-pill rp-green">🛡️ Robustez: 5/5</span>
+            <span class="rating-pill rp-green">⚡ Latência: &lt;5s</span>
+            <span class="rating-pill rp-green">🔒 Segurança: Alta</span>
+          </div>
+          <div class="ratings-row" style="margin-top:8px;">
+            <span class="badge badge-green">⭐ 10.000+ stars GitHub</span>
+            <span class="badge badge-indigo">Go binary — sem runtime</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">Como funciona</h3>
+
+    <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#86efac;">
+  Desenvolvedor           GitHub                      VPS (webhook binary)
+       │                     │                               │
+       │──── git push ────────►                              │
+       │                     │                               │
+       │                     │──── POST /hooks/deploy ──────►│
+       │                     │   payload + HMAC sig          │
+       │                     │                               │ verifica sig
+       │                     │                               │ identifica hook por ID
+       │                     │                               │ checa "trigger-rule"
+       │                     │                               │    (branch == main?)
+       │                     │                               │──── executa script
+       │                     │                               │      deploy.sh voxa-api
+       │                     │                               │
+       │                     │◄──── 200 OK ─────────────────│
+
+  [ /etc/webhook.conf — lista de hooks ]
+  Hook ID      Script                    Trigger
+  ─────────────────────────────────────────────────
+  deploy-api   /scripts/deploy-voxa.sh   branch=main
+  deploy-web   /scripts/deploy-web.sh    branch=main
+  deploy-bot   /scripts/deploy-bot.sh    branch=main
+</pre>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;margin-top:20px;">Setup</h3>
+    <div class="code-wrap">
+      <span class="code-label">bash — instalar webhook</span>
+      <pre><span class="cm"># Ubuntu — instalar via apt</span>
+sudo apt install webhook
+
+<span class="cm"># OU baixar binary diretamente (versão mais recente)</span>
+wget https://github.com/adnanh/webhook/releases/latest/download/webhook-linux-amd64.tar.gz
+tar -xzf webhook-linux-amd64.tar.gz
+sudo mv webhook /usr/local/bin/</pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">/etc/webhook.json</span>
+      <pre>[
+  {
+    <span class="str">"id"</span>: <span class="str">"deploy-playground"</span>,
+    <span class="str">"execute-command"</span>: <span class="str">"/home/clawdbot/.openclaw/workspace/coding/andreclawdbot-playground/deploy.sh"</span>,
+    <span class="str">"command-working-directory"</span>: <span class="str">"/home/clawdbot/.openclaw/workspace/coding/andreclawdbot-playground"</span>,
+    <span class="str">"trigger-rule"</span>: {
+      <span class="str">"and"</span>: [
+        {
+          <span class="str">"match"</span>: {
+            <span class="str">"type"</span>: <span class="str">"payload-hmac-sha256"</span>,
+            <span class="str">"secret"</span>: <span class="str">"SEU_WEBHOOK_SECRET"</span>,
+            <span class="str">"parameter"</span>: { <span class="str">"source"</span>: <span class="str">"header"</span>, <span class="str">"name"</span>: <span class="str">"X-Hub-Signature-256"</span> }
+          }
+        },
+        {
+          <span class="str">"match"</span>: {
+            <span class="str">"type"</span>: <span class="str">"value"</span>,
+            <span class="str">"value"</span>: <span class="str">"refs/heads/master"</span>,
+            <span class="str">"parameter"</span>: { <span class="str">"source"</span>: <span class="str">"payload"</span>, <span class="str">"name"</span>: <span class="str">"ref"</span> }
+          }
+        }
+      ]
+    }
+  },
+  {
+    <span class="str">"id"</span>: <span class="str">"deploy-voxa-api"</span>,
+    <span class="str">"execute-command"</span>: <span class="str">"/home/clawdbot/.openclaw/workspace/coding/voxa-api/deploy.sh"</span>,
+    <span class="str">"trigger-rule"</span>: { <span class="cm">/* ... mesmo padrão, branch=main */</span> }
+  }
+]</pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">/etc/systemd/system/webhook.service</span>
+      <pre>[Unit]
+Description=Webhook Server for Auto-Deploy
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/webhook -hooks /etc/webhook.json -port 9000 -verbose
+User=clawdbot
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">GitHub Settings → Webhooks (por repo)</span>
+      <pre><span class="cm">• Payload URL:    http://138.197.19.184:9000/hooks/deploy-playground</span>
+<span class="cm">• Content type:   application/json</span>
+<span class="cm">• Secret:         SEU_WEBHOOK_SECRET (mesmo no webhook.json)</span>
+<span class="cm">• Event:          Just the push event</span></pre>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✓ Prós</h4>
+        <ul>
+          <li>Binary único em Go — sem runtime Node/Python</li>
+          <li>Gerenciamento de hooks por arquivo JSON — muito flexível</li>
+          <li>Validação HMAC nativa e muito robusta</li>
+          <li>Trigger rules poderosas (branch, payload, HMAC)</li>
+          <li>Usado em produção por milhares de projetos</li>
+          <li>Baixíssimo consumo de recursos (Go binary)</li>
+          <li>Managed pelo systemd — restart automático</li>
+          <li>Logs detalhados com flag -verbose</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Contras</h4>
+        <ul>
+          <li>Porta 9000 precisa ser acessível pelo GitHub</li>
+          <li>Configuração JSON pode ser verbosa para muitos repos</li>
+          <li>Sem UI — logs apenas via journalctl</li>
+          <li>Sem retry automático se o script de deploy falhar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="success-box" style="margin-top:20px;">
+      <h3>⭐ Melhor opção para nosso cenário específico</h3>
+      <p>
+        O adnanh/webhook combina o melhor dos dois mundos: <strong>latência mínima dos webhooks + robustez de uma ferramenta dedicada</strong>.
+        É battle-tested, tem 10k+ stars no GitHub, tem validação HMAC robusta e é gerenciável via systemd
+        como qualquer outro serviço. Perfeito para projetos mistos pois cada hook pode chamar um <code>deploy.sh</code> específico.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     OPÇÃO E — Self-hosted Runner
+═══════════════════════════════════════════════════════ -->
+<section id="opcao-e" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">E</div>
+    <h2>Opção E — GitHub Actions Self-Hosted Runner</h2>
+  </div>
+
+  <div class="option-block">
+    <div class="option-header">
+      <div class="option-id">
+        <div class="option-letter letter-e">E</div>
+        <div>
+          <div class="option-title">Self-Hosted Runner</div>
+          <div class="option-subtitle">Runner do GitHub Actions instalado na VPS — os workflows rodam diretamente na máquina</div>
+          <div class="ratings-row">
+            <span class="rating-pill rp-red">⚙️ Complexidade: 4/5</span>
+            <span class="rating-pill rp-green">🛡️ Robustez: 5/5</span>
+            <span class="rating-pill rp-yellow">⚡ Latência: 1-2 min</span>
+            <span class="rating-pill rp-yellow">🔒 Segurança: Média</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;">Como funciona</h3>
+
+    <div class="arch-ascii">
+<pre style="background:transparent;border:none;border-radius:0;padding:0;color:#fde047;">
+  Desenvolvedor      GitHub              VPS (actions-runner)
+       │                │                      │
+       │──── git push ──►                      │
+       │                │                      │
+       │         workflow dispara              │
+       │         runs-on: self-hosted ─────────►│
+       │                │               job executa NA VPS
+       │                │                  git pull (local)
+       │                │                  npm ci / build
+       │                │                  systemctl restart
+       │                │                      │
+       │                │◄───── job concluído ──│
+       │                │                      │
+       │         ✅ Resultado no GH UI          │
+</pre>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;margin-top:20px;">Setup</h3>
+    <div class="code-wrap">
+      <span class="code-label">bash — instalar runner na VPS</span>
+      <pre><span class="cm"># GitHub Repo → Settings → Actions → Runners → New self-hosted runner</span>
+<span class="cm"># Copiar e executar os comandos gerados pelo GitHub:</span>
+
+mkdir actions-runner && cd actions-runner
+curl -o actions-runner-linux-x64-2.x.x.tar.gz -L https://github.com/actions/runner/releases/download/...
+tar xzf ./actions-runner-linux-x64-2.x.x.tar.gz
+./config.sh --url https://github.com/andreclawdbot/voxa-api --token <span class="var">TOKEN_GERADO</span>
+./run.sh &
+
+<span class="cm"># Instalar como service systemd</span>
+sudo ./svc.sh install
+sudo ./svc.sh start</pre>
+    </div>
+
+    <div class="code-wrap" style="margin-top:12px;">
+      <span class="code-label">.github/workflows/deploy.yml (runs on self-hosted)</span>
+      <pre><span class="var">name</span>: <span class="str">Deploy</span>
+<span class="var">on</span>:
+  <span class="var">push</span>:
+    <span class="var">branches</span>: [<span class="str">main</span>]
+
+<span class="var">jobs</span>:
+  <span class="var">deploy</span>:
+    <span class="var">runs-on</span>: <span class="str">self-hosted</span>   <span class="cm"># &lt;-- roda na VPS diretamente</span>
+
+    <span class="var">steps</span>:
+      - <span class="var">uses</span>: <span class="str">actions/checkout@v4</span>
+
+      - <span class="var">name</span>: <span class="str">Install deps</span>
+        <span class="var">run</span>: npm ci
+
+      - <span class="var">name</span>: <span class="str">Build</span>
+        <span class="var">run</span>: npm run build
+
+      - <span class="var">name</span>: <span class="str">Restart service</span>
+        <span class="var">run</span>: sudo systemctl restart voxa-api</pre>
+    </div>
+
+    <div class="warning-box" style="margin-top:12px;">
+      <h3>⚠️ Alerta de custo — Março 2026</h3>
+      <p>
+        A partir de março/2026, GitHub está cobrando taxa de plataforma para self-hosted runners em alguns planos.
+        Verifique a política atual em <a href="https://northflank.com/blog/github-pricing-change-self-hosted-alternatives-github-actions" target="_blank" style="color:#fca5a5;">github.com/pricing</a>.
+        Para repositórios públicos, ainda é gratuito.
+      </p>
+    </div>
+
+    <div class="pros-cons">
+      <div class="pros">
+        <h4>✓ Prós</h4>
+        <ul>
+          <li>Workflows YAML expressivos e versionados no repo</li>
+          <li>Testes, lint, build e deploy no mesmo pipeline</li>
+          <li>Logs, histórico e notificações nativas do GitHub</li>
+          <li>Acesso direto aos recursos da VPS (sem SSH externo)</li>
+          <li>Sem porta extra exposta — runner conecta no GitHub via HTTPS</li>
+          <li>Suporte a environments, approvals e branch protection</li>
+        </ul>
+      </div>
+      <div class="cons">
+        <h4>✗ Contras</h4>
+        <ul>
+          <li>Mais complexo de configurar — um runner por repo (ou org-level)</li>
+          <li>Runner precisa de manutenção (atualizações)</li>
+          <li>Latência de 1-2 min para o runner ser atribuído</li>
+          <li>Possível custo extra a partir de março/2026</li>
+          <li>Runner comprometido = código malicioso executado na VPS</li>
+          <li>Overhead maior vs webhook para deploy simples</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="yellow-box" style="margin-top:20px;">
+      <h3>⚠️ Quando usar</h3>
+      <p>
+        Melhor para projetos com <strong>pipeline CI/CD completo</strong> — testes, lint, build, múltiplos ambientes.
+        Se você só quer "git pull + restart", o overhead é desnecessário.
+        Ideal quando a equipe cresce e a rastreabilidade de deploys vira uma necessidade de compliance.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     RECOMENDAÇÃO FINAL
+═══════════════════════════════════════════════════════ -->
+<section id="recomendacao" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-green">⭐</div>
+    <h2>Recomendação Final</h2>
+  </div>
+
+  <div class="rec-block">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <div class="option-letter letter-d" style="width:64px;height:64px;font-size:2rem;">D</div>
+      <div>
+        <h3 style="font-size:1.4rem;font-weight:800;color:var(--green);margin:0;">adnanh/webhook — Recomendação Principal</h3>
+        <p style="color:var(--muted);margin-top:4px;">Para o cenário VPS DigitalOcean + projetos mistos + GitHub como host</p>
+      </div>
+    </div>
+
+    <p style="color:var(--muted);font-size:0.95rem;line-height:1.7;margin-bottom:24px;">
+      O <strong style="color:var(--text);">adnanh/webhook</strong> é a melhor escolha para este setup específico porque combina
+      <strong style="color:var(--green);">latência mínima</strong> (eventos push chegam em &lt;5s),
+      <strong style="color:var(--green);">segurança adequada</strong> (validação HMAC-SHA256 nativa do GitHub),
+      <strong style="color:var(--green);">zero overhead de runtime</strong> (binary Go standalone),
+      e <strong style="color:var(--green);">flexibilidade total</strong> para stacks mistos via scripts de deploy por projeto.
+      É battle-tested com 10k+ stars, gerenciável pelo systemd como qualquer outro serviço, e não adiciona dependências ao sistema.
+    </p>
+
+    <div class="two-col" style="margin-bottom:24px;">
+      <div class="success-box" style="margin-bottom:0;">
+        <h3>✅ Por que não GitHub Actions SSH (Opção C)?</h3>
+        <p>
+          A opção C é ótima para equipes e tem logs no GitHub UI, mas adiciona 30s+ de overhead
+          do runner ubuntu-latest, depende de disponibilidade do GitHub Actions, e armazena chave SSH privada
+          como secret. Para um setup de 1 pessoa com projetos simples, o overhead não compensa.
+          <strong>Use como complemento se quiser rastreabilidade.</strong>
+        </p>
+      </div>
+      <div class="info-box" style="margin-bottom:0;">
+        <h3>💡 Por que não Cron Polling (Opção B)?</h3>
+        <p>
+          O cron polling é mais simples, mas a latência de 1-5 minutos pode ser frustrante.
+          Também cria load desnecessário na API do GitHub.
+          <strong>Use como fallback de emergência</strong> caso o webhook fique fora, mas não como solução principal.
+        </p>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:20px;color:var(--text);">📋 Plano de implementação para este setup</h3>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Instalar adnanh/webhook na VPS</h4>
+          <div class="code-wrap" style="margin-top:8px;">
+            <span class="code-label">bash</span>
+            <pre class="no-label">sudo apt install webhook
+# ou versão mais recente via binary direto do GitHub Releases</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Criar deploy.sh em cada projeto</h4>
+          <p>Cada projeto tem seu próprio script com os comandos corretos. O webhook apenas chama o script.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Configurar /etc/webhook.json</h4>
+          <p>Um hook por projeto, cada um apontando para seu deploy.sh, com validação HMAC e verificação de branch.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Criar webhook.service no systemd</h4>
+          <p><code>sudo systemctl enable --now webhook</code> — o serviço sobe no boot e reinicia automaticamente.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Configurar webhook em cada repo no GitHub</h4>
+          <p>Cada repo aponta para <code>http://138.197.19.184:9000/hooks/&lt;hook-id&gt;</code> com o mesmo secret.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <h4>Testar com um push real</h4>
+          <p><code>journalctl -u webhook -f</code> — logs em tempo real de cada deploy disparado.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     DEPLOY.SH
+═══════════════════════════════════════════════════════ -->
+<section id="deploy-sh" class="animate-on-scroll">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">📜</div>
+    <h2>deploy.sh — Script Genérico</h2>
+  </div>
+
+  <p class="text-muted" style="margin-bottom:24px;font-size:0.95rem;">
+    Cada projeto tem seu próprio <code>deploy.sh</code> na raiz do repositório. O webhook chama esse script diretamente.
+    O script detecta o tipo de projeto automaticamente e executa os comandos corretos.
+  </p>
+
+  <div class="code-wrap">
+    <span class="code-label">deploy.sh — genérico (auto-detecta tipo de projeto)</span>
+    <pre><span class="cm">#!/bin/bash</span>
+<span class="cm"># deploy.sh — Auto-deploy script para projetos na VPS</span>
+<span class="cm"># Chamado pelo adnanh/webhook após push na branch principal</span>
+<span class="cm"># Coloque na raiz de cada projeto. Ajuste SERVICE_NAME.</span>
+
+<span class="kw">set</span> -e  <span class="cm"># para se qualquer comando falhar</span>
+
+<span class="cm"># ── CONFIGURAÇÃO (editar por projeto) ─────────────────────────────────────────</span>
+SERVICE_NAME=<span class="str">"playground"</span>       <span class="cm"># nome do systemd service</span>
+BRANCH=<span class="str">"master"</span>                   <span class="cm"># branch a fazer pull</span>
+DEPLOY_LOG=<span class="str">"/var/log/deploy-$(basename $(pwd)).log"</span>
+
+<span class="cm"># ── LOGGING ────────────────────────────────────────────────────────────────────</span>
+<span class="fn">log</span>() { <span class="fn">echo</span> <span class="str">"[$(date '+%Y-%m-%d %H:%M:%S')] $*"</span> | tee -a <span class="str">"$DEPLOY_LOG"</span>; }
+
+<span class="fn">log</span> <span class="str">"━━━━ DEPLOY START ━━━━"</span>
+<span class="fn">log</span> <span class="str">"Projeto: $(basename $(pwd))"</span>
+<span class="fn">log</span> <span class="str">"Diretório: $(pwd)"</span>
+
+<span class="cm"># ── PASSO 1: git pull ──────────────────────────────────────────────────────────</span>
+<span class="fn">log</span> <span class="str">"▶ git pull origin $BRANCH"</span>
+git pull origin <span class="str">"$BRANCH"</span>
+<span class="fn">log</span> <span class="str">"  HEAD: $(git rev-parse --short HEAD)"</span>
+
+<span class="cm"># ── PASSO 2: detectar tipo de projeto e instalar deps ─────────────────────────</span>
+<span class="kw">if</span> [ -f <span class="str">"package.json"</span> ]; then
+  <span class="fn">log</span> <span class="str">"▶ Projeto Node.js detectado — npm ci"</span>
+  npm ci --omit=dev
+
+  <span class="cm"># Detectar Next.js pelo next no package.json</span>
+  <span class="kw">if</span> grep -q <span class="str">'"next"'</span> package.json; then
+    <span class="fn">log</span> <span class="str">"▶ Next.js detectado — npm run build"</span>
+    npm run build
+  fi
+
+<span class="kw">elif</span> [ -f <span class="str">"requirements.txt"</span> ]; then
+  <span class="fn">log</span> <span class="str">"▶ Projeto Python detectado — pip install"</span>
+  <span class="cm"># Usa o venv do projeto se existir, senão o do workspace</span>
+  VENV=<span class="str">"./venv"</span>
+  <span class="kw">if</span> [ ! -d <span class="str">"$VENV"</span> ]; then
+    VENV=<span class="str">"/home/clawdbot/.openclaw/workspace/venv"</span>
+  fi
+  <span class="str">"${VENV}/bin/pip"</span> install -r requirements.txt --quiet
+
+<span class="kw">else</span>
+  <span class="fn">log</span> <span class="str">"▶ HTML estático ou projeto sem dependências — pulando instalação"</span>
+<span class="kw">fi</span>
+
+<span class="cm"># ── PASSO 3: restart do serviço ───────────────────────────────────────────────</span>
+<span class="kw">if</span> [ -n <span class="str">"$SERVICE_NAME"</span> ]; then
+  <span class="fn">log</span> <span class="str">"▶ Reiniciando serviço: $SERVICE_NAME"</span>
+  sudo systemctl restart <span class="str">"$SERVICE_NAME"</span>
+  sleep 2
+
+  STATUS=<span class="var">$(systemctl is-active "$SERVICE_NAME")</span>
+  <span class="kw">if</span> [ <span class="str">"$STATUS"</span> = <span class="str">"active"</span> ]; then
+    <span class="fn">log</span> <span class="str">"✅ Serviço $SERVICE_NAME rodando (active)"</span>
+  <span class="kw">else</span>
+    <span class="fn">log</span> <span class="str">"❌ ERRO: Serviço $SERVICE_NAME status=$STATUS"</span>
+    <span class="fn">exit</span> <span class="num">1</span>
+  fi
+<span class="kw">fi</span>
+
+<span class="fn">log</span> <span class="str">"━━━━ DEPLOY DONE ━━━━"</span></pre>
+  </div>
+
+  <h3 style="font-size:1.1rem;font-weight:700;margin:28px 0 16px;">Deploy.sh específico por projeto</h3>
+
+  <div class="two-col">
+    <div>
+      <div class="code-wrap">
+        <span class="code-label">andreclawdbot-playground/deploy.sh</span>
+        <pre><span class="cm">#!/bin/bash</span>
+<span class="kw">set</span> -e
+git pull origin master
+sudo systemctl restart playground
+<span class="fn">echo</span> <span class="str">"[$(date)] Playground deployed"</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="code-wrap">
+        <span class="code-label">voxa-api/deploy.sh</span>
+        <pre><span class="cm">#!/bin/bash</span>
+<span class="kw">set</span> -e
+git pull origin main
+npm ci --omit=dev
+sudo systemctl restart voxa-api
+<span class="fn">echo</span> <span class="str">"[$(date)] voxa-api deployed"</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="code-wrap">
+        <span class="code-label">voxa-web/deploy.sh</span>
+        <pre><span class="cm">#!/bin/bash</span>
+<span class="kw">set</span> -e
+git pull origin main
+npm ci
+npm run build
+sudo systemctl restart voxa-web
+<span class="fn">echo</span> <span class="str">"[$(date)] voxa-web deployed"</span></pre>
+      </div>
+    </div>
+    <div>
+      <div class="code-wrap">
+        <span class="code-label">trading-bot/deploy.sh</span>
+        <pre><span class="cm">#!/bin/bash</span>
+<span class="kw">set</span> -e
+git pull origin main
+~/.openclaw/workspace/venv/bin/pip install \
+  -r requirements.txt --quiet
+sudo systemctl restart trading-bot
+<span class="fn">echo</span> <span class="str">"[$(date)] trading-bot deployed"</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:24px;">
+    <h3>🔧 Permissão sudo sem senha para systemctl restart</h3>
+    <p>
+      O webhook roda como usuário <code>clawdbot</code>. Para que <code>sudo systemctl restart</code> funcione sem senha:<br/>
+      <code>sudo visudo</code> → adicionar:<br/>
+      <code>clawdbot ALL=(ALL) NOPASSWD: /bin/systemctl restart playground, /bin/systemctl restart voxa-api, /bin/systemctl restart voxa-web, /bin/systemctl restart voxa-logs, /bin/systemctl restart trading-bot</code>
+    </p>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <p>
+    <span>🚀 Auto Deploy na VPS — Pesquisa</span><br/>
+    Documentado por Johnny Juvenil · Fevereiro 2026<br/>
+    <a href="https://github.com/andreclawdbot/andreclawdbot-playground" target="_blank">github.com/andreclawdbot/andreclawdbot-playground</a>
+    &nbsp;·&nbsp;
+    <a href="../">← Playground</a>
+  </p>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+  const navLinks = document.querySelectorAll('nav a');
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => { link.style.color = ''; link.style.borderColor = ''; });
+        const activeLink = document.querySelector('nav a[href="#' + entry.target.id + '"]');
+        if (activeLink) { activeLink.style.color = '#86efac'; activeLink.style.borderColor = '#22c55e'; }
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('section[id]').forEach(section => navObserver.observe(section));
+</script>
+
+</body>
+</html>
