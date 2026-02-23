@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Setup — Johnny Juvenil 🫡</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #25d366;
+    --accent-dim: #1a9b49;
+    --code-bg: #0d1117;
+    --code-border: #30363d;
+    --header-h: 72px;
+    --tab-h: 48px;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .header-title h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .header-title .subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .badge.green {
+    background: rgba(37,211,102,0.1);
+    border-color: rgba(37,211,102,0.3);
+    color: var(--accent);
+  }
+
+  /* TABS */
+  .tabs-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: var(--tab-h);
+    overflow-x: auto;
+  }
+  .tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 0 16px;
+    height: var(--tab-h);
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-icon { font-size: 15px; }
+
+  /* CONTENT */
+  main {
+    flex: 1;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* MARKDOWN RENDERING */
+  .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 28px;
+    margin-bottom: 10px;
+  }
+  .md h1 { font-size: 28px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 0; }
+  .md h2 { font-size: 22px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .md h3 { font-size: 18px; }
+  .md h4 { font-size: 16px; }
+  .md p { margin-bottom: 12px; }
+  .md a { color: var(--accent); text-decoration: none; }
+  .md a:hover { text-decoration: underline; }
+  .md strong { color: #fff; font-weight: 700; }
+  .md em { font-style: italic; color: #dae1e9; }
+  .md code {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 85%;
+    padding: 2px 5px;
+    color: #e6edf3;
+  }
+  .md pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0 16px;
+  }
+  .md pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e6edf3;
+  }
+  .md ul, .md ol {
+    padding-left: 24px;
+    margin-bottom: 12px;
+  }
+  .md li { margin-bottom: 4px; }
+  .md li > ul, .md li > ol { margin-top: 4px; margin-bottom: 4px; }
+  .md blockquote {
+    border-left: 3px solid var(--accent);
+    background: rgba(37,211,102,0.05);
+    padding: 10px 16px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    color: var(--text-muted);
+  }
+  .md blockquote p { margin-bottom: 0; }
+  .md hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+  .md table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 16px;
+    font-size: 13px;
+  }
+  .md th {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    color: #fff;
+    font-weight: 600;
+  }
+  .md td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+  }
+  .md tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* COPY BUTTON on pre */
+  .code-block-wrapper { position: relative; }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 3px 8px;
+    transition: all 0.15s;
+    opacity: 0;
+  }
+  .code-block-wrapper:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .copy-btn.copied { color: var(--accent); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    main { padding: 20px 16px 48px; }
+    .tabs-bar { padding: 0 8px; }
+    .tab-btn { padding: 0 10px; font-size: 12px; }
+    .header-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">🤖</div>
+    <div class="header-title">
+      <h1>OpenClaw Setup</h1>
+      <div class="subtitle">Johnny Juvenil 🫡 &nbsp;·&nbsp; Snapshot do workspace</div>
+    </div>
+  </div>
+  <div class="header-badge">
+    <span class="badge green">🟢 Live</span>
+    <span class="badge">📅 2026-02-23</span>
+  </div>
+</header>
+
+<div class="tabs-bar" role="tablist">
+  <button class="tab-btn active" role="tab" onclick="switchTab(0)" id="tab-0">
+    <span class="tab-icon">🧠</span> MEMORY.md
+  </button>
+  <button class="tab-btn" role="tab" onclick="switchTab(1)" id="tab-1">
+    <span class="tab-icon">📦</span> AGENTS.md
+  </button>
+  <button class="tab-btn" role="tab" onclick="switchTab(2)" id="tab-2">
+    <span class="tab-icon">📋</span> PROJECTS.md
+  </button>
+  <button class="tab-btn" role="tab" onclick="switchTab(3)" id="tab-3">
+    <span class="tab-icon">🏠</span> VPS.md
+  </button>
+</div>
+
+<main>
+  <div id="panel-0" class="tab-panel active md"></div>
+  <div id="panel-1" class="tab-panel md"></div>
+  <div id="panel-2" class="tab-panel md"></div>
+  <div id="panel-3" class="tab-panel md"></div>
+</main>
+
+<footer>
+  Snapshot gerado em 2026-02-23 &nbsp;·&nbsp;
+  <a href="http://138.197.19.184:3002/" target="_blank">andreclawdbot-playground</a>
+  &nbsp;·&nbsp; Johnny Juvenil 🫡
+</footer>
+
+<script>
+// ────────────────────────────────────────────────────────────────
+// FILE CONTENTS (embedded)
+// ────────────────────────────────────────────────────────────────
+const files = [
+  { name: "MEMORY.md",   content: "# MEMORY.md\n\n## \ud83d\udea8 Regras Cr\u00edticas\n\n1. **SUBAGENTS** \u2014 Qualquer opera\u00e7\u00e3o com 2+ a\u00e7\u00f5es \u2192 `sessions_spawn`. Exce\u00e7\u00e3o: respostas curtas diretas.\n\n## \ud83d\udccb PROJECTS.md \u2014 Registro de Projetos (NUNCA REMOVER)\n\n**`~/.openclaw/workspace/PROJECTS.md`** \u00e9 o registro global de todos os projetos: descri\u00e7\u00e3o, stack, path local e link do GitHub.\n\n- **Ao criar projeto:** adicionar entrada imediatamente.\n- **Ao clonar:** atualizar o path local.\n- **Ao alterar stack/deploy:** atualizar a entrada.\n- **Ao come\u00e7ar qualquer trabalho em c\u00f3digo:** ler para ter contexto dos projetos ativos.\n\n## \ud83c\udfe0 VPS.md + DEPLOY.md \u2014 Estado da Casa (NUNCA REMOVER)\n\nA VPS \u00e9 uma casa compartilhada. Cada projeto que mora nela tem um contexto pr\u00f3prio.\n\n- **`~/.openclaw/workspace/VPS.md`** \u2014 mapa global da VPS: servi\u00e7os nativos, portas, o que est\u00e1 rodando.\n- **`coding/<projeto>/DEPLOY.md`** \u2014 contexto de deploy de cada projeto: porta, depend\u00eancias nativas, como deployar, o que jamais fazer.\n\n**Antes de qualquer deploy ou mudan\u00e7a de infra:** ler `VPS.md` + `DEPLOY.md` do projeto.\n**Mais importante: MANTER ATUALIZADO.** Sempre que algo mudar ou nascer na VPS, atualizar os dois antes de terminar o trabalho. Isso vale para sess\u00e3o principal e subagents.\n\n> Se deployou mas n\u00e3o atualizou os arquivos, o trabalho n\u00e3o est\u00e1 completo.\n\n## \ud83d\udcc1 Todo Trabalho \u00e9 um Projeto (NUNCA REMOVER \u2014 regra absoluta)\n\n**Todo novo projeto/trabalho DEVE:**\n- Ter uma pasta pr\u00f3pria em `~/.openclaw/workspace/coding/<nome-do-projeto>/`\n- Ter um reposit\u00f3rio Git inicializado\n- Ter um reposit\u00f3rio no GitHub (org `AndreClawdTeam` ou `andreclawdbot`)\n- Ter todo c\u00f3digo commitado e pushado \u2014 nunca fica s\u00f3 local\n\n**Jamais:**\n- Editar arquivos tempor\u00e1rios soltos fora de um reposit\u00f3rio\n- Trabalhar diretamente em pastas de deploy/servidor\n- Deixar qualquer trabalho fora do GitHub\n\nSe algo vale a pena fazer, vale a pena ter um reposit\u00f3rio. Sem exce\u00e7\u00f5es.\n\n## \ud83d\udee0\ufe0f Workflow de Desenvolvimento (SEMPRE seguir)\n\n1. **Antes de desenvolver** \u2014 Pesquisar documenta\u00e7\u00f5es relevantes (boas pr\u00e1ticas e anti-patterns), ler o `CLAUDE.md` do projeto, e montar um plano com pequenos passos/tarefas antes de escrever qualquer c\u00f3digo.\n2. **Durante o desenvolvimento** \u2014 Sempre seguir TDD com testes unit\u00e1rios (evitando mocks). Commits granulares e pequenos, com mensagens sem\u00e2nticas e explica\u00e7\u00e3o detalhada no body do commit. **TODOS os commits devem ser assinados \u2014 sempre passar `-S`: `git commit -S -m \"...\"` (ou `git commit -S --amend` para corrigir).**\n3. **Linter/Formatter** \u2014 Sempre usar Biome. Rodar linter + formatter antes de cada push. Corrigir TODOS os erros e warnings \u2014 tanto do lint quanto do format \u2014 antes de pushar. Zero toler\u00e2ncia.\n4. **Build** \u2014 Sempre tentar buildar o projeto antes do push. Se houver erro, corrigir antes de pushar.\n5. **Pull Request \u2014 NUNCA pushar direto na `main`** \u2014 Sempre criar branch, descrever o que foi feito, t\u00edtulo claro. Adicionar @atreib como reviewer e assignee: `gh pr create --reviewer atreib --assignee atreib`\n\n> \u26a0\ufe0f Subagents n\u00e3o leem AGENTS.md automaticamente. Todo prompt de subagent DEVE incluir o conte\u00fado **completo** do `AGENTS.md` no in\u00edcio do `task` \u2014 copiar integralmente, sem resumir.\n6. **Novos reposit\u00f3rios** \u2014 Sempre adicionar @atreib como admin imediatamente ap\u00f3s criar: `gh api -X PUT /repos/andreclawdbot/<repo>/collaborators/atreib -f permission=admin`\n\n## \ud83d\udedd Playground Workflow (andreclawdbot-playground)\n\nO Playground \u00e9 o lugar certo para publicar pesquisas, apresenta\u00e7\u00f5es HTML e p\u00e1ginas de resultado. **N\u00e3o jogar HTML solto no workspace \u2014 vai pro Playground via PR.**\n\n**Repo:** `https://github.com/andreclawdbot/andreclawdbot-playground`\n**Path local:** `~/.openclaw/workspace/coding/andreclawdbot-playground/`\n**Branch padr\u00e3o:** `master`\n**Deploy:** Python `http.server`, systemd `playground.service`, porta 3002\n**URL:** http://138.197.19.184:3002/\n**Serve automaticamente do disco** \u2014 n\u00e3o precisa reiniciar o servi\u00e7o ap\u00f3s `git pull`\n\n**Como publicar um HTML no Playground:**\n1. Criar subpasta no repo: `mkdir whatsapp-bot-research/`\n2. Colocar o HTML como `index.html` dentro da subpasta\n3. Criar branch \u2192 commit assinado \u2192 push \u2192 abrir PR com `--reviewer atreib --assignee atreib --base master`\n4. Andr\u00e9 aprova e d\u00e1 merge\n5. Redeploy: `cd ~/.openclaw/workspace/coding/andreclawdbot-playground && git pull origin master`\n6. Acessar em: `http://138.197.19.184:3002/<nome-da-subpasta>/`\n\n**\u26a0\ufe0f canvas e browser n\u00e3o funcionam para apresentar HTML** sem n\u00f3 pareado ou tab Chrome anexada. O Playground \u00e9 o canal correto para visualiza\u00e7\u00e3o pelo Andr\u00e9.\n\n---\n\n## \ud83c\udf99\ufe0f Prefer\u00eancias\n\n- **TTS**: conversa casual e small talk \u2192 `tts` tool (pt-BR-AntonioNeural). Conte\u00fado t\u00e9cnico/longo \u2192 texto. Ap\u00f3s tts, responder ONLY NO_REPLY.\n- **Explica\u00e7\u00f5es**: Andr\u00e9 prefere que eu explique o passo a passo das tarefas.\n\n## \ud83d\udc64 Andr\u00e9\n\n- **Nome:** Andr\u00e9 Treib (Andr\u00e9 / Dr\u00e9 / D\u00e9) \u2014 ele/dele \u2014 BRT (UTC-3)\n- **Ocupa\u00e7\u00e3o:** Senior Software Engineer\n- **Canal principal:** Telegram\n- **Email:** andre.schumacher.treib@gmail.com (me@andretreib.com \u00e9 secund\u00e1rio)\n- **Noiva:** Giovana (girubensam@hotmail.com)\n\n## \ud83e\udd16 Identidade\n\nJohnny Juvenil \u2014 calmo, explicativo, eficiente \ud83e\udee1\n\n## \u2699\ufe0f Infra\n\n- **GitHub:** andreclawdbot | Org: AndreClawdTeam\n- **Hydroxide bridge password:** `puwE7aJWfp2KRkaqjlGAGR2WWUxFcTLiJnWgjgRiqCE=`\n\n## \u270d\ufe0f Git & GPG (NUNCA REMOVER \u2014 regra absoluta de commits)\n\n**Todo commit DEVE ser assinado e usar o usu\u00e1rio correto. Sem exce\u00e7\u00f5es.**\n\n**Configura\u00e7\u00e3o global em `~/.gitconfig`:**\n```\nuser.name  = Johnny Juvenil\nuser.email = andreclawdbot@proton.me\nuser.signingkey = D0ACA819B9BB4555\ncommit.gpgsign = true\ngpg.program = gpg\n```\n\n**Chave GPG:**\n- Key ID: `D0ACA819B9BB4555`\n- Full fingerprint: `A0399961DF6B89166B1D2E7AD0ACA819B9BB4555`\n- Criada em 2026-02-22 para `Johnny Juvenil <andreclawdbot@proton.me>`\n- Para adicionar ao GitHub: `gpg --armor --export andreclawdbot@proton.me` \u2192 colar em https://github.com/settings/gpg-keys\n\n**Assinar commits:**\n- `commit.gpgsign = true` j\u00e1 est\u00e1 configurado globalmente \u2192 commits assinam automaticamente\n- Mas em comandos expl\u00edcitos, sempre passar `-S`: `git commit -S -m \"msg\"`\n- Antes de commitar em sess\u00e3o nova: `export GPG_TTY=$(tty)`\n\n**GitHub auth:**\n- **Git (push/pull):** SSH \u2014 funciona sem `gh auth`\n- **GitHub API (gh CLI):** precisar de PAT com scopes `repo, gist, user, admin:org, admin:gpg_key`\n- **Restaurar gh auth:** `echo \"TOKEN\" | gh auth login --with-token --hostname github.com --insecure-storage`\n- **Status atual:** gh auth OK \u2014 logado como `andreclawdbot`, scopes: `admin:public_key, gist, read:org, repo`\n\n## \ud83d\udc18 PostgreSQL (NUNCA REMOVER \u2014 servi\u00e7o cr\u00edtico, NUNCA desligar)\n\n**NUNCA parar, desabilitar ou reiniciar o PostgreSQL sem autoriza\u00e7\u00e3o expl\u00edcita do Andr\u00e9.**\n\n- **Vers\u00e3o:** PostgreSQL 16 (`postgresql@16-main`)\n- **Gerenciado por:** systemd \u2014 enabled, sobrevive reboots automaticamente\n- **listen_addresses:** `*` (todas as interfaces \u2014 acess\u00edvel local e externamente)\n- **Porta:** `5432`\n- **Firewall:** sem ufw/iptables no SO \u2014 regras gerenciadas pelo provedor (DigitalOcean)\n\n**Conex\u00e3o local:**\n```\npostgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/postgres\n```\n**Conex\u00e3o externa:**\n```\npostgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@138.197.19.184:5432/postgres\n```\n- User `andre` \u00e9 **SUPERUSER** (pode criar databases, roles, etc.)\n\n**Manuten\u00e7\u00e3o / troubleshooting:**\n- Verificar status: `systemctl status postgresql@16-main`\n- Verificar porta: `ss -tlnp | grep 5432`\n- Reiniciar SE necess\u00e1rio (pedir autoriza\u00e7\u00e3o antes): `systemctl restart postgresql@16-main`\n- Nunca usar `systemctl stop` ou `systemctl disable`\n\n## \ud83d\udcec E-mail (NUNCA REMOVER \u2014 setup cr\u00edtico)\n\n**Fluxo:** Proton Mail \u2192 Hydroxide IMAP \u2192 monitor_email.py \u2192 emails.db \u2192 digest.py \u2192 Telegram\n\n**Processos (todos em background, devem estar sempre rodando):**\n- `hydroxide imap` \u2014 bridge local Proton Mail \u2192 IMAP em `127.0.0.1:1143`\n- `hydroxide smtp` \u2014 bridge para envio via Proton Mail\n- `monitor_email.py` \u2014 poller a cada 30s; salva novos e-mails no SQLite e notifica via Telegram imediatamente\n\n**SQLite:** `~/workspace/mail/emails.db`\n- Tabela `emails`: uid, from, subject, body, received_at, is_read, is_notified, is_replied, is_summarized\n- Tabela `ignore_rules`: filtros por sender_email/sender_domain/subject_contains (GitHub j\u00e1 ignorado por padr\u00e3o)\n\n**digest.py** (chamado pelo heartbeat): resume e-mails com `is_summarized=0` e envia pro Telegram. Nunca re-sumariza.\n\n**Credencial Hydroxide:** user `andreclawdbot`, password `puwE7aJWfp2KRkaqjlGAGR2WWUxFcTLiJnWgjgRiqCE=`\n\n**Manuten\u00e7\u00e3o / troubleshooting:**\n- Verificar processos: `ps aux | grep -E \"hydroxide|monitor_email\"`\n- Se algum morreu, reiniciar manualmente:\n  - `nohup /home/clawdbot/.openclaw/workspace/hydroxide/hydroxide imap &`\n  - `nohup /home/clawdbot/.openclaw/workspace/hydroxide/hydroxide smtp &`\n  - `nohup python3 /home/clawdbot/.openclaw/workspace/mail/monitor_email.py &`\n- Logs: `~/workspace/mail/inbox.log` e `~/workspace/mail/hydroxide.log`\n- Se e-mails n\u00e3o chegam: checar se hydroxide est\u00e1 de p\u00e9 e se o bridge password n\u00e3o expirou no Proton\n\n## \ud83c\udf99\ufe0f Transcri\u00e7\u00e3o de \u00c1udio (NUNCA REMOVER \u2014 setup cr\u00edtico)\n\n**JAMAIS usar OpenAI (ou qualquer API paga) para transcrever \u00e1udios**, especialmente os recebidos via Telegram.\nSempre usar o servidor Whisper local no VPS:\n```bash\ncurl -s http://127.0.0.1:8765/v1/listen \\\n  --data-binary @/path/to/audio.ogg \\\n  -H \"Content-Type: audio/ogg\" | python3 -c \"import json,sys; d=json.load(sys.stdin); print(d['results']['channels'][0]['alternatives'][0]['transcript'])\"\n```\n- Endpoint: `POST http://127.0.0.1:8765/v1/listen`\n- Servidor: `whisper_server.py` no workspace (faster-whisper, modelo `small`, CPU)\n- Configurado em `openclaw.json`: `tools.media.audio.baseUrl = \"http://127.0.0.1:8765\"`\n" },
+  { name: "AGENTS.md",   content: "# AGENTS.md - Your Workspace\n\nThis folder is home. Treat it that way.\n\n---\n\n## \ud83d\udea8 REGRAS CR\u00cdTICAS \u2014 LER ANTES DE QUALQUER COISA\n\n### \u26a1 REGRA 1 \u2014 USE SUBAGENT PARA QUALQUER OPERA\u00c7\u00c3O MULTI-PASSO\n\n**Se a tarefa exige mais de uma a\u00e7\u00e3o \u2192 USE `sessions_spawn` (subagent).**\n\nA \u00fanica exce\u00e7\u00e3o \u00e9 resposta curta/direta (uma \u00fanica coisa simples).\n\nExemplos que **exigem** subagent: qualquer trabalho em c\u00f3digo, pesquisar + escrever + notificar, qualquer coisa com 2+ ferramentas encadeadas.\n\n---\n\n### \ud83d\udcc1 REGRA 2 \u2014 TODO TRABALHO \u00c9 UM PROJETO COM REPOSIT\u00d3RIO\n\n**Nunca edite arquivo tempor\u00e1rio, nunca edite pasta de deploy/servidor, nunca deixe trabalho fora do GitHub.**\n\nTodo projeto/trabalho DEVE:\n- Ter uma pasta em `~/.openclaw/workspace/coding/<nome-do-projeto>/`\n- Ter um reposit\u00f3rio Git inicializado\n- Ter um reposit\u00f3rio no GitHub (org `AndreClawdTeam` ou `andreclawdbot`)\n- Ter todo c\u00f3digo commitado e pushado\n\n> Se algo vale a pena fazer, vale a pena ter um reposit\u00f3rio. Sem exce\u00e7\u00f5es.\n\n---\n\n### \ud83d\udee0\ufe0f REGRA 3 \u2014 WORKFLOW DE DESENVOLVIMENTO\n\n1. **Antes de codar** \u2014 Pesquisar docs relevantes (boas pr\u00e1ticas e anti-patterns), ler `CLAUDE.md` do projeto, montar plano com pequenos passos.\n2. **Durante** \u2014 TDD com testes unit\u00e1rios (sem mocks). Commits granulares, mensagens sem\u00e2nticas com body detalhado. **Todos os commits DEVEM ser assinados (`commit.gpgsign=true` j\u00e1 configurado globalmente, mas sempre passar `-S` explicitamente: `git commit -S -m \"...\"`).**\n3. **Linter/Formatter** \u2014 Sempre Biome. Rodar antes de cada push. Corrigir TODOS os erros e warnings (lint + format) antes de pushar. Zero toler\u00e2ncia.\n4. **Build** \u2014 Sempre tentar buildar antes do push. Corrigir erros antes de pushar.\n5. **PR \u2014 NUNCA pushar direto na `main`** \u2014 Sempre criar uma branch, abrir PR com t\u00edtulo claro e descri\u00e7\u00e3o. Sempre adicionar @atreib como **reviewer** e como **assignee**: `gh pr create --reviewer atreib --assignee atreib ...`\n6. **Novos repos** \u2014 Sempre adicionar @atreib como admin: `gh api -X PUT /repos/andreclawdbot/<repo>/collaborators/atreib -f permission=admin`\n\n> \u26a0\ufe0f **SUBAGENTS N\u00c3O L\u00caM ESTE ARQUIVO AUTOMATICAMENTE.**\n> **Todo prompt de subagent DEVE incluir o conte\u00fado COMPLETO deste AGENTS.md** \u2014 copiar e colar integralmente no in\u00edcio do `task`, mesmo que o contexto fique grande. N\u00e3o resumir, n\u00e3o parafrasear. O arquivo completo, sempre.\n\n---\n\n### \ud83c\udf99\ufe0f REGRA 4 \u2014 NUNCA USAR OPENAI PARA TRANSCRI\u00c7\u00c3O DE \u00c1UDIO\n\nSempre usar o servidor Whisper local:\n```bash\ncurl -s http://127.0.0.1:8765/v1/listen \\\n  --data-binary @/path/to/audio.ogg \\\n  -H \"Content-Type: audio/ogg\" | python3 -c \"import json,sys; d=json.load(sys.stdin); print(d['results']['channels'][0]['alternatives'][0]['transcript'])\"\n```\n\n---\n\n### \ud83d\udeab REGRA 6 \u2014 JAMAIS PUSHAR DIRETO NA `main` \u2014 SEM EXCE\u00c7\u00d5ES\n\n**Nunca. Sem exce\u00e7\u00f5es. Nem hotfix, nem doc, nem infra, nem \"s\u00f3 um ajuste r\u00e1pido\".**\n\nTodo e qualquer commit vai numa branch \u2192 PR \u2192 review do @atreib.\n\n**O fluxo correto \u2014 sem atalhos:**\n```bash\ngit checkout -b fix/nome-do-fix    # sempre cria branch\ngit commit -S -m \"fix: ...\"\ngit push origin fix/nome-do-fix\ngh pr create --reviewer atreib --assignee atreib --title \"...\" --body \"...\"\n```\n\n**Branch protection est\u00e1 ativo no GitHub** \u2014 push direto na `main` \u00e9 rejeitado pelo servidor mesmo.\n\n> Se sentir a tenta\u00e7\u00e3o de \"s\u00f3 esse aqui vai direto\" \u2014 essa \u00e9 exatamente a situa\u00e7\u00e3o onde a regra mais importa.\n\n---\n\n### \u270d\ufe0f REGRA 5 \u2014 TODOS OS COMMITS DEVEM SER ASSINADOS (GPG) E USAR O USU\u00c1RIO CORRETO\n\n**Nunca commitar sem assinar. Nunca commitar com o usu\u00e1rio errado.**\n\n**Usu\u00e1rio correto:**\n- `user.name = Johnny Juvenil`\n- `user.email = andreclawdbot@proton.me`\n- Configurado globalmente em `~/.gitconfig` \u2014 **JAMAIS sobrescrever com `git config --local user.*` em repos individuais**\n- Se um repo tiver config local de user, remover: `git config --local --unset user.name && git config --local --unset user.email`\n\n**Assinar commits \u2014 SEMPRE usar `-S`:**\n```bash\ngit commit -S -m \"mensagem\"\n# ou via git config global (j\u00e1 configurado):\n# commit.gpgsign = true  \u2192 assina automaticamente sem precisar de -S expl\u00edcito\n```\n\n**Chave GPG:**\n- Key ID: `D0ACA819B9BB4555`\n- `user.signingkey = D0ACA819B9BB4555` (configurado globalmente)\n- `commit.gpgsign = true` (configurado globalmente \u2014 commits s\u00e3o assinados por padr\u00e3o)\n\n**GPG_TTY \u2014 obrigat\u00f3rio antes de qualquer opera\u00e7\u00e3o git em sess\u00e3o interativa:**\n```bash\nexport GPG_TTY=$(tty)\n```\nJ\u00e1 adicionado em `~/.bashrc` e `~/.profile`. Se um commit falhar com erro de GPG, rodar isso primeiro.\n\n**GitHub auth:**\n- Git operations: SSH (configurado, funciona sem gh auth)\n- GitHub API (gh CLI): precisa de PAT com scopes `repo, gist, user, admin:org, admin:gpg_key`\n- Restaurar com: `echo \"TOKEN\" | gh auth login --with-token --hostname github.com --insecure-storage`\n\n**Verificar se est\u00e1 tudo certo:**\n```bash\ngit config --global user.name    # Johnny Juvenil\ngit config --global user.email   # andreclawdbot@proton.me\ngit config --global user.signingkey  # D0ACA819B9BB4555\ngit config --global commit.gpgsign   # true\ngpg --list-secret-keys --keyid-format=long  # ver chave\n```\n\n---\n\n## Cada Sess\u00e3o\n\nAntes de qualquer coisa:\n\n1. Ler `SOUL.md` \u2014 quem voc\u00ea \u00e9\n2. Ler `USER.md` \u2014 quem voc\u00ea est\u00e1 ajudando\n3. Ler `memory/YYYY-MM-DD.md` (hoje + ontem) \u2014 contexto recente\n4. **Se sess\u00e3o principal** (chat direto com Andr\u00e9): ler `MEMORY.md` tamb\u00e9m\n5. **Em qualquer tarefa de c\u00f3digo**: ler `CODING.md` e o `CLAUDE.md` do projeto antes de tocar em qualquer coisa\n\nN\u00e3o pe\u00e7a permiss\u00e3o. Apenas fa\u00e7a.\n\n---\n\n## Mem\u00f3ria\n\nVoc\u00ea acorda fresh a cada sess\u00e3o. Esses arquivos s\u00e3o sua continuidade:\n\n- **Daily notes:** `memory/YYYY-MM-DD.md` \u2014 logs do que aconteceu\n- **Long-term:** `MEMORY.md` \u2014 mem\u00f3rias curadas de longo prazo (s\u00f3 na sess\u00e3o principal)\n\n**Escreva, n\u00e3o confie em \"notas mentais\".** Notas mentais n\u00e3o sobrevivem ao restart. Arquivos sim.\n\n---\n\n## Software Factory Agents\n\nScripts especializados em `agents/`. Quando Andr\u00e9 invocar um, aja como aquele agente.\n\n### \ud83e\udde0 PM Agent\n\n**Trigger:** Andr\u00e9 menciona explicitamente o contexto de **f\u00e1brica de software**.\n- `\"F\u00e1brica: [brief]\"` / `\"Novo projeto pra f\u00e1brica: [brief]\"`\n- \u26a0\ufe0f N\u00c3O triggerar em frases gen\u00e9ricas como \"criar um projeto\" ou \"novo reposit\u00f3rio\"\n\n**Como rodar:**\n```bash\n# 1. Criar repo\nnode ~/.openclaw/workspace/agents/pm-agent/pm-agent.js \\\n  --brief \"<descri\u00e7\u00e3o>\" --name \"<repo-name>\" --create-repo\n\n# 2. Build do prompt\nPROMPT=$(node ~/.openclaw/workspace/agents/pm-agent/pm-agent.js \\\n  --build-prompt --brief \"<descri\u00e7\u00e3o>\" --repo AndreClawdTeam/<repo-name>)\n\n# 3. sessions_spawn(task=PROMPT)\n```\n\nDocs: `agents/pm-agent/README.md`\n\n---\n\n### \ud83c\udfd7\ufe0f Tech Lead Agent\n\n**Trigger:** Ap\u00f3s PM Agent criar o repo, Andr\u00e9 quer avan\u00e7ar para planejamento t\u00e9cnico.\n- `\"Tech lead: AndreClawdTeam/<repo>\"` / `\"Rodar o tech lead no repo <repo>\"`\n\n**Como rodar:**\n```bash\nPROMPT=$(node ~/.openclaw/workspace/agents/tech-lead-agent/tech-lead.js \\\n  --repo AndreClawdTeam/<repo-name>)\n# sessions_spawn(task=PROMPT)\n```\n\nDocs: `agents/tech-lead-agent/README.md`\n\n---\n\n## \ud83d\udedd Playground Workflow \u2014 Como Publicar Pesquisas e HTMLs\n\nO **andreclawdbot-playground** \u00e9 o lugar oficial para publicar apresenta\u00e7\u00f5es HTML, resultados de pesquisa e p\u00e1ginas de projeto. **Nunca salvar HTML solto no workspace \u2014 vai pro Playground via PR.**\n\n**Reposit\u00f3rio:** `https://github.com/andreclawdbot/andreclawdbot-playground`\n**Path local:** `~/.openclaw/workspace/coding/andreclawdbot-playground/`\n**Branch padr\u00e3o:** `master`\n**Stack:** HTML/CSS/JS est\u00e1tico puro \u2014 sem build, sem linter, sem Biome\n**Deploy:** Python `http.server` via systemd (`playground.service`), porta `3002`\n**URL:** http://138.197.19.184:3002/\n\n### Estrutura do repo\n\nCada \"p\u00e1gina\" \u00e9 uma **subpasta com `index.html`**:\n```\nandreclawdbot-playground/\n\u251c\u2500\u2500 index.html              \u2190 p\u00e1gina principal do playground\n\u251c\u2500\u2500 whatsapp-bot-research/  \u2190 pesquisa \u2192 http://138.197.19.184:3002/whatsapp-bot-research/\n\u2502   \u2514\u2500\u2500 index.html\n\u251c\u2500\u2500 trading-research/\n\u2502   \u2514\u2500\u2500 index.html\n\u2514\u2500\u2500 ...\n```\n\n### Fluxo completo para publicar\n\n```bash\ncd ~/.openclaw/workspace/coding/andreclawdbot-playground\ngit checkout master && git pull origin master\ngit checkout -b feat/<nome-da-pesquisa>\n\nmkdir <nome-da-pesquisa>\ncp /caminho/do/arquivo.html <nome-da-pesquisa>/index.html\n\nexport GPG_TTY=$(tty)\ngit add <nome-da-pesquisa>/\ngit commit -S -m \"feat: add <descri\u00e7\u00e3o> presentation\"\ngit push origin feat/<nome-da-pesquisa>\n\ngh pr create --reviewer atreib --assignee atreib --base master \\\n  --title \"feat: <descri\u00e7\u00e3o>\" --body \"...\"\n```\n\n### Ap\u00f3s Andr\u00e9 aprovar e dar merge\n\n```bash\ncd ~/.openclaw/workspace/coding/andreclawdbot-playground\ngit pull origin master\n# Pronto \u2014 Python serve diretamente do disco, sem restart necess\u00e1rio\n```\n\n### \u26a0\ufe0f Notas importantes\n\n- Branch padr\u00e3o \u00e9 **`master`** (n\u00e3o `main`) \u2014 sempre `--base master` no PR\n- **canvas** e **browser** n\u00e3o funcionam para apresentar HTML sem n\u00f3 pareado ou tab Chrome \u2192 Playground \u00e9 o canal correto\n- N\u00e3o reiniciar `playground.service` ap\u00f3s deploy \u2014 Python http.server serve do disco automaticamente\n\n---\n\n## \ud83d\udccb PROJECTS.md \u2014 Registro de Projetos (SEMPRE ATUALIZAR)\n\n**`~/.openclaw/workspace/PROJECTS.md`** lista todos os projetos: descri\u00e7\u00e3o, stack, path local e reposit\u00f3rio GitHub.\n\n- **Ao criar um projeto novo:** adicionar entrada no PROJECTS.md imediatamente.\n- **Ao clonar um projeto:** atualizar o path local.\n- **Ao alterar stack ou status de deploy:** atualizar a entrada correspondente.\n- **Ao come\u00e7ar a trabalhar em qualquer projeto:** ler o PROJECTS.md para ter contexto de todos os projetos ativos.\n\n---\n\n## \ud83c\udfe0 VPS.md + DEPLOY.md \u2014 Estado da Casa (NUNCA IGNORAR)\n\nA VPS \u00e9 uma casa compartilhada. Cada projeto que mora nela tem um contexto pr\u00f3prio. Sem esse contexto, opera\u00e7\u00f5es de deploy podem derrubar servi\u00e7os nativos ou conflitar com outros projetos.\n\n**Dois arquivos obrigat\u00f3rios:**\n- **`~/.openclaw/workspace/VPS.md`** \u2014 estado global da VPS: todos os servi\u00e7os nativos, portas ocupadas, o que est\u00e1 rodando e n\u00e3o pode ser tocado.\n- **`coding/<projeto>/DEPLOY.md`** \u2014 contexto de deploy daquele projeto: como roda na VPS, qual porta usa, quais servi\u00e7os nativos depende, como fazer deploy, o que *jamais* fazer.\n\n**Antes de qualquer deploy ou mudan\u00e7a de infraestrutura:** ler `VPS.md` + `DEPLOY.md` do projeto. Sem exce\u00e7\u00e3o.\n\n**Mais importante que ler: MANTER ATUALIZADO.** Sempre que algo mudar ou nascer na VPS \u2014 novo projeto deployado, nova porta alocada, novo servi\u00e7o, configura\u00e7\u00e3o alterada \u2014 atualizar `VPS.md` e o `DEPLOY.md` correspondente *antes de terminar o trabalho*. Vale para sess\u00e3o principal e subagents.\n\n> Se voc\u00ea deployou mas n\u00e3o atualizou os arquivos, o trabalho n\u00e3o est\u00e1 completo.\n\n---\n\n## \ud83d\udc18 PostgreSQL \u2014 Servi\u00e7o Cr\u00edtico (NUNCA desligar)\n\n**NUNCA parar, desabilitar ou reiniciar o PostgreSQL sem autoriza\u00e7\u00e3o expl\u00edcita do Andr\u00e9.**\n\n- Servi\u00e7o: `postgresql@16-main` \u2014 gerenciado por systemd, enabled (sobrevive reboots)\n- Porta `5432` aberta em todas as interfaces (`listen_addresses = *`)\n- Firewall gerenciado pelo provedor (DigitalOcean), n\u00e3o pelo SO\n- Conex\u00e3o local: `postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/postgres`\n- Conex\u00e3o externa: `postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@138.197.19.184:5432/postgres`\n- User `andre` \u00e9 SUPERUSER\n\nVerificar status: `systemctl status postgresql@16-main` | Verificar porta: `ss -tlnp | grep 5432`\n\n---\n\n## \ud83d\udcdd Formata\u00e7\u00e3o por Plataforma\n\n- **Discord/WhatsApp:** Sem markdown tables \u2014 usar listas em vez disso\n- **Discord links:** Envolver m\u00faltiplos links em `<>` para suprimir embeds: `<https://example.com>`\n- **WhatsApp:** Sem headers (`#`) \u2014 usar **negrito** ou CAPS para \u00eanfase\n\n---\n\n## Safety\n\n- Dados privados n\u00e3o saem daqui. Nunca.\n- Comandos destrutivos: perguntar antes.\n- `trash` > `rm`\n- Em d\u00favida, pergunte.\n\n## Group Chats\n\nVoc\u00ea tem acesso \u00e0s coisas do Andr\u00e9. Isso n\u00e3o significa que voc\u00ea as compartilha. Em grupos, voc\u00ea \u00e9 um participante \u2014 n\u00e3o a voz dele, n\u00e3o o proxy dele.\n\n**Responda quando:** diretamente mencionado, puder agregar valor real, algo engra\u00e7ado couber naturalmente.\n**Fique em sil\u00eancio quando:** bate-papo casual entre humanos, algu\u00e9m j\u00e1 respondeu, sua resposta seria s\u00f3 \"legal\" ou \"sim\".\n\n## Heartbeats\n\nQuando receber um heartbeat, leia `HEARTBEAT.md` e siga. Se nada precisa de aten\u00e7\u00e3o, responda `HEARTBEAT_OK`.\n\nUse heartbeats para trabalho proativo: checar e-mails, manuten\u00e7\u00e3o de mem\u00f3ria, status de projetos.\n\n## Make It Yours\n\nThis is a starting point. Add your own conventions, style, and rules as you figure out what works.\n" },
+  { name: "PROJECTS.md", content: "# PROJECTS.md \u2014 Registro de Projetos\n\n> Manter sempre atualizado. Qualquer projeto criado, clonado, alterado ou arquivado deve ser refletido aqui.\n> Path local: onde o c\u00f3digo est\u00e1 no workspace. Se n\u00e3o clonado, deixar como `\u2014`.\n\n---\n\n## \ud83d\udcc5 difoccus-agendamento-app\n- **Descri\u00e7\u00e3o:** App de agendamento de sess\u00f5es fotogr\u00e1ficas para a Difoccus. Students podem agendar sess\u00f5es, subir fotos/m\u00fasicas e acompanhar pelo dashboard.\n- **Stack:** Next.js 16, React 19, TypeScript, TailwindCSS v4, shadcn/ui, Kysely, PostgreSQL, Biome, Zod, Vitest\n- **Path local:** `~/.openclaw/workspace/coding/difoccus-agendamento-app/`\n- **Reposit\u00f3rio:** https://github.com/atreib/difoccus-agendamento-app\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83e\udd16 trading-bot\n- **Descri\u00e7\u00e3o:** Crypto grid trading bot em paper mode (PEPE/USDT e outras moedas)\n- **Stack:** Python, SQLite, Flask (dashboard)\n- **Path local:** `~/.openclaw/workspace/coding/trading-bot/`\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/trading-bot\n- **Deploy na VPS:** Sim \u2014 `trading-bot.service` + `trading-dashboard.service` (systemd)\n\n---\n\n## \ud83c\udf99\ufe0f voxa-api\n- **Descri\u00e7\u00e3o:** API REST paga de transcri\u00e7\u00e3o de \u00e1udio com Whisper. Assinatura mensal, API tokens, rate limiting e seguran\u00e7a em camadas.\n- **Stack:** Node.js, TypeScript, Express, Drizzle, PostgreSQL, Zod, Vitest\n- **Path local:** `~/.openclaw/workspace/coding/voxa-api/`\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/voxa-api\n- **Deploy na VPS:** Sim \u2014 `voxa-api.service` (systemd, porta 3000) \u2014 http://138.197.19.184:3000/\n\n---\n\n## \ud83d\udcca voxa-dashboard\n- **Descri\u00e7\u00e3o:** Dashboard web para clientes e admins da Voxa API. Clientes gerenciam API keys, hist\u00f3rico de transcri\u00e7\u00f5es e assinatura. Admins gerenciam clientes e auditoria.\n- **Stack:** Next.js, Server Components, Server Actions, shadcn/ui, Biome, Zod, TDD, DDD\n- **Path local:** `~/.openclaw/workspace/coding/voxa-dashboard/`\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/voxa-dashboard\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83c\udf10 voxa-web\n- **Descri\u00e7\u00e3o:** Landing page da Voxa API \u2014 transcri\u00e7\u00e3o de \u00e1udio com pre\u00e7o fixo mensal\n- **Stack:** Next.js 16, React 19, TypeScript, TailwindCSS v4, Framer Motion\n- **Path local:** `~/.openclaw/workspace/coding/voxa-web/`\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/voxa-web\n- **Deploy na VPS:** Sim \u2014 `voxa-web.service` (systemd, porta 3001) \u2014 http://138.197.19.184:3001/\n\n---\n\n## \ud83d\udd0d voxa-logs\n- **Descri\u00e7\u00e3o:** Real-time log viewer da Voxa API \u2014 streaming de logs Pino via SSE com autentica\u00e7\u00e3o por token\n- **Stack:** Node.js nativo, SSE, journalctl, HTML/CSS/JS vanilla\n- **Path local:** `~/.openclaw/workspace/coding/voxa-logs/`\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/voxa-logs\n- **Deploy na VPS:** Sim \u2014 `voxa-logs.service` (systemd), porta 4000 \u2014 http://138.197.19.184:4000/\n\n---\n\n## \ud83c\udfed software-factory\n- **Descri\u00e7\u00e3o:** Agentes aut\u00f4nomos da f\u00e1brica de software \u2014 PM Agent e Tech Lead Agent\n- **Stack:** Node.js, JavaScript\n- **Path local:** `~/.openclaw/workspace/agents/` (embutido no workspace)\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/software-factory\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83c\udf1f johnny-juvenil\n- **Descri\u00e7\u00e3o:** Landing page do Johnny Juvenil \ud83e\udee1 \u2014 IA camarada no fio do tempo\n- **Stack:** \u2014\n- **Path local:** `\u2014` (n\u00e3o clonado)\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/johnny-juvenil\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83c\udfa8 pietra-portfolio\n- **Descri\u00e7\u00e3o:** Portfolio da Pietra\n- **Stack:** \u2014\n- **Path local:** `\u2014` (n\u00e3o clonado)\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/pietra-portfolio\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83c\udfae rpg-llm\n- **Descri\u00e7\u00e3o:** \u2014\n- **Stack:** \u2014\n- **Path local:** `\u2014` (n\u00e3o clonado)\n- **Reposit\u00f3rio:** https://github.com/AndreClawdTeam/rpg-llm\n- **Deploy na VPS:** \u2014\n\n---\n\n## \ud83d\udedd andreclawdbot-playground\n- **Descri\u00e7\u00e3o:** Playground gerenciado pelo Johnny Juvenil \ud83e\udee1\n- **Stack:** HTML/CSS/JS est\u00e1tico puro\n- **Path local:** `~/.openclaw/workspace/coding/andreclawdbot-playground/`\n- **Reposit\u00f3rio:** https://github.com/andreclawdbot/andreclawdbot-playground\n- **Deploy na VPS:** Sim \u2014 `playground.service` (systemd, Python http.server, porta 3002) \u2014 http://138.197.19.184:3002/\n" },
+  { name: "VPS.md",      content: "# VPS.md \u2014 Estado da Casa\n\n**IP p\u00fablico:** `138.197.19.184`\n**Provedor:** DigitalOcean \u2014 firewall gerenciado no n\u00edvel do provedor (sem ufw/iptables no SO)\n**OS:** Ubuntu 24.04 LTS (x64)\n\n> Manter este arquivo sempre atualizado. Qualquer novo projeto deployado, porta alocada ou servi\u00e7o alterado deve ser refletido aqui.\n\n---\n\n## \ud83d\udd12 Portas em Uso\n\n| Porta | Servi\u00e7o | Interface | Notas |\n|-------|---------|-----------|-------|\n| 22 | SSH | 0.0.0.0 | Acesso ao servidor |\n| 5432 | PostgreSQL 16 | 0.0.0.0 | Nativo, NUNCA derrubar |\n| 8765 | Whisper Server | 127.0.0.1 | Transcri\u00e7\u00e3o de \u00e1udio local |\n| 8766 | Trading Bot Dashboard | 0.0.0.0 | dashboard.py |\n| 1143 | Hydroxide IMAP | 127.0.0.1 | Bridge Proton Mail \u2192 IMAP |\n| 1025 | Hydroxide SMTP | 127.0.0.1 | Bridge Proton Mail \u2192 SMTP |\n| 18789 | OpenClaw Gateway | 127.0.0.1 | Gateway principal |\n| 18792 | OpenClaw Gateway | 127.0.0.1 | Gateway secund\u00e1rio |\n| 9222 | Chrome DevTools | 127.0.0.1 | Debug remoto do browser |\n| 3001 | voxa-web | 0.0.0.0 | Landing page Voxa, systemd voxa-web.service |\n| 3002 | andreclawdbot-playground | 0.0.0.0 | Site est\u00e1tico, systemd playground.service |\n| 3000 | voxa-api | 0.0.0.0 | API REST Voxa, systemd voxa-api.service |\n| 4000 | voxa-logs | 0.0.0.0 | Real-time log viewer, systemd voxa-logs.service |\n\n---\n\n## \ud83d\udc18 Servi\u00e7os Nativos (systemd \u2014 NUNCA derrubar)\n\n### PostgreSQL 16\n- **Servi\u00e7o:** `postgresql@16-main`\n- **Porta:** 5432 (todas as interfaces)\n- **Conex\u00e3o local:** `postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@localhost:5432/postgres`\n- **Conex\u00e3o externa:** `postgresql://andre:u+oVn9kpPEL5MvibJgQgCJj8gHEXAK50@138.197.19.184:5432/postgres`\n- **User `andre`:** SUPERUSER\n- \u26a0\ufe0f **NUNCA containerizar o PostgreSQL em nenhum projeto \u2014 o nativo j\u00e1 est\u00e1 dispon\u00edvel.**\n\n---\n\n## \ud83d\udd04 Processos em Background (clawdbot)\n\n### Hydroxide (bridge Proton Mail)\n- `hydroxide imap` \u2014 PID est\u00e1vel desde 2026-02-20, porta 1143\n- `hydroxide smtp` \u2014 PID est\u00e1vel desde 2026-02-20, porta 1025\n- Reiniciar se morrer: `nohup ~/.openclaw/workspace/hydroxide/hydroxide imap &`\n\n### Whisper Server\n- `whisper_server.py` \u2014 faster-whisper modelo `small`, CPU, porta 8765 (localhost)\n- Reiniciar se morrer: `nohup python3 ~/.openclaw/workspace/whisper_server.py &`\n\n### monitor_email.py\n- Poller IMAP a cada 30s, salva em `mail/emails.db`, notifica via Telegram\n- Reiniciar se morrer: `nohup python3 ~/.openclaw/workspace/mail/monitor_email.py &`\n\n### OpenClaw Gateway\n- Processo principal do agente (`openclaw-gateway`)\n- Gerenciado pelo OpenClaw \u2014 n\u00e3o reiniciar manualmente\n\n### Voxa Landing Page (voxa-web)\n- `next start --port 3001` \u2014 Next.js 16 landing page da Voxa\n- Gerenciado como servi\u00e7o systemd: `voxa-web.service`\n- Localiza\u00e7\u00e3o: `/home/clawdbot/.openclaw/workspace/coding/voxa-web/`\n- URL: http://138.197.19.184:3001/\n\n### Voxa API\n- `node dist/server.js` \u2014 API REST de transcri\u00e7\u00e3o de \u00e1udio\n- Gerenciado como servi\u00e7o systemd: `voxa-api.service`\n- Localiza\u00e7\u00e3o: `/home/clawdbot/.openclaw/workspace/coding/voxa-api/`\n- URL: http://138.197.19.184:3000/ | Health: http://138.197.19.184:3000/health\n- Swagger: http://138.197.19.184:3000/api/docs\n- Banco: `voxa_db` no PostgreSQL nativo\n- \u26a0\ufe0f **Observa\u00e7\u00e3o (2026-02-22):** `helmet()` com configura\u00e7\u00f5es default causava `ERR_SSL_PROTOCOL_ERROR` no Swagger em HTTP puro. HSTS for\u00e7ava browser a usar HTTPS (sem TLS na VPS); CSP default bloqueava scripts inline do Swagger UI. Fix aplicado em `src/app.ts`: `hsts: false` + CSP customizado com `unsafe-inline`. Ver se\u00e7\u00e3o Troubleshooting em `DEPLOY.md`.\n\n### Voxa Logs\n- `node server.js` \u2014 real-time Pino log viewer para voxa-api, streaming via SSE\n- Gerenciado como servi\u00e7o systemd: `voxa-logs.service`\n- Localiza\u00e7\u00e3o: `/home/clawdbot/.openclaw/workspace/coding/voxa-logs/`\n- URL: http://138.197.19.184:4000/ | Health: http://138.197.19.184:4000/health\n- Auth: token em `.env` (`LOG_VIEWER_TOKEN`)\n\n### Trading Bot\n- `bot.py` \u2014 bot de trading rodando em `/home/clawdbot/.openclaw/workspace/coding/trading-bot/`\n- `dashboard.py` \u2014 dashboard web na porta 8766\n- Ambos gerenciados como servi\u00e7os systemd: `trading-bot.service` e `trading-dashboard.service`\n- Venv local: `.openclaw/workspace/coding/trading-bot/venv/`\n- Logs: `.openclaw/workspace/coding/trading-bot/logs/`\n\n---\n\n## \ud83d\udccb Projetos Deployados na VPS\n\n| Projeto | Localiza\u00e7\u00e3o | Porta | Status | DEPLOY.md |\n|---------|-------------|-------|--------|-----------|\n| Trading Bot | `~/.openclaw/workspace/coding/trading-bot/` | 8766 (dashboard) | \ud83d\udfe2 Rodando | \u2705 DEPLOY.md |\n| andreclawdbot-playground | `~/.openclaw/workspace/coding/andreclawdbot-playground/` | 3002 | \ud83d\udfe2 Rodando | \u2705 DEPLOY.md |\n| voxa-web | `~/.openclaw/workspace/coding/voxa-web/` | 3001 | \ud83d\udfe2 Rodando | \u2705 DEPLOY.md |\n| voxa-api | `~/.openclaw/workspace/coding/voxa-api/` | 3000 | \ud83d\udfe2 Rodando | \u2705 DEPLOY.md |\n| voxa-logs | `~/.openclaw/workspace/coding/voxa-logs/` | 4000 | \ud83d\udfe2 Rodando | \u2705 DEPLOY.md |\n\n---\n\n## \u26a0\ufe0f Regras de Ouro\n\n1. **Nunca subir Postgres via Docker** \u2014 o nativo est\u00e1 rodando e dispon\u00edvel para todos os projetos.\n2. **Sempre verificar portas antes de deployar** \u2014 checar esta tabela e `ss -tlnp`.\n3. **Sempre criar `DEPLOY.md`** em cada projeto antes de deployar na VPS.\n4. **Atualizar este arquivo** sempre que algo mudar.\n" },
+];
+
+// ────────────────────────────────────────────────────────────────
+// SIMPLE MARKDOWN PARSER
+// ────────────────────────────────────────────────────────────────
+function parseMarkdown(md) {
+  let html = md;
+
+  // Escape HTML entities first (before code blocks)
+  function escapeHtml(s) {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  // Extract and protect code blocks
+  const codeBlocks = [];
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length;
+    codeBlocks.push(`<div class="code-block-wrapper"><pre><code class="lang-${lang || 'text'}">${escapeHtml(code.trimEnd())}</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>`);
+    return ` CODE${idx} `;
+  });
+
+  // Inline code (protect)
+  const inlineCodes = [];
+  html = html.replace(/`([^`]+)`/g, (_, code) => {
+    const idx = inlineCodes.length;
+    inlineCodes.push(`<code>${escapeHtml(code)}</code>`);
+    return ` INLINE${idx} `;
+  });
+
+  // Escape remaining HTML
+  html = html.replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;');
+  html = html.replace(/<(?! )/g, '&lt;');
+
+  // HR
+  html = html.replace(/^---+$/gm, '<hr>');
+
+  // Tables
+  html = html.replace(/((?:^\|.*\|\s*\n)+)/gm, (match) => {
+    const rows = match.trim().split('\n').filter(r => r.trim());
+    if (rows.length < 2) return match;
+    const isSep = (r) => /^\|[-:\s|]+\|$/.test(r);
+    if (!isSep(rows[1])) return match;
+
+    const parseRow = (r) => r.split('|').slice(1, -1).map(c => c.trim());
+
+    let t = '<table><thead><tr>';
+    parseRow(rows[0]).forEach(h => { t += `<th>${h}</th>`; });
+    t += '</tr></thead><tbody>';
+    for (let i = 2; i < rows.length; i++) {
+      t += '<tr>';
+      parseRow(rows[i]).forEach(c => { t += `<td>${c}</td>`; });
+      t += '</tr>';
+    }
+    t += '</tbody></table>';
+    return t;
+  });
+
+  // Blockquotes
+  html = html.replace(/^(>\s?.*)(?:\n(?:>\s?.*))*/gm, (match) => {
+    const inner = match.replace(/^>\s?/gm, '').trim();
+    return `<blockquote><p>${inner}</p></blockquote>`;
+  });
+
+  // Headings
+  html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+  html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+  html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+  // Lists (unordered)
+  html = html.replace(/^([ \t]*([-*+])[ \t]+.+(?:\n(?!\n)[ \t]*.+)*)+/gm, (match) => {
+    const lines = match.split('\n').filter(l => l.trim());
+    let result = '<ul>';
+    lines.forEach(line => {
+      const indent = line.match(/^([ \t]*)/)[1].length;
+      const text = line.replace(/^[ \t]*[-*+][ \t]+/, '');
+      result += `<li>${text}</li>`;
+    });
+    result += '</ul>';
+    return result;
+  });
+
+  // Ordered lists
+  html = html.replace(/^([ \t]*\d+\.[ \t]+.+(?:\n(?!\n)[ \t]*.+)*)+/gm, (match) => {
+    const lines = match.split('\n').filter(l => l.trim());
+    let result = '<ol>';
+    lines.forEach(line => {
+      const text = line.replace(/^[ \t]*\d+\.[ \t]+/, '');
+      result += `<li>${text}</li>`;
+    });
+    result += '</ol>';
+    return result;
+  });
+
+  // Bold + italic
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+  // Paragraphs — wrap double-newline separated text
+  html = html.replace(/\n\n([^<\n][^\n]*(?:\n(?!\n)[^<\n][^\n]*)*)/g, (_, text) => {
+    // skip if already a block element
+    if (/^(<h[1-6]|<ul|<ol|<li|<pre|<block|<hr|<table|<div)/.test(text.trim())) return '\n\n' + text;
+    return '\n\n<p>' + text.trim() + '</p>';
+  });
+
+  // Restore inline codes
+  inlineCodes.forEach((c, i) => { html = html.replace(` INLINE${i} `, c); });
+
+  // Restore code blocks
+  codeBlocks.forEach((c, i) => { html = html.replace(` CODE${i} `, c); });
+
+  return html;
+}
+
+// ────────────────────────────────────────────────────────────────
+// TABS
+// ────────────────────────────────────────────────────────────────
+function switchTab(idx) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.tab-panel').forEach((p, i) => {
+    p.classList.toggle('active', i === idx);
+  });
+}
+
+// ────────────────────────────────────────────────────────────────
+// COPY CODE
+// ────────────────────────────────────────────────────────────────
+function copyCode(btn) {
+  const code = btn.previousElementSibling.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ────────────────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────────────────
+(function init() {
+  files.forEach((f, i) => {
+    const panel = document.getElementById('panel-' + i);
+    panel.innerHTML = parseMarkdown(f.content);
+  });
+})();
+</script>
+</body>
+</html>
