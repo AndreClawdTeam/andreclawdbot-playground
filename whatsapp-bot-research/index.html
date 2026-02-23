@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WhatsApp Bot — Guia de Implementação</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f1117;--surface:#1a1d27;--surface2:#242736;--surface3:#2d3047;
+    --accent:#25d366;--accent2:#128c7e;--accent3:#34b7f1;
+    --danger:#e74c3c;--warn:#f39c12;--info:#3498db;
+    --text:#e8eaf6;--muted:#8b92b2;--border:#2d3047;
+    --code-bg:#12141e;--radius:10px;
+  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+  header{background:linear-gradient(135deg,#0d1b12 0%,#1a2d20 50%,#0f1117 100%);border-bottom:1px solid var(--border);padding:28px 40px 20px;display:flex;align-items:center;gap:18px}
+  header .logo{width:52px;height:52px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+  header h1{font-size:1.8rem;font-weight:700;color:var(--text)}
+  header h1 span{color:var(--accent)}
+  header p{color:var(--muted);font-size:.9rem;margin-top:3px}
+  nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 40px;display:flex;gap:4px;overflow-x:auto}
+  nav button{background:none;border:none;color:var(--muted);padding:14px 20px;cursor:pointer;font-size:.9rem;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;font-family:inherit}
+  nav button:hover{color:var(--text)}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  main{max-width:1100px;margin:0 auto;padding:32px 40px}
+  section{display:none}
+  section.active{display:block}
+  h2{font-size:1.5rem;font-weight:700;margin-bottom:6px;color:var(--text)}
+  h2 .badge{font-size:.7rem;background:var(--accent2);color:#fff;padding:2px 8px;border-radius:20px;margin-left:10px;vertical-align:middle;font-weight:500}
+  .subtitle{color:var(--muted);margin-bottom:28px;font-size:.95rem}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 26px;margin-bottom:20px}
+  .card h3{font-size:1.1rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .card h3 .icon{font-size:1.3rem}
+  .card p,.card li{color:var(--muted);font-size:.9rem;line-height:1.7}
+  .card ul{padding-left:20px;margin-top:6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+  .tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:12px;font-weight:600;margin:2px}
+  .tag.green{background:#0d2b1a;color:var(--accent);border:1px solid #1a5c33}
+  .tag.blue{background:#0d1f2b;color:var(--accent3);border:1px solid #1a3d5c}
+  .tag.red{background:#2b0d0d;color:var(--danger);border:1px solid #5c1a1a}
+  .tag.yellow{background:#2b1d0d;color:var(--warn);border:1px solid #5c3d1a}
+  .tbl-wrap{overflow-x:auto;margin:16px 0;border-radius:var(--radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th{background:var(--surface2);padding:12px 16px;text-align:left;color:var(--text);font-weight:600;border-bottom:1px solid var(--border)}
+  td{padding:11px 16px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--surface2)}
+  td.good{color:var(--accent)}
+  td.bad{color:var(--danger)}
+  td.warn{color:var(--warn)}
+  td strong{color:var(--text)}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:18px 22px;overflow-x:auto;margin:14px 0;font-size:.82rem;line-height:1.7}
+  code{font-family:'JetBrains Mono','Fira Code','Consolas',monospace}
+  .kw{color:#c792ea}.fn{color:#82aaff}.str{color:#c3e88d}.cm{color:#546e7a;font-style:italic}
+  .num{color:#f78c6c}.tp{color:#ffcb6b}.op{color:#89ddff}.prop{color:#f07178}
+  .cost-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;text-align:center}
+  .cost-card .price{font-size:2rem;font-weight:800;color:var(--accent);margin:8px 0 4px}
+  .cost-card .price.paid{color:var(--warn)}
+  .cost-card .label{color:var(--text);font-weight:600;font-size:.95rem}
+  .cost-card .desc{color:var(--muted);font-size:.82rem;margin-top:6px}
+  .alert{padding:12px 18px;border-radius:8px;font-size:.88rem;margin:14px 0;display:flex;gap:10px;align-items:flex-start}
+  .alert.warn{background:#1e1508;border:1px solid #5c3d1a;color:var(--warn)}
+  .alert.info{background:#080f1e;border:1px solid #1a3d5c;color:var(--accent3)}
+  .alert.success{background:#080f0d;border:1px solid #1a5c33;color:var(--accent)}
+  .steps{list-style:none;padding:0;margin:16px 0;counter-reset:step}
+  .steps li{counter-increment:step;display:flex;gap:14px;margin-bottom:16px;align-items:flex-start}
+  .steps li::before{content:counter(step);background:var(--accent2);color:#fff;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;margin-top:1px}
+  .steps li .txt{color:var(--muted);font-size:.9rem}
+  .steps li .txt strong{color:var(--text)}
+  .rec{background:linear-gradient(135deg,#0a2018 0%,#0d2b1a 100%);border:1px solid #1a5c33;border-radius:var(--radius);padding:20px 26px;display:flex;gap:16px;align-items:center;margin-bottom:24px}
+  .rec .star{font-size:2rem}
+  .rec h3{color:var(--accent);font-size:1.1rem;margin-bottom:4px}
+  .rec p{color:var(--muted);font-size:.88rem}
+  .arch{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:20px 0}
+  .arch-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:.82rem;color:var(--text);text-align:center;min-width:100px}
+  .arch-box.green{border-color:var(--accent);color:var(--accent)}
+  .arch-box.blue{border-color:var(--accent3);color:var(--accent3)}
+  .arch-box.purple{border-color:#c792ea;color:#c792ea}
+  .arch-arrow{color:var(--muted);font-size:1.2rem;padding:0 8px}
+  footer{text-align:center;padding:24px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:40px}
+  @media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr}main{padding:20px 16px}header{padding:20px 16px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">💬</div>
+  <div>
+    <h1>WhatsApp <span>Bot</span> — Guia de Implementação</h1>
+    <p>Stacks · Deploy · Custos · Arquitetura de Fluxos · TypeScript</p>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="active" data-tab="libraries">📦 Bibliotecas</button>
+  <button data-tab="deploy">🚀 Deploy</button>
+  <button data-tab="costs">💰 Custos</button>
+  <button data-tab="flows">🔀 Fluxos &amp; Arquitetura</button>
+  <button data-tab="quickstart">⚡ Quick Start</button>
+</nav>
+
+<main>
+
+<!-- TAB 1: BIBLIOTECAS -->
+<section id="libraries" class="active">
+  <h2>Bibliotecas &amp; SDKs <span class="badge">5 opções</span></h2>
+  <p class="subtitle">Comparativo das principais formas de criar bots no WhatsApp com TypeScript/Node.js.</p>
+
+  <div class="rec">
+    <div class="star">⭐</div>
+    <div>
+      <h3>Recomendado para TypeScript: Baileys</h3>
+      <p>Conexão direta via WebSocket (sem browser), escrito nativamente em TypeScript, lightweight, 8k+ stars no GitHub. Ideal para bots de produção em Node.js.</p>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Biblioteca</th>
+          <th>Tipo</th>
+          <th>TS Nativo</th>
+          <th>Mecanismo</th>
+          <th>RAM Aprox.</th>
+          <th>Risco Ban</th>
+          <th>Stars</th>
+          <th>Melhor Para</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Baileys</strong> <span class="tag green">⭐ Top TS</span></td>
+          <td>Não-oficial</td>
+          <td class="good">✅ Sim</td>
+          <td>WebSocket direto</td>
+          <td class="good">~50–100 MB</td>
+          <td class="warn">Médio</td>
+          <td>8k+</td>
+          <td>Bots TS, leve, produção</td>
+        </tr>
+        <tr>
+          <td><strong>whatsapp-web.js</strong></td>
+          <td>Não-oficial</td>
+          <td class="warn">⚠️ Parcial</td>
+          <td>Puppeteer/Chrome</td>
+          <td class="bad">~500 MB+</td>
+          <td class="warn">Médio</td>
+          <td>15k+</td>
+          <td>API simples, protótipos</td>
+        </tr>
+        <tr>
+          <td><strong>WPPConnect</strong></td>
+          <td>Não-oficial</td>
+          <td class="good">✅ Sim</td>
+          <td>Puppeteer/Chrome</td>
+          <td class="bad">~500 MB+</td>
+          <td class="warn">Médio</td>
+          <td>3.5k+</td>
+          <td>REST API wrapper</td>
+        </tr>
+        <tr>
+          <td><strong>Meta Cloud API</strong> <span class="tag blue">Oficial</span></td>
+          <td>Oficial Meta</td>
+          <td class="good">✅ Sim</td>
+          <td>Webhook + REST</td>
+          <td class="good">Serverless ok</td>
+          <td class="good">Zero</td>
+          <td>—</td>
+          <td>Produção empresarial</td>
+        </tr>
+        <tr>
+          <td><strong>Twilio</strong></td>
+          <td>Oficial (wrapper)</td>
+          <td class="good">✅ SDK</td>
+          <td>REST + Webhook</td>
+          <td class="good">Serverless ok</td>
+          <td class="good">Zero</td>
+          <td>—</td>
+          <td>Simples, sandbox gratuita</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="icon">🔌</span> Baileys — Destaques</h3>
+      <ul>
+        <li>WebSocket direto com servidores WhatsApp — sem Selenium nem Puppeteer</li>
+        <li>Suporte multi-device nativo</li>
+        <li>Envio/recebimento de mídia, grupos, botões</li>
+        <li>EventEmitter para escuta de eventos em tempo real</li>
+        <li>100% TypeScript — tipagem completa incluída</li>
+        <li>Node 17+ necessário</li>
+      </ul>
+      <br/>
+      <span class="tag red">⚠ Não-oficial</span>
+      <span class="tag yellow">Uso massivo = risco</span>
+      <span class="tag green">Gratuito</span>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🏢</span> Meta Cloud API — Destaques</h3>
+      <ul>
+        <li>API oficial — zero risco de ban ou suspensão</li>
+        <li>Webhook para receber mensagens (sem sessão persistente)</li>
+        <li>Templates de mensagem aprovados pelo Meta</li>
+        <li>Suporte a botões, listas, mídia, fluxos interativos</li>
+        <li>Número de telefone dedicado (WABA obrigatório)</li>
+        <li>Aprovação + verificação de negócio necessária</li>
+      </ul>
+      <br/>
+      <span class="tag green">Oficial &amp; Seguro</span>
+      <span class="tag yellow">Aprovação necessária</span>
+      <span class="tag blue">Per-message pricing</span>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🌐</span> whatsapp-web.js — Destaques</h3>
+      <ul>
+        <li>API mais simples e documentada entre as não-oficiais</li>
+        <li>15k+ stars — maior comunidade</li>
+        <li>Usa Puppeteer (Chrome headless) — alto consumo de RAM</li>
+        <li>Tipagem parcial via @types externos</li>
+        <li>Mais fácil de aprender para quem vem do JS</li>
+      </ul>
+      <br/>
+      <span class="tag red">Alto uso de RAM</span>
+      <span class="tag yellow">Puppeteer obrigatório</span>
+      <span class="tag green">Comunidade enorme</span>
+    </div>
+    <div class="card">
+      <h3><span class="icon">📡</span> Twilio — Destaques</h3>
+      <ul>
+        <li>Sandbox gratuita para testes imediatos</li>
+        <li>SDK TypeScript oficial (@twilio/conversations)</li>
+        <li>Webhook simples, deploy serverless fácil</li>
+        <li>Precisa de aprovação + número Twilio dedicado</li>
+        <li>Custo mais alto por mensagem que Meta direta</li>
+      </ul>
+      <br/>
+      <span class="tag blue">SDK Oficial TS</span>
+      <span class="tag yellow">Sandbox gratuita</span>
+      <span class="tag red">Custo mais elevado</span>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 2: DEPLOY -->
+<section id="deploy">
+  <h2>Deploy &amp; Infraestrutura</h2>
+  <p class="subtitle">O que muda no deploy dependendo da abordagem escolhida.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="icon">🔴</span> Libs Não-Oficiais (Baileys, wwjs, WPP)</h3>
+      <ul>
+        <li>Requerem <strong>sessão persistente</strong> — bot fica conectado 24/7 via WebSocket</li>
+        <li>Autenticação via QR Code na primeira execução</li>
+        <li>Estado de auth salvo em arquivos locais ou banco de dados</li>
+        <li><strong>Não funciona com serverless</strong> (Lambda, Vercel, CF Workers)</li>
+        <li>Necessita VPS ou container sempre ativo</li>
+        <li>whatsapp-web.js exige Chrome headless instalado no servidor</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon">✅</span> Meta Cloud API (Oficial)</h3>
+      <ul>
+        <li>Baseada em <strong>webhooks</strong> — completamente stateless</li>
+        <li>Funciona perfeitamente com <strong>serverless</strong> (Lambda, Vercel, etc.)</li>
+        <li>Não precisa de sessão ativa — só URL pública para receber eventos</li>
+        <li>URL de webhook deve ser HTTPS com certificado válido</li>
+        <li>Necessita número de telefone aprovado e WABA configurado no Meta</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:24px 0 12px;color:var(--text)">🏗️ Opções de Infraestrutura</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Plataforma</th><th>Tipo</th><th>Compatível com</th><th>Custo/mês</th><th>Sessão Persistente</th><th>Indicado para</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>VPS (Hetzner, DigitalOcean)</strong></td>
+          <td>VPS</td>
+          <td>Qualquer lib</td>
+          <td class="warn">$4–$12/mês</td>
+          <td class="good">✅ Sim</td>
+          <td>Baileys, wwjs, produção</td>
+        </tr>
+        <tr>
+          <td><strong>Railway</strong></td>
+          <td>PaaS container</td>
+          <td>Qualquer lib</td>
+          <td class="warn">~$5/mês</td>
+          <td class="good">✅ Sim</td>
+          <td>Deploy fácil via Git</td>
+        </tr>
+        <tr>
+          <td><strong>Fly.io</strong></td>
+          <td>Container (edge)</td>
+          <td>Qualquer lib</td>
+          <td class="good">Free tier / ~$1.94/mês</td>
+          <td class="good">✅ Volumes disponíveis</td>
+          <td>Baileys + volume para auth</td>
+        </tr>
+        <tr>
+          <td><strong>Render</strong></td>
+          <td>PaaS</td>
+          <td>Qualquer lib</td>
+          <td class="warn">Free (dorme) / $7/mês</td>
+          <td class="warn">⚠️ Dorme no free tier</td>
+          <td>Meta API + webhooks (paid)</td>
+        </tr>
+        <tr>
+          <td><strong>Vercel / Cloudflare Workers</strong></td>
+          <td>Serverless</td>
+          <td>Meta Cloud API, Twilio</td>
+          <td class="good">Free tier generoso</td>
+          <td class="bad">❌ Stateless apenas</td>
+          <td>Meta Cloud API</td>
+        </tr>
+        <tr>
+          <td><strong>Docker self-hosted</strong></td>
+          <td>Container</td>
+          <td>Qualquer lib</td>
+          <td class="good">Custo do servidor base</td>
+          <td class="good">✅ Sim</td>
+          <td>Controle total</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert info">
+    <span>💡</span>
+    <div><strong>Dica para Baileys + Docker:</strong> Monte um volume para persistir a pasta <code>auth_info/</code>. Assim o bot não pede QR Code a cada redeploy. Em produção, implemente um auth state customizado usando Redis ou PostgreSQL.</div>
+  </div>
+
+  <div class="grid2" style="margin-top:20px">
+    <div class="card">
+      <h3><span class="icon">🐳</span> Dockerfile — Baileys (Alpine, leve)</h3>
+      <pre><code><span class="kw">FROM</span> node:20-alpine
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production
+<span class="kw">COPY</span> dist/ ./dist/
+<span class="kw">VOLUME</span> ["/app/auth_info"]
+<span class="kw">CMD</span> ["node", "dist/index.js"]</code></pre>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🐳</span> Dockerfile — whatsapp-web.js (Chromium)</h3>
+      <pre><code><span class="kw">FROM</span> node:20
+<span class="kw">RUN</span> apt-get update && apt-get install -y \
+  chromium libasound2 libgconf-2-4
+<span class="kw">ENV</span> PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=<span class="str">true</span>
+<span class="kw">ENV</span> PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+<span class="kw">WORKDIR</span> /app
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> npm ci
+<span class="kw">VOLUME</span> ["/app/.wwebjs_auth"]
+<span class="kw">CMD</span> ["node", "dist/index.js"]</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 3: CUSTOS -->
+<section id="costs">
+  <h2>Custos para Manter no Ar</h2>
+  <p class="subtitle">Estimativas mensais para diferentes abordagens e volumes de uso.</p>
+
+  <h3 style="color:var(--text);margin-bottom:16px">🏗️ Infraestrutura (por abordagem)</h3>
+  <div class="grid3">
+    <div class="cost-card">
+      <div class="label">Baileys em VPS</div>
+      <div class="price">$4–6</div>
+      <div class="desc">Hetzner CX11 / DigitalOcean Basic<br/>512 MB RAM suficiente<br/>Sessão WebSocket persistente</div>
+    </div>
+    <div class="cost-card">
+      <div class="label">whatsapp-web.js em VPS</div>
+      <div class="price paid">$12–20</div>
+      <div class="desc">Precisa de 1–2 GB RAM<br/>(Puppeteer + Chrome headless)<br/>DigitalOcean Basic 2GB = $12/mês</div>
+    </div>
+    <div class="cost-card">
+      <div class="label">Meta Cloud API — Infra</div>
+      <div class="price">$0</div>
+      <div class="desc">Serverless (Vercel/CF Workers)<br/>Free tiers disponíveis<br/>Webhook stateless puro</div>
+    </div>
+  </div>
+
+  <h3 style="color:var(--text);margin:28px 0 16px">📨 Meta Cloud API — Custo por Mensagem (a partir de jul/2025)</h3>
+
+  <div class="alert success">
+    <span>✅</span>
+    <div><strong>Atualização importante (jul/2025):</strong> O modelo mudou de <em>por conversa</em> para <em>por mensagem entregue</em>. Mensagens de serviço (user-initiated, dentro da janela de 24h) são <strong>totalmente gratuitas</strong>.</div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Tipo de Mensagem</th><th>Custo (Brasil)</th><th>Quando cobrado</th><th>Exemplo de uso</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Service / Free-form</strong></td>
+          <td class="good">GRATUITO</td>
+          <td>Dentro da janela de 24h após msg do usuário</td>
+          <td>Atendimento, respostas, suporte</td>
+        </tr>
+        <tr>
+          <td><strong>Utility Template</strong> (na janela CSW)</td>
+          <td class="good">GRATUITO</td>
+          <td>Enviado dentro da Customer Service Window</td>
+          <td>Confirmação de pedido, recibo</td>
+        </tr>
+        <tr>
+          <td><strong>Utility Template</strong> (fora da janela)</td>
+          <td class="warn">~$0.02–0.04/msg</td>
+          <td>Por mensagem entregue</td>
+          <td>Notificação de envio, status</td>
+        </tr>
+        <tr>
+          <td><strong>Marketing Template</strong></td>
+          <td class="bad">~$0.0625/msg</td>
+          <td>Por mensagem entregue</td>
+          <td>Promoções, campanhas, newsletters</td>
+        </tr>
+        <tr>
+          <td><strong>Authentication Template</strong></td>
+          <td class="warn">~$0.01–0.03/msg</td>
+          <td>Por mensagem entregue</td>
+          <td>OTP, 2FA, verificação</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert info">
+    <span>📊</span>
+    <div><strong>Exemplo prático:</strong> Bot de atendimento com 500 usuários/dia, todos respondendo mensagens do usuário → <strong>$0/mês de custo Meta</strong>. Campanha de marketing com 1.000 mensagens → ~$62,50. Volume discount disponível a partir de certos thresholds (até 20% off).</div>
+  </div>
+
+  <h3 style="color:var(--text);margin:28px 0 16px">🆚 Resumo Comparativo — Custo Total Mensal</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Cenário</th><th>Abordagem</th><th>Infra/mês</th><th>Custo msgs</th><th>Total estimado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Bot pessoal / hobby</td>
+          <td>Baileys + Fly.io</td>
+          <td class="good">~$0–2</td>
+          <td class="good">$0</td>
+          <td class="good"><strong>~$0–2/mês</strong></td>
+        </tr>
+        <tr>
+          <td>Startup / pequeno negócio</td>
+          <td>Baileys + Hetzner VPS</td>
+          <td class="good">~$4/mês</td>
+          <td class="good">$0</td>
+          <td class="good"><strong>~$4/mês</strong></td>
+        </tr>
+        <tr>
+          <td>Negócio (atendimento puro)</td>
+          <td>Meta Cloud API + Vercel</td>
+          <td class="good">~$0</td>
+          <td class="good">$0 (service msgs)</td>
+          <td class="good"><strong>~$0/mês</strong></td>
+        </tr>
+        <tr>
+          <td>Negócio (marketing ativo)</td>
+          <td>Meta Cloud API</td>
+          <td class="good">~$0–5</td>
+          <td class="bad">$60–200/mês</td>
+          <td class="warn"><strong>$60–205/mês</strong></td>
+        </tr>
+        <tr>
+          <td>Prototipagem / sandbox</td>
+          <td>Twilio Sandbox</td>
+          <td class="good">$0</td>
+          <td class="good">$0 (sandbox)</td>
+          <td class="good"><strong>$0 (dev only)</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- TAB 4: FLUXOS -->
+<section id="flows">
+  <h2>Fluxos &amp; Arquitetura de Conversação</h2>
+  <p class="subtitle">Padrões para gerenciar rotas, menus e fluxos de conversa em TypeScript.</p>
+
+  <div class="arch">
+    <div class="arch-box green">Usuário 📱</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box">Message<br/>Receiver</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box blue">Command<br/>Router</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box purple">State<br/>Manager</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box">Handler<br/>Function</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box green">Resposta 📤</div>
+  </div>
+
+  <h3 style="color:var(--text);margin:24px 0 12px">📐 Padrão 1 — Command Router</h3>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:4px">Mapeia comandos fixos (<code>!menu</code>, <code>!ajuda</code>) para funções handler. Simples e direto.</p>
+  <pre><code><span class="cm">// commandRouter.ts</span>
+<span class="kw">import</span> { WAMessage, WASocket } <span class="kw">from</span> <span class="str">'baileys'</span>
+
+<span class="kw">type</span> <span class="tp">Handler</span> = (msg: <span class="tp">WAMessage</span>, sock: <span class="tp">WASocket</span>) =&gt; <span class="tp">Promise</span>&lt;<span class="kw">void</span>&gt;
+
+<span class="kw">const</span> commands = <span class="kw">new</span> <span class="tp">Map</span>&lt;<span class="tp">string</span>, <span class="tp">Handler</span>&gt;()
+
+<span class="cm">// Registrar handlers</span>
+commands.<span class="fn">set</span>(<span class="str">'!menu'</span>, <span class="kw">async</span> (msg, sock) =&gt; {
+  <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+    text: <span class="str">'📋 *Menu Principal*\n1️⃣ Suporte\n2️⃣ Pedidos\n3️⃣ Sair'</span>
+  })
+})
+
+commands.<span class="fn">set</span>(<span class="str">'!status'</span>, <span class="kw">async</span> (msg, sock) =&gt; {
+  <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+    text: <span class="str">'🟢 Sistema operacional!'</span>
+  })
+})
+
+<span class="cm">// Dispatcher no handler de mensagens</span>
+<span class="kw">export function</span> <span class="fn">dispatch</span>(msg: <span class="tp">WAMessage</span>, sock: <span class="tp">WASocket</span>) {
+  <span class="kw">const</span> text = msg.message?.conversation?.trim() ?? <span class="str">''</span>
+  <span class="kw">const</span> handler = commands.<span class="fn">get</span>(text.<span class="fn">toLowerCase</span>())
+  <span class="kw">if</span> (handler) <span class="kw">return</span> <span class="fn">handler</span>(msg, sock)
+  <span class="cm">// fallback: mensagem desconhecida</span>
+  <span class="kw">return</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+    text: <span class="str">'❓ Comando não reconhecido. Digite *!menu* para ver as opções.'</span>
+  })
+}</code></pre>
+
+  <h3 style="color:var(--text);margin:24px 0 12px">🔄 Padrão 2 — State Machine por Usuário</h3>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:4px">Cada usuário tem um estado. O bot responde diferente dependendo do estado atual. Ideal para fluxos multi-etapa.</p>
+  <pre><code><span class="cm">// stateMachine.ts</span>
+<span class="kw">type</span> <span class="tp">State</span> = <span class="str">'idle'</span> | <span class="str">'waiting_name'</span> | <span class="str">'waiting_cpf'</span> | <span class="str">'waiting_confirm'</span>
+
+<span class="kw">interface</span> <span class="tp">UserSession</span> {
+  state: <span class="tp">State</span>
+  data: <span class="tp">Record</span>&lt;<span class="tp">string</span>, <span class="tp">string</span>&gt;
+}
+
+<span class="kw">const</span> sessions = <span class="kw">new</span> <span class="tp">Map</span>&lt;<span class="tp">string</span>, <span class="tp">UserSession</span>&gt;()
+
+<span class="kw">function</span> <span class="fn">getSession</span>(userId: <span class="tp">string</span>): <span class="tp">UserSession</span> {
+  <span class="kw">if</span> (!sessions.<span class="fn">has</span>(userId))
+    sessions.<span class="fn">set</span>(userId, { state: <span class="str">'idle'</span>, data: {} })
+  <span class="kw">return</span> sessions.<span class="fn">get</span>(userId)!
+}
+
+<span class="kw">const</span> stateHandlers: <span class="tp">Record</span>&lt;<span class="tp">State</span>, <span class="tp">Handler</span>&gt; = {
+  idle: <span class="kw">async</span> (msg, sock) =&gt; {
+    <span class="kw">const</span> s = <span class="fn">getSession</span>(msg.key.remoteJid!)
+    s.state = <span class="str">'waiting_name'</span>
+    <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, { text: <span class="str">'👋 Olá! Qual é o seu nome?'</span> })
+  },
+  waiting_name: <span class="kw">async</span> (msg, sock) =&gt; {
+    <span class="kw">const</span> s = <span class="fn">getSession</span>(msg.key.remoteJid!)
+    s.data.name = msg.message?.conversation ?? <span class="str">''</span>
+    s.state = <span class="str">'waiting_cpf'</span>
+    <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+      text: <span class="str">`Oi, ${s.data.name}! Agora informe seu CPF:`</span>
+    })
+  },
+  waiting_cpf: <span class="kw">async</span> (msg, sock) =&gt; {
+    <span class="kw">const</span> s = <span class="fn">getSession</span>(msg.key.remoteJid!)
+    s.data.cpf = msg.message?.conversation ?? <span class="str">''</span>
+    s.state = <span class="str">'waiting_confirm'</span>
+    <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+      text: <span class="str">`✅ Confirmar?\nNome: ${s.data.name}\nCPF: ${s.data.cpf}\n\nResponda *sim* ou *não*`</span>
+    })
+  },
+  waiting_confirm: <span class="kw">async</span> (msg, sock) =&gt; {
+    <span class="kw">const</span> s = <span class="fn">getSession</span>(msg.key.remoteJid!)
+    <span class="kw">if</span> (msg.message?.conversation?.toLowerCase() === <span class="str">'sim'</span>) {
+      <span class="kw">await</span> <span class="fn">saveToDb</span>(s.data) <span class="cm">// sua lógica</span>
+      sessions.<span class="fn">delete</span>(msg.key.remoteJid!)
+      <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, { text: <span class="str">'🎉 Cadastro realizado!'</span> })
+    } <span class="kw">else</span> {
+      sessions.<span class="fn">delete</span>(msg.key.remoteJid!)
+      <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, { text: <span class="str">'❌ Cancelado.'</span> })
+    }
+  }
+}
+
+<span class="cm">// Dispatcher com state machine</span>
+<span class="kw">export function</span> <span class="fn">dispatchStateful</span>(msg: <span class="tp">WAMessage</span>, sock: <span class="tp">WASocket</span>) {
+  <span class="kw">const</span> jid = msg.key.remoteJid!
+  <span class="kw">const</span> session = <span class="fn">getSession</span>(jid)
+  <span class="kw">return</span> stateHandlers[session.state](msg, sock)
+}</code></pre>
+
+  <h3 style="color:var(--text);margin:24px 0 12px">🏛️ Padrão 3 — Intent Handler (Regex / NLP)</h3>
+  <p style="color:var(--muted);font-size:.9rem;margin-bottom:4px">Detecta intenções por padrão. Combina com LLMs ou motores NLU (Dialogflow, Wit.ai) para linguagem natural.</p>
+  <pre><code><span class="cm">// intentRouter.ts</span>
+<span class="kw">interface</span> <span class="tp">Intent</span> {
+  name: <span class="tp">string</span>
+  patterns: <span class="tp">RegExp</span>[]
+  handler: <span class="tp">Handler</span>
+}
+
+<span class="kw">const</span> intents: <span class="tp">Intent</span>[] = [
+  {
+    name: <span class="str">'greeting'</span>,
+    patterns: [<span class="str">/oi|olá|bom dia|boa tarde|boa noite/i</span>],
+    handler: <span class="kw">async</span> (msg, sock) =&gt; {
+      <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+        text: <span class="str">'👋 Olá! Como posso ajudar hoje?'</span>
+      })
+    }
+  },
+  {
+    name: <span class="str">'pricing'</span>,
+    patterns: [<span class="str">/preço|valor|quanto custa|custo|plano/i</span>],
+    handler: <span class="kw">async</span> (msg, sock) =&gt; {
+      <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+        text: <span class="str">'💰 Nossos planos a partir de R$ 49,90/mês'</span>
+      })
+    }
+  },
+  {
+    name: <span class="str">'farewell'</span>,
+    patterns: [<span class="str">/tchau|até|adeus|encerrar/i</span>],
+    handler: <span class="kw">async</span> (msg, sock) =&gt; {
+      sessions.<span class="fn">delete</span>(msg.key.remoteJid!)
+      <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(msg.key.remoteJid!, {
+        text: <span class="str">'👋 Até logo! Ótimo dia para você.'</span>
+      })
+    }
+  }
+]
+
+<span class="kw">export function</span> <span class="fn">routeByIntent</span>(text: <span class="tp">string</span>): <span class="tp">Handler</span> | <span class="kw">null</span> {
+  <span class="kw">for</span> (<span class="kw">const</span> intent <span class="kw">of</span> intents) {
+    <span class="kw">if</span> (intent.patterns.<span class="fn">some</span>(p =&gt; p.<span class="fn">test</span>(text))) <span class="kw">return</span> intent.handler
+  }
+  <span class="kw">return null</span>
+}</code></pre>
+
+  <div class="grid2" style="margin-top:20px">
+    <div class="card">
+      <h3><span class="icon">💡</span> Quando usar cada padrão?</h3>
+      <ul>
+        <li><strong>Command Router:</strong> Bots com comandos fixos e previsíveis</li>
+        <li><strong>State Machine:</strong> Fluxos multi-etapa: cadastro, checkout, formulário</li>
+        <li><strong>Intent Handler:</strong> FAQ, atendimento, linguagem natural</li>
+        <li><strong>Híbrido:</strong> State machine + intents dentro de cada estado</li>
+        <li><strong>LLM-powered:</strong> State machine + ChatGPT/Gemini como handler</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🗄️</span> Persistência de Estado</h3>
+      <ul>
+        <li><strong>Map em memória:</strong> Simples, perde ao reiniciar o processo</li>
+        <li><strong>Redis:</strong> TTL automático, suporte multi-instância, rápido</li>
+        <li><strong>PostgreSQL / SQLite:</strong> Histórico completo, ACID, consultas</li>
+        <li><strong>Recomendado produção:</strong> Redis para sessões + Postgres para histórico</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TAB 5: QUICK START -->
+<section id="quickstart">
+  <h2>⚡ Quick Start — Baileys + TypeScript</h2>
+  <p class="subtitle">Guia rápido para ter um bot rodando em minutos.</p>
+
+  <ol class="steps">
+    <li><div class="txt"><strong>Criar o projeto TypeScript</strong><br/>
+      <pre><code>mkdir my-wa-bot &amp;&amp; cd my-wa-bot
+npm init -y
+npm install baileys
+npm install -D typescript @types/node ts-node
+npx tsc --init</code></pre>
+    </div></li>
+    <li><div class="txt"><strong>Código principal — src/index.ts</strong><br/>
+      <pre><code><span class="kw">import</span> makeWASocket, {
+  DisconnectReason, useMultiFileAuthState
+} <span class="kw">from</span> <span class="str">'baileys'</span>
+<span class="kw">import</span> { Boom } <span class="kw">from</span> <span class="str">'@hapi/boom'</span>
+
+<span class="kw">async function</span> <span class="fn">startBot</span>(): <span class="tp">Promise</span>&lt;<span class="kw">void</span>&gt; {
+  <span class="kw">const</span> { state, saveCreds } =
+    <span class="kw">await</span> <span class="fn">useMultiFileAuthState</span>(<span class="str">'auth_info'</span>)
+
+  <span class="kw">const</span> sock = <span class="fn">makeWASocket</span>({
+    auth: state,
+    printQRInTerminal: <span class="kw">true</span>,
+    browser: [<span class="str">'MyBot'</span>, <span class="str">'Chrome'</span>, <span class="str">'1.0.0'</span>],
+  })
+
+  <span class="cm">// Persistir credenciais</span>
+  sock.ev.<span class="fn">on</span>(<span class="str">'creds.update'</span>, saveCreds)
+
+  <span class="cm">// Reconexão automática</span>
+  sock.ev.<span class="fn">on</span>(<span class="str">'connection.update'</span>, ({ connection, lastDisconnect }) =&gt; {
+    <span class="kw">if</span> (connection === <span class="str">'close'</span>) {
+      <span class="kw">const</span> code = (lastDisconnect?.error <span class="kw">as</span> <span class="tp">Boom</span>)?.output?.statusCode
+      <span class="kw">if</span> (code !== DisconnectReason.loggedOut) <span class="fn">startBot</span>()
+    } <span class="kw">else if</span> (connection === <span class="str">'open'</span>) {
+      console.<span class="fn">log</span>(<span class="str">'✅ Bot conectado!'</span>)
+    }
+  })
+
+  <span class="cm">// Receber e responder mensagens</span>
+  sock.ev.<span class="fn">on</span>(<span class="str">'messages.upsert'</span>, <span class="kw">async</span> ({ messages, type }) =&gt; {
+    <span class="kw">if</span> (type !== <span class="str">'notify'</span>) <span class="kw">return</span>
+
+    <span class="kw">for</span> (<span class="kw">const</span> msg <span class="kw">of</span> messages) {
+      <span class="kw">if</span> (msg.key.fromMe || !msg.message) <span class="kw">continue</span>
+
+      <span class="kw">const</span> jid = msg.key.remoteJid!
+      <span class="kw">const</span> text =
+        msg.message.conversation ??
+        msg.message.extendedTextMessage?.text ?? <span class="str">''</span>
+
+      <span class="kw">if</span> (text.<span class="fn">toLowerCase</span>() === <span class="str">'!ping'</span>) {
+        <span class="kw">await</span> sock.<span class="fn">sendMessage</span>(jid, { text: <span class="str">'🏓 Pong!'</span> })
+      }
+    }
+  })
+}
+
+<span class="fn">startBot</span>()</code></pre>
+    </div></li>
+    <li><div class="txt"><strong>Rodar em desenvolvimento</strong><br/>
+      <pre><code>npx ts-node src/index.ts
+<span class="cm"># Escaneie o QR Code com seu WhatsApp</span>
+<span class="cm"># Envie "!ping" para testar</span></code></pre>
+    </div></li>
+    <li><div class="txt"><strong>Build para produção</strong><br/>
+      <pre><code>npx tsc           <span class="cm"># compila → dist/</span>
+node dist/index.js</code></pre>
+    </div></li>
+    <li><div class="txt"><strong>Manter ativo com PM2 na VPS</strong><br/>
+      <pre><code>npm install -g pm2
+pm2 start dist/index.js --name wa-bot
+pm2 save &amp;&amp; pm2 startup   <span class="cm"># iniciar com o sistema</span>
+pm2 logs wa-bot            <span class="cm"># ver logs</span></code></pre>
+    </div></li>
+  </ol>
+
+  <div class="alert success">
+    <span>✅</span>
+    <div><strong>Pronto!</strong> Para produção: implemente um auth state customizado com Redis/PostgreSQL em vez do <code>useMultiFileAuthState</code> (apenas para dev/demo).</div>
+  </div>
+
+  <div class="grid2" style="margin-top:20px">
+    <div class="card">
+      <h3><span class="icon">📚</span> Recursos &amp; Links</h3>
+      <ul>
+        <li>Docs Baileys: <strong>baileys.wiki</strong></li>
+        <li>Repo: <strong>github.com/WhiskeySockets/Baileys</strong></li>
+        <li>Meta Cloud API: <strong>developers.facebook.com/docs/whatsapp</strong></li>
+        <li>whatsapp-web.js: <strong>wwebjs.dev</strong></li>
+        <li>WPPConnect: <strong>wppconnect.io</strong></li>
+        <li>Evolution API (wrapper Baileys): <strong>doc.evolution-api.com</strong></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3><span class="icon">🎯</span> Decisão Rápida</h3>
+      <ul>
+        <li>🏠 <strong>Hobby/pessoal:</strong> Baileys + Fly.io (~$0/mês)</li>
+        <li>🚀 <strong>Startup:</strong> Baileys + Hetzner CX11 (~$4/mês)</li>
+        <li>🏢 <strong>Empresa (atendimento):</strong> Meta Cloud API + Vercel (~$0)</li>
+        <li>📣 <strong>Empresa (marketing):</strong> Meta Cloud API + budget msgs</li>
+        <li>🧪 <strong>Testar rápido:</strong> Twilio Sandbox (gratuito)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  WhatsApp Bot Guide · Pesquisa técnica gerada automaticamente · Fev 2026
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('nav button')
+  const sections = document.querySelectorAll('section')
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab
+      tabs.forEach(b => b.classList.remove('active'))
+      sections.forEach(s => s.classList.remove('active'))
+      btn.classList.add('active')
+      document.getElementById(target).classList.add('active')
+    })
+  })
+</script>
+</body>
+</html>
