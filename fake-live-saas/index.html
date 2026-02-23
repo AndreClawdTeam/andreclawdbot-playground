@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📺 Fake Live SaaS — Arquitetura Completa</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #09090b;
+      --bg2:      #111113;
+      --bg3:      #18181b;
+      --bg4:      #27272a;
+      --border:   #3f3f46;
+      --text:     #fafafa;
+      --muted:    #a1a1aa;
+      --accent:   #6366f1;
+      --accent2:  #8b5cf6;
+      --green:    #22c55e;
+      --yellow:   #eab308;
+      --red:      #ef4444;
+      --orange:   #f97316;
+      --cyan:     #06b6d4;
+      --pink:     #ec4899;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: 80px 24px 60px;
+      text-align: center;
+      background: linear-gradient(135deg, #09090b 0%, #1a1027 50%, #09090b 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, rgba(139,92,246,0.1) 40%, transparent 70%);
+      animation: pulse-glow 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      50%       { opacity: 1;   transform: translateX(-50%) scale(1.08); }
+    }
+
+    header h1 {
+      position: relative;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 60%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      position: relative;
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 680px;
+      margin: 0 auto 24px;
+    }
+
+    .badge-row {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid;
+    }
+    .badge-indigo { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+    .badge-green  { background: rgba(34,197,94,0.12);  border-color: rgba(34,197,94,0.35);  color: #86efac; }
+    .badge-cyan   { background: rgba(6,182,212,0.12);  border-color: rgba(6,182,212,0.35);  color: #67e8f9; }
+    .badge-pink   { background: rgba(236,72,153,0.12); border-color: rgba(236,72,153,0.35); color: #f9a8d4; }
+    .badge-yellow { background: rgba(234,179,8,0.12);  border-color: rgba(234,179,8,0.35);  color: #fde047; }
+    .badge-orange { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.35); color: #fdba74; }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      scrollbar-width: thin;
+    }
+
+    .sidebar-title {
+      padding: 0 20px 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 20px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(99,102,241,0.08); }
+    .nav-icon { font-size: 0.9rem; min-width: 18px; }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 48px 40px;
+      min-width: 0;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      margin-bottom: 80px;
+      scroll-margin-top: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .section-num {
+      background: rgba(99,102,241,0.2);
+      color: var(--accent);
+      border: 1px solid rgba(99,102,241,0.4);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .card-indigo { border-left: 4px solid var(--accent); }
+    .card-green  { border-left: 4px solid var(--green); }
+    .card-cyan   { border-left: 4px solid var(--cyan); }
+    .card-pink   { border-left: 4px solid var(--pink); }
+    .card-yellow { border-left: 4px solid var(--yellow); }
+    .card-orange { border-left: 4px solid var(--orange); }
+    .card-red    { border-left: 4px solid var(--red); }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p, .card li { color: var(--muted); font-size: 0.88rem; }
+    .card ul { padding-left: 16px; }
+    .card li { margin-bottom: 4px; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* ── CODE BLOCKS ── */
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 16px 0;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: var(--bg4);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      gap: 8px;
+    }
+
+    .code-lang {
+      background: rgba(99,102,241,0.2);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+
+    .code-content {
+      padding: 16px 20px;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* syntax colors */
+    .k  { color: #c792ea; } /* keyword */
+    .s  { color: #c3e88d; } /* string */
+    .c  { color: #546e7a; font-style: italic; } /* comment */
+    .n  { color: #82aaff; } /* function/identifier */
+    .t  { color: #ffcb6b; } /* type */
+    .v  { color: #f07178; } /* variable/value */
+    .p  { color: var(--cyan); } /* punctuation / special */
+    .o  { color: #89ddff; } /* operator */
+    .num { color: #f78c6c; } /* number */
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    thead th {
+      background: var(--bg4);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(63,63,70,0.5);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .td-green  { color: var(--green); font-weight: 600; }
+    .td-red    { color: var(--red); font-weight: 600; }
+    .td-yellow { color: var(--yellow); font-weight: 600; }
+    .td-cyan   { color: var(--cyan); font-weight: 600; }
+    .td-muted  { color: var(--muted); font-size: 0.8rem; }
+
+    /* ── ASCII / DIAGRAM ── */
+    .ascii-diagram {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--muted);
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .ascii-diagram .hl  { color: var(--text); }
+    .ascii-diagram .acc { color: var(--accent); }
+    .ascii-diagram .grn { color: var(--green); }
+    .ascii-diagram .cyn { color: var(--cyan); }
+    .ascii-diagram .ylw { color: var(--yellow); }
+    .ascii-diagram .pnk { color: var(--pink); }
+
+    /* ── ROADMAP ── */
+    .phase {
+      position: relative;
+      padding-left: 32px;
+      margin-bottom: 32px;
+    }
+
+    .phase::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 28px;
+      bottom: -16px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .phase:last-child::before { display: none; }
+
+    .phase-dot {
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .phase-dot-indigo { background: var(--accent); }
+    .phase-dot-green  { background: var(--green); }
+    .phase-dot-yellow { background: var(--yellow); color: #000; }
+    .phase-dot-pink   { background: var(--pink); }
+
+    .phase-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .phase h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .phase-meta {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .phase-tag {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .tag-time   { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .tag-scope  { background: rgba(34,197,94,0.15); color: #86efac; }
+    .tag-effort { background: rgba(234,179,8,0.15);  color: #fde047; }
+
+    /* ── PROS/CONS ── */
+    .pro-con-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 12px 0;
+    }
+
+    .pros, .cons {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .pros { border-top: 3px solid var(--green); }
+    .cons { border-top: 3px solid var(--red); }
+
+    .pros h4, .cons h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .pros h4 { color: var(--green); }
+    .cons h4 { color: var(--red); }
+
+    .pros li, .cons li {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 5px;
+      list-style: none;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .pros li::before { content: '✓'; position: absolute; left: 0; color: var(--green); }
+    .cons li::before { content: '✗'; position: absolute; left: 0; color: var(--red); }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 0.88rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .callout-icon { font-size: 1.1rem; line-height: 1.5; flex-shrink: 0; }
+    .callout p { margin: 0; }
+
+    .callout-info   { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); }
+    .callout-warn   { background: rgba(234,179,8,0.1);  border: 1px solid rgba(234,179,8,0.3);  }
+    .callout-tip    { background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.3);  }
+    .callout-danger { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  }
+
+    /* ── PRICING HIGHLIGHT ── */
+    .price-big {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--green);
+      display: block;
+    }
+
+    .price-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .pricing-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    /* ── MISC ── */
+    p { margin-bottom: 12px; color: var(--muted); font-size: 0.92rem; }
+    strong { color: var(--text); font-weight: 600; }
+    em { color: var(--cyan); font-style: normal; }
+
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 20px 0 10px; }
+    h3 { font-size: 1rem; font-weight: 700; margin: 16px 0 8px; }
+
+    .text-accent  { color: var(--accent); }
+    .text-green   { color: var(--green); }
+    .text-cyan    { color: var(--cyan); }
+    .text-yellow  { color: var(--yellow); }
+    .text-pink    { color: var(--pink); }
+    .text-red     { color: var(--red); }
+    .text-muted   { color: var(--muted); }
+
+    .inline-code {
+      background: var(--bg4);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: monospace;
+      font-size: 0.85em;
+      color: var(--cyan);
+    }
+
+    .flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+    .flex-1   { flex: 1; min-width: 200px; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      main { padding: 24px 20px; }
+      .pro-con-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .pricing-cards { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-glow"></div>
+  <h1>📺 Fake Live SaaS</h1>
+  <p>Pesquisa técnica completa: arquitetura, stack, custo e roadmap para construir um sistema de "lives" agendadas com vídeo pré-gravado + fake chat em tempo real.</p>
+  <div class="badge-row">
+    <span class="badge badge-indigo">⚡ TypeScript</span>
+    <span class="badge badge-cyan">🚀 Next.js 14</span>
+    <span class="badge badge-green">🌿 Node.js / Fastify</span>
+    <span class="badge badge-orange">📦 AWS S3 / R2</span>
+    <span class="badge badge-yellow">🎬 HLS.js</span>
+    <span class="badge badge-pink">💬 SSE</span>
+    <span class="badge badge-indigo">🐘 PostgreSQL + RLS</span>
+    <span class="badge badge-cyan">⚡ Redis</span>
+    <span class="badge badge-green">☁️ CloudFront / Cloudflare</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-title">Índice</div>
+    <a class="nav-item active" href="#overview" onclick="setActive(this)">
+      <span class="nav-icon">🎯</span> Visão Geral
+    </a>
+    <a class="nav-item" href="#architecture" onclick="setActive(this)">
+      <span class="nav-icon">🏗️</span> Arquitetura
+    </a>
+    <a class="nav-item" href="#stack" onclick="setActive(this)">
+      <span class="nav-icon">🛠️</span> Stack Recomendada
+    </a>
+    <a class="nav-item" href="#multitenant" onclick="setActive(this)">
+      <span class="nav-icon">🏢</span> Multi-tenant
+    </a>
+    <a class="nav-item" href="#upload" onclick="setActive(this)">
+      <span class="nav-icon">⬆️</span> Upload de Vídeo
+    </a>
+    <a class="nav-item" href="#transcoding" onclick="setActive(this)">
+      <span class="nav-icon">🎞️</span> Processamento HLS
+    </a>
+    <a class="nav-item" href="#streaming" onclick="setActive(this)">
+      <span class="nav-icon">📡</span> Streaming / Player
+    </a>
+    <a class="nav-item" href="#fakechat" onclick="setActive(this)">
+      <span class="nav-icon">💬</span> Fake Chat (SSE)
+    </a>
+    <a class="nav-item" href="#scheduling" onclick="setActive(this)">
+      <span class="nav-icon">📅</span> Agendamento
+    </a>
+    <a class="nav-item" href="#timesync" onclick="setActive(this)">
+      <span class="nav-icon">⏱️</span> Controle de Tempo
+    </a>
+    <a class="nav-item" href="#cost" onclick="setActive(this)">
+      <span class="nav-icon">💰</span> Modelo de Custo
+    </a>
+    <a class="nav-item" href="#roadmap" onclick="setActive(this)">
+      <span class="nav-icon">🗺️</span> Roadmap
+    </a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 1. VISÃO GERAL -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="overview">
+      <div class="section-header">
+        <span class="section-icon">🎯</span>
+        <h2 class="section-title">Visão Geral do Sistema</h2>
+        <span class="section-num">01</span>
+      </div>
+
+      <p>O <strong>Fake Live SaaS</strong> permite que criadores de conteúdo publiquem vídeos pré-gravados como se fossem transmissões ao vivo, com controle de acesso por horário e chat sincronizado com o conteúdo. A "live" nunca existe de verdade — o vídeo é um arquivo estático servido via HLS, e o servidor orquestra tudo.</p>
+
+      <div class="card-grid">
+        <div class="card card-indigo">
+          <h3>🎭 SYSTEM ADMIN</h3>
+          <p>Visão global da plataforma. Gerencia todos os tenants (clientes pagantes), planos de assinatura, limites de armazenamento e faturamento. Acessa métricas agregadas.</p>
+        </div>
+        <div class="card card-cyan">
+          <h3>👔 ADMIN (Tenant)</h3>
+          <p>Cliente pagante. Cria e gerencia projetos (lives), faz upload de vídeos e CSVs, configura horários de exibição, personaliza a página da live. Gerencia sua assinatura.</p>
+        </div>
+        <div class="card card-green">
+          <h3>👤 ENDUSER</h3>
+          <p>Espectador final. Acessa apenas a hot page da live via link público. Não tem dashboard. Vê o player com restrição de seek + chat rolando em tempo real.</p>
+        </div>
+      </div>
+
+      <div class="ascii-diagram">
+<span class="hl">FLUXO PRINCIPAL DO SISTEMA</span>
+
+<span class="acc">┌─────────────────────────────────────────────────────────────────────┐</span>
+<span class="acc">│                        ADMIN (TENANT)                                │</span>
+<span class="acc">└──────────────────────────────┬──────────────────────────────────────┘</span>
+                               <span class="acc">│</span>
+          <span class="cyn">1. Upload vídeo (mp4, até 5h)</span>        <span class="cyn">2. Upload CSV de comentários</span>
+                               <span class="acc">│</span>                             <span class="acc">│</span>
+                    <span class="acc">┌──────────▼──────────────────────▼──────────┐</span>
+                    <span class="acc">│             Dashboard (Next.js)             │</span>
+                    <span class="acc">│  • Gerenciar projetos  • Config horários    │</span>
+                    <span class="acc">│  • Ver analytics       • Assinatura         │</span>
+                    <span class="acc">└──────────────────────┬──────────────────────┘</span>
+                                           <span class="acc">│</span>
+                    <span class="grn">3. API cria job de transcodificação + parseia CSV</span>
+                                           <span class="acc">│</span>
+                    <span class="acc">┌──────────────────────▼──────────────────────┐</span>
+                    <span class="acc">│          API Layer (Node.js/Fastify)         │</span>
+                    <span class="acc">│  PostgreSQL │ Redis │ BullMQ │ S3 │ CDN       │</span>
+                    <span class="acc">└──────────────────────┬──────────────────────┘</span>
+                                           <span class="acc">│</span>
+                    <span class="ylw">4. Transcodifica p/ HLS (360p/720p/1080p)</span>
+                    <span class="ylw">   Armazena no S3/R2 + invalida cache CDN</span>
+                                           <span class="acc">│</span>
+               <span class="cyn">────────────────────────────────────────────────</span>
+               <span class="cyn">                    LIVE AGENDADA                </span>
+               <span class="cyn">────────────────────────────────────────────────</span>
+                                           <span class="acc">│</span>
+                    <span class="acc">┌──────────────────────▼──────────────────────┐</span>
+                    <span class="acc">│            Hot Page (ENDUSER)               │</span>
+                    <span class="acc">│  Player HLS.js │ Seek desabilitado           │</span>
+                    <span class="acc">│  Fake chat via SSE │ Estado da live          │</span>
+                    <span class="acc">│                                             │</span>
+                    <span class="acc">│  ┌──────────────┐  ┌─────────────────────┐  │</span>
+                    <span class="acc">│  │ ▶ 47:23/5:00h│  │ 💬 João: boa noite! │  │</span>
+                    <span class="acc">│  │ [AO VIVO 🔴] │  │ 💬 Maria: incrível  │  │</span>
+                    <span class="acc">│  └──────────────┘  │ 💬 Pedro: ❤️❤️❤️    │  │</span>
+                    <span class="acc">│                   └─────────────────────┘  │</span>
+                    <span class="acc">└─────────────────────────────────────────────┘</span>
+
+<span class="pnk">Fora do horário:</span>   "Em breve" / "Próximas lives" / "Live encerrada"
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">💡</span>
+        <p><strong>Insight chave:</strong> O vídeo é sempre um arquivo VOD (Video on Demand) servido via HLS. O "ao vivo" é uma ilusão controlada pelo servidor: o player inicia exatamente no segundo <code class="inline-code">(agora - liveStartedAt)</code> e não permite seek. O chat é um arquivo CSV pré-carregado, emitido via SSE no timestamp correto.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 2. ARQUITETURA -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="architecture">
+      <div class="section-header">
+        <span class="section-icon">🏗️</span>
+        <h2 class="section-title">Arquitetura das Camadas</h2>
+        <span class="section-num">02</span>
+      </div>
+
+      <div class="ascii-diagram">
+<span class="hl">ARQUITETURA COMPLETA — FAKE LIVE SAAS</span>
+
+<span class="acc">┌──────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="acc">│                            CAMADA DE CLIENTE                                 │</span>
+<span class="acc">├─────────────────────────────────────────────────┬────────────────────────────┤</span>
+<span class="acc">│  Dashboard (Next.js 14 App Router)              │  Hot Page (Next.js SSR)    │</span>
+<span class="acc">│  app.fakelive.io/dashboard                      │  live.tenant.fakelive.io   │</span>
+<span class="acc">│  • Gestão de projetos/vídeos                    │  • Player HLS.js           │</span>
+<span class="acc">│  • Upload multipart + progress                  │  • Chat SSE em tempo real  │</span>
+<span class="acc">│  • Config agendamento                           │  • Estado da live          │</span>
+<span class="acc">│  • Analytics / Billing                          │                            │</span>
+<span class="acc">└─────────────────────────┬───────────────────────┴──────────────┬─────────────┘</span>
+                          <span class="acc">│  HTTPS / REST / SSE                  │</span>
+<span class="acc">┌─────────────────────────▼───────────────────────────────────────▼─────────────┐</span>
+<span class="acc">│                           API LAYER (Fastify + Node.js)                        │</span>
+<span class="acc">├────────────────┬───────────────┬──────────────────┬───────────────┬────────────┤</span>
+<span class="acc">│ Auth (JWT)     │ Upload Routes │ Live State API   │ SSE /chat     │ Admin API  │</span>
+<span class="acc">│ /auth/*        │ /videos/upload│ GET /live/:id    │ /live/:id/sse │ /admin/*   │</span>
+<span class="acc">│ RBAC Middleware│ presigned URLs│ currentSecond,   │ emite msgs    │ tenants,   │</span>
+<span class="acc">│ tenant_id ctx  │ multipart S3  │ status, schedule │ baseado no ts │ billing    │</span>
+<span class="acc">└────────┬───────┴───────┬───────┴────────┬─────────┴───────┬───────┴────────────┘</span>
+         <span class="acc">│               │               │                 │</span>
+<span class="acc">┌────────▼──────┐ ┌──────▼──────┐ ┌────────▼──────┐  ┌──────▼─────────────────┐</span>
+<span class="acc">│  PostgreSQL   │ │    Redis    │ │  BullMQ Jobs  │  │  S3 / R2 + CDN         │</span>
+<span class="grn">│  • tenants    │ │  • sessions │ │  • transcode  │  │  • vídeos originais     │</span>
+<span class="grn">│  • projects   │ │  • live     │ │  • csv-parse  │  │  • HLS segments .ts    │</span>
+<span class="grn">│  • schedules  │ │    state    │ │  • thumbnail  │  │  • playlists .m3u8     │</span>
+<span class="grn">│  • comments   │ │  • chat     │ │  • notify     │  │  • thumbnails .jpg     │</span>
+<span class="grn">│  • billing    │ │    buffer   │ │               │  │  CloudFront / R2+CDN   │</span>
+<span class="grn">│  RLS por      │ │  TTL cache  │ │  Redis Queue  │  │  signed URLs           │</span>
+<span class="grn">│  tenant_id    │ │             │ │               │  │                        │</span>
+<span class="acc">└───────────────┘ └─────────────┘ └───────────────┘  └────────────────────────┘</span>
+
+<span class="ylw">WORKERS (Node.js separados):</span>
+<span class="ylw">  transcode-worker.ts  →  consome fila BullMQ → executa FFmpeg → envia .m3u8/.ts p/ S3</span>
+<span class="ylw">  csv-worker.ts        →  parseia CSV → salva comentários no PG → pré-computa índice</span>
+<span class="ylw">  schedule-worker.ts   →  cron a cada minuto → atualiza estado de lives no Redis</span>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">✅</span>
+        <p><strong>Por que Fastify e não Express?</strong> Fastify é ~2x mais rápido em throughput bruto, tem schema validation nativo com Zod/JSON Schema, e TypeScript first-class. Para rotas de SSE com muitas conexões abertas simultâneas, isso importa.</p>
+      </div>
+
+      <h2>Modelo de Dados (PostgreSQL)</h2>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">SQL</span> schema.sql — tabelas principais</div>
+        <div class="code-content"><span class="c">-- Tenants (clientes pagantes)</span>
+<span class="k">CREATE TABLE</span> <span class="n">tenants</span> (
+  <span class="v">id</span>         <span class="t">UUID</span> <span class="k">PRIMARY KEY DEFAULT</span> <span class="n">gen_random_uuid</span>(),
+  <span class="v">slug</span>       <span class="t">TEXT</span> <span class="k">UNIQUE NOT NULL</span>,   <span class="c">-- subdomínio: "guru-espirita"</span>
+  <span class="v">name</span>       <span class="t">TEXT NOT NULL</span>,
+  <span class="v">plan</span>       <span class="t">TEXT DEFAULT</span> <span class="s">'starter'</span>, <span class="c">-- starter | pro | enterprise</span>
+  <span class="v">storage_gb</span> <span class="t">INT DEFAULT</span> <span class="num">50</span>,         <span class="c">-- limite por plano</span>
+  <span class="v">created_at</span> <span class="t">TIMESTAMPTZ DEFAULT NOW</span>()
+);
+
+<span class="c">-- Projetos (cada "live recorrente")</span>
+<span class="k">CREATE TABLE</span> <span class="n">projects</span> (
+  <span class="v">id</span>          <span class="t">UUID PRIMARY KEY DEFAULT</span> <span class="n">gen_random_uuid</span>(),
+  <span class="v">tenant_id</span>   <span class="t">UUID NOT NULL REFERENCES</span> <span class="n">tenants</span>(<span class="v">id</span>),
+  <span class="v">title</span>       <span class="t">TEXT NOT NULL</span>,
+  <span class="v">slug</span>        <span class="t">TEXT NOT NULL</span>,
+  <span class="v">video_hls</span>   <span class="t">TEXT</span>,   <span class="c">-- URL da playlist master.m3u8 no CDN</span>
+  <span class="v">duration_s</span>  <span class="t">INT</span>,    <span class="c">-- duração do vídeo em segundos</span>
+  <span class="v">status</span>      <span class="t">TEXT DEFAULT</span> <span class="s">'pending'</span>, <span class="c">-- pending | ready | error</span>
+  <span class="v">created_at</span>  <span class="t">TIMESTAMPTZ DEFAULT NOW</span>(),
+  <span class="k">UNIQUE</span>(<span class="v">tenant_id</span>, <span class="v">slug</span>)
+);
+
+<span class="c">-- Agendamentos de live</span>
+<span class="k">CREATE TABLE</span> <span class="n">schedules</span> (
+  <span class="v">id</span>          <span class="t">UUID PRIMARY KEY DEFAULT</span> <span class="n">gen_random_uuid</span>(),
+  <span class="v">project_id</span>  <span class="t">UUID NOT NULL REFERENCES</span> <span class="n">projects</span>(<span class="v">id</span>),
+  <span class="v">tenant_id</span>   <span class="t">UUID NOT NULL REFERENCES</span> <span class="n">tenants</span>(<span class="v">id</span>),
+  <span class="v">cron_expr</span>   <span class="t">TEXT NOT NULL</span>,  <span class="c">-- "0 20 * * 1,3" = seg/qua 20h</span>
+  <span class="v">timezone</span>    <span class="t">TEXT DEFAULT</span> <span class="s">'America/Sao_Paulo'</span>,
+  <span class="v">active</span>      <span class="t">BOOLEAN DEFAULT TRUE</span>
+);
+
+<span class="c">-- Comentários (parseados do CSV)</span>
+<span class="k">CREATE TABLE</span> <span class="n">comments</span> (
+  <span class="v">id</span>          <span class="t">BIGSERIAL PRIMARY KEY</span>,
+  <span class="v">project_id</span>  <span class="t">UUID NOT NULL REFERENCES</span> <span class="n">projects</span>(<span class="v">id</span>),
+  <span class="v">tenant_id</span>   <span class="t">UUID NOT NULL REFERENCES</span> <span class="n">tenants</span>(<span class="v">id</span>),
+  <span class="v">ts_seconds</span>  <span class="t">INT NOT NULL</span>,  <span class="c">-- segundo do vídeo em que aparece</span>
+  <span class="v">author</span>      <span class="t">TEXT NOT NULL</span>,
+  <span class="v">body</span>        <span class="t">TEXT NOT NULL</span>
+);
+<span class="k">CREATE INDEX</span> <span class="k">ON</span> <span class="n">comments</span>(<span class="v">project_id</span>, <span class="v">ts_seconds</span>);
+
+<span class="c">-- RLS aplicado em todas as tabelas de tenant</span>
+<span class="k">ALTER TABLE</span> <span class="n">projects</span>  <span class="k">ENABLE ROW LEVEL SECURITY</span>;
+<span class="k">ALTER TABLE</span> <span class="n">schedules</span> <span class="k">ENABLE ROW LEVEL SECURITY</span>;
+<span class="k">ALTER TABLE</span> <span class="n">comments</span>  <span class="k">ENABLE ROW LEVEL SECURITY</span>;</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 3. STACK RECOMENDADA -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="stack">
+      <div class="section-header">
+        <span class="section-icon">🛠️</span>
+        <h2 class="section-title">Stack Recomendada</h2>
+        <span class="section-num">03</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Camada</th>
+              <th>Escolha</th>
+              <th>Alternativa</th>
+              <th>Justificativa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Frontend / Dashboard</strong></td>
+              <td class="td-cyan">Next.js 14 (App Router)</td>
+              <td class="td-muted">Remix / React Router v7</td>
+              <td>Middleware nativo para multi-tenant por subdomínio, RSC para SSR do estado da live, excelente ecosystem.</td>
+            </tr>
+            <tr>
+              <td><strong>API Backend</strong></td>
+              <td class="td-cyan">Fastify + TypeScript</td>
+              <td class="td-muted">Hono / Express</td>
+              <td>~2x throughput vs Express, schema validation built-in, plugins SSE nativos, excelente para streaming de response.</td>
+            </tr>
+            <tr>
+              <td><strong>ORM / Query Builder</strong></td>
+              <td class="td-cyan">Drizzle ORM</td>
+              <td class="td-muted">Prisma / Kysely</td>
+              <td>Type-safe, suporta RLS via SET LOCAL, sem "magic", migrações SQL reais, performance próxima do raw SQL.</td>
+            </tr>
+            <tr>
+              <td><strong>Banco de Dados</strong></td>
+              <td class="td-cyan">PostgreSQL 16</td>
+              <td class="td-muted">MySQL</td>
+              <td>Row Level Security nativo, <code class="inline-code">current_setting()</code> para tenant_id, JSONB, CTEs, window functions.</td>
+            </tr>
+            <tr>
+              <td><strong>Cache / Pub-Sub</strong></td>
+              <td class="td-cyan">Redis (Upstash ou self-hosted)</td>
+              <td class="td-muted">Valkey</td>
+              <td>Estado da live em memória com TTL, fila de comentários para SSE, session storage, rate limiting.</td>
+            </tr>
+            <tr>
+              <td><strong>Job Queue</strong></td>
+              <td class="td-cyan">BullMQ</td>
+              <td class="td-muted">Inngest / pg-boss</td>
+              <td>Construída sobre Redis, suporta retries, concurrência e prioridades. Perfeito para jobs de transcodificação.</td>
+            </tr>
+            <tr>
+              <td><strong>Storage de Vídeos</strong></td>
+              <td class="td-cyan">Cloudflare R2</td>
+              <td class="td-muted">AWS S3</td>
+              <td><strong>Zero egress fees</strong> — diferencial enorme para streaming de vídeo. $0.015/GB stored vs $0.023/GB no S3.</td>
+            </tr>
+            <tr>
+              <td><strong>CDN</strong></td>
+              <td class="td-cyan">Cloudflare CDN (via R2 public bucket)</td>
+              <td class="td-muted">AWS CloudFront</td>
+              <td>R2 + Cloudflare CDN = zero egress, cache automático de .m3u8 e .ts, DDoS protection gratuita.</td>
+            </tr>
+            <tr>
+              <td><strong>Transcodificação</strong></td>
+              <td class="td-cyan">FFmpeg + BullMQ Worker</td>
+              <td class="td-muted">AWS MediaConvert / Cloudflare Stream</td>
+              <td>Auto-hospedado = custo zero de transcodificação além do servidor. MediaConvert custa $0.015/min HD.</td>
+            </tr>
+            <tr>
+              <td><strong>Upload de vídeo longo</strong></td>
+              <td class="td-cyan">Multipart S3/R2 via Presigned URLs</td>
+              <td class="td-muted">tus-node-server</td>
+              <td>Upload direto do browser para R2 sem passar pelo servidor. Chunks de 10MB, resumable client-side.</td>
+            </tr>
+            <tr>
+              <td><strong>Autenticação</strong></td>
+              <td class="td-cyan">Better-auth / Auth.js</td>
+              <td class="td-muted">Clerk / Supabase Auth</td>
+              <td>Self-hosted, suporte a RBAC custom, sem lock-in, custo zero além do servidor.</td>
+            </tr>
+            <tr>
+              <td><strong>Billing</strong></td>
+              <td class="td-cyan">Stripe</td>
+              <td class="td-muted">Paddle / Hotmart</td>
+              <td>API melhor da indústria, webhooks confiáveis, usage-based billing para GB armazenado/transferido.</td>
+            </tr>
+            <tr>
+              <td><strong>Player de vídeo</strong></td>
+              <td class="td-cyan">HLS.js + &lt;video&gt; customizado</td>
+              <td class="td-muted">Video.js / Plyr</td>
+              <td>Controle total da UI, sem CSS de terceiro, ~250KB. Interceptar seek events programaticamente.</td>
+            </tr>
+            <tr>
+              <td><strong>Real-time chat</strong></td>
+              <td class="td-cyan">SSE (Server-Sent Events)</td>
+              <td class="td-muted">WebSocket / Socket.io</td>
+              <td>Unidirecional (server→client), sem handshake WS, funciona através de proxies HTTP, reconnect automático.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <p><strong>Por que NÃO usar Cloudflare Stream?</strong> A precificação parece simples ($5/1000 min stored + $1/1000 min delivered), mas um vídeo de 5h = 300 min → $1.50 só pra armazenar <em>um</em> vídeo. Se o tenant tem 10 projetos = $15/mês só em storage, mais $1 por cada 1000 min entregue. Com R2 + FFmpeg, você armazena 300min (≈ 5GB em HLS 1080p) por $0.075/mês com zero egress. A diferença de custo em escala é absurda.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 4. MULTI-TENANT -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="multitenant">
+      <div class="section-header">
+        <span class="section-icon">🏢</span>
+        <h2 class="section-title">Arquitetura Multi-Tenant</h2>
+        <span class="section-num">04</span>
+      </div>
+
+      <p>O sistema usa o modelo <strong>Pool Model</strong>: um único banco de dados com isolamento por <code class="inline-code">tenant_id</code> via PostgreSQL Row Level Security (RLS). Esta é a abordagem mais econômica e escalável para SaaS em fase de crescimento.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Estratégia</th>
+              <th>Isolamento</th>
+              <th>Custo</th>
+              <th>Complexidade</th>
+              <th>Recomendado para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Banco por Tenant</strong></td>
+              <td class="td-green">Máximo</td>
+              <td class="td-red">Altíssimo</td>
+              <td class="td-red">Alta</td>
+              <td>Regulatório (HIPAA, financeiro)</td>
+            </tr>
+            <tr>
+              <td><strong>Schema por Tenant</strong></td>
+              <td class="td-yellow">Alto</td>
+              <td class="td-yellow">Médio</td>
+              <td class="td-yellow">Média</td>
+              <td>>100 tenants com dados isolados</td>
+            </tr>
+            <tr>
+              <td><strong>✅ Pool (tenant_id + RLS)</strong></td>
+              <td class="td-yellow">Médio</td>
+              <td class="td-green">Baixo</td>
+              <td class="td-green">Baixa</td>
+              <td>SaaS geral, startup → escala</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Implementação com RLS</h2>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">SQL</span> Row Level Security + configuração via app</div>
+        <div class="code-content"><span class="c">-- 1. Criar usuário da aplicação (sem permissão de owner)</span>
+<span class="k">CREATE ROLE</span> <span class="n">app_user</span> <span class="k">LOGIN</span>;
+<span class="k">GRANT SELECT</span>, <span class="k">INSERT</span>, <span class="k">UPDATE</span>, <span class="k">DELETE ON ALL TABLES IN SCHEMA</span> <span class="n">public</span> <span class="k">TO</span> <span class="n">app_user</span>;
+
+<span class="c">-- 2. Criar função para ler tenant_id do contexto da sessão</span>
+<span class="k">CREATE OR REPLACE FUNCTION</span> <span class="n">current_tenant_id</span>() <span class="k">RETURNS UUID AS</span> $$
+  <span class="k">SELECT</span> <span class="n">current_setting</span>(<span class="s">'app.tenant_id'</span>, <span class="k">true</span>)::<span class="t">UUID</span>;
+$$ <span class="k">LANGUAGE SQL STABLE</span>;
+
+<span class="c">-- 3. Políticas RLS</span>
+<span class="k">CREATE POLICY</span> <span class="n">tenant_isolation</span> <span class="k">ON</span> <span class="n">projects</span>
+  <span class="k">USING</span> (<span class="v">tenant_id</span> = <span class="n">current_tenant_id</span>())
+  <span class="k">WITH CHECK</span> (<span class="v">tenant_id</span> = <span class="n">current_tenant_id</span>());
+
+<span class="k">CREATE POLICY</span> <span class="n">tenant_isolation</span> <span class="k">ON</span> <span class="n">comments</span>
+  <span class="k">USING</span> (<span class="v">tenant_id</span> = <span class="n">current_tenant_id</span>());
+
+<span class="c">-- 4. Force RLS até para o owner</span>
+<span class="k">ALTER TABLE</span> <span class="n">projects</span>  <span class="k">FORCE ROW LEVEL SECURITY</span>;
+<span class="k">ALTER TABLE</span> <span class="n">comments</span>  <span class="k">FORCE ROW LEVEL SECURITY</span>;</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> middleware — injeta tenant_id em cada request</div>
+        <div class="code-content"><span class="c">// src/middleware/tenant.ts</span>
+<span class="k">import</span> { <span class="n">FastifyRequest</span>, <span class="n">FastifyReply</span> } <span class="k">from</span> <span class="s">'fastify'</span>;
+<span class="k">import</span> { <span class="n">db</span> } <span class="k">from</span> <span class="s">'../db'</span>;
+
+<span class="k">declare module</span> <span class="s">'fastify'</span> {
+  <span class="k">interface</span> <span class="t">FastifyRequest</span> {
+    tenantId: <span class="t">string</span>;
+    userId:   <span class="t">string</span>;
+    role:     <span class="s">'system_admin'</span> | <span class="s">'admin'</span> | <span class="s">'enduser'</span>;
+  }
+}
+
+<span class="k">export async function</span> <span class="n">tenantMiddleware</span>(
+  req: <span class="t">FastifyRequest</span>,
+  reply: <span class="t">FastifyReply</span>
+) {
+  <span class="c">// JWT já validado — extrair tenantId do payload</span>
+  <span class="k">const</span> { tenantId, userId, role } = req.user;
+
+  req.tenantId = tenantId;
+  req.userId   = userId;
+  req.role     = role;
+
+  <span class="c">// 🔑 Setar tenant_id na conexão PG para o RLS funcionar</span>
+  <span class="k">await</span> db.<span class="n">execute</span>(
+    <span class="n">sql</span><span class="s">`SELECT set_config('app.tenant_id', ${tenantId}, true)`</span>
+  );
+}</div>
+      </div>
+
+      <h2>Roteamento por Subdomínio (Next.js)</h2>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> middleware.ts — Next.js subdomain routing</div>
+        <div class="code-content"><span class="c">// middleware.ts (raiz do Next.js)</span>
+<span class="k">import</span> { <span class="n">NextResponse</span> } <span class="k">from</span> <span class="s">'next/server'</span>;
+<span class="k">import type</span> { <span class="t">NextRequest</span> } <span class="k">from</span> <span class="s">'next/server'</span>;
+
+<span class="k">export function</span> <span class="n">middleware</span>(req: <span class="t">NextRequest</span>) {
+  <span class="k">const</span> host = req.headers.<span class="n">get</span>(<span class="s">'host'</span>) ?? <span class="s">''</span>;
+  <span class="k">const</span> baseDomain = <span class="s">'fakelive.io'</span>;
+
+  <span class="c">// live.guru-espirita.fakelive.io → slug = "guru-espirita"</span>
+  <span class="k">const</span> match = host.<span class="n">match</span>(<span class="s">/^live\.([^.]+)\.fakelive\.io$/</span>);
+
+  <span class="k">if</span> (match) {
+    <span class="k">const</span> tenantSlug = match[<span class="num">1</span>];
+    <span class="k">const</span> url = req.nextUrl.<span class="n">clone</span>();
+    url.pathname = <span class="s">`/live/${tenantSlug}${req.nextUrl.pathname}`</span>;
+    <span class="k">return</span> <span class="n">NextResponse</span>.<span class="n">rewrite</span>(url);
+  }
+
+  <span class="c">// app.fakelive.io → dashboard</span>
+  <span class="k">if</span> (host.<span class="n">startsWith</span>(<span class="s">'app.'</span>)) {
+    <span class="k">return</span> <span class="n">NextResponse</span>.<span class="n">next</span>();
+  }
+
+  <span class="k">return</span> <span class="n">NextResponse</span>.<span class="n">next</span>();
+}
+
+<span class="k">export const</span> config = {
+  matcher: [<span class="s">'/((?!_next|favicon.ico|api).*)'</span>],
+};</div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <p><strong>Estratégia de URL:</strong> Use <code class="inline-code">live.{tenant-slug}.fakelive.io/{project-slug}</code> para a hot page. Dashboard fica em <code class="inline-code">app.fakelive.io</code>. Isso requer wildcard DNS (<code class="inline-code">*.fakelive.io → servidor</code>) e wildcard TLS no Cloudflare (grátis no plano Pro).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 5. UPLOAD DE VÍDEO LONGO -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="upload">
+      <div class="section-header">
+        <span class="section-icon">⬆️</span>
+        <h2 class="section-title">Upload de Vídeo Longo (até 5h)</h2>
+        <span class="section-num">05</span>
+      </div>
+
+      <p>Um vídeo de 5 horas em qualidade razoável pesa entre <strong>5 GB</strong> (comprimido) e <strong>30+ GB</strong> (raw). Não é possível fazer upload direto via <code class="inline-code">multipart/form-data</code> no servidor — isso satura memória e depende de uma conexão ininterrupta. A solução é <strong>upload direto do browser para o R2/S3</strong> usando presigned URLs em chunks.</p>
+
+      <div class="card-grid">
+        <div class="card card-cyan">
+          <h3>📦 Multipart S3/R2 (Recomendado)</h3>
+          <ul>
+            <li>Browser divide arquivo em chunks de 10–50 MB</li>
+            <li>API gera presigned URLs por chunk (via R2 SDK)</li>
+            <li>Browser faz PUT direto para R2 (sem passar pelo servidor)</li>
+            <li>API finaliza com <code class="inline-code">CompleteMultipartUpload</code></li>
+            <li>Chunks paralelos: 3-5 simultâneos = máxima velocidade</li>
+          </ul>
+        </div>
+        <div class="card card-indigo">
+          <h3>🔄 tus Protocol (Alternativa robusta)</h3>
+          <ul>
+            <li>Protocolo aberto para uploads resumable</li>
+            <li>tus-node-server suporta S3/R2 como storage backend</li>
+            <li>Retoma exatamente de onde parou (rede caiu = continua)</li>
+            <li>Mais overhead de servidor (proxy na API)</li>
+            <li>Ideal se usuários têm conexão instável</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Fluxo Multipart com Presigned URLs</h2>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> API — gerar presigned URLs para upload multipart</div>
+        <div class="code-content"><span class="c">// POST /api/videos/upload/init</span>
+<span class="k">import</span> { <span class="n">S3Client</span>, <span class="n">CreateMultipartUploadCommand</span>,
+         <span class="n">UploadPartCommand</span>, <span class="n">CompleteMultipartUploadCommand</span> } <span class="k">from</span> <span class="s">'@aws-sdk/client-s3'</span>;
+<span class="k">import</span> { <span class="n">getSignedUrl</span> } <span class="k">from</span> <span class="s">'@aws-sdk/s3-request-presigner'</span>;
+
+<span class="k">const</span> r2 = <span class="k">new</span> <span class="n">S3Client</span>({
+  region: <span class="s">'auto'</span>,
+  endpoint: <span class="s">`https://${CF_ACCOUNT_ID}.r2.cloudflarestorage.com`</span>,
+  credentials: { accessKeyId: <span class="n">R2_ACCESS_KEY</span>, secretAccessKey: <span class="n">R2_SECRET_KEY</span> },
+});
+
+<span class="k">export async function</span> <span class="n">initMultipartUpload</span>(
+  tenantId: <span class="t">string</span>,
+  projectId: <span class="t">string</span>,
+  filename: <span class="t">string</span>,
+  totalParts: <span class="t">number</span>   <span class="c">// Math.ceil(fileSize / CHUNK_SIZE)</span>
+) {
+  <span class="k">const</span> key = <span class="s">`tenants/${tenantId}/projects/${projectId}/original/${filename}`</span>;
+
+  <span class="c">// 1. Iniciar multipart upload</span>
+  <span class="k">const</span> { UploadId } = <span class="k">await</span> r2.<span class="n">send</span>(<span class="k">new</span> <span class="n">CreateMultipartUploadCommand</span>({
+    Bucket: <span class="s">'fakelive-videos'</span>,
+    Key:    key,
+    ContentType: <span class="s">'video/mp4'</span>,
+  }));
+
+  <span class="c">// 2. Gerar presigned URLs para cada chunk</span>
+  <span class="k">const</span> partUrls = <span class="k">await</span> <span class="n">Promise</span>.<span class="n">all</span>(
+    <span class="n">Array</span>.<span class="n">from</span>({ length: totalParts }, (_, i) =>
+      <span class="n">getSignedUrl</span>(r2, <span class="k">new</span> <span class="n">UploadPartCommand</span>({
+        Bucket:     <span class="s">'fakelive-videos'</span>,
+        Key:        key,
+        UploadId,
+        PartNumber: i + <span class="num">1</span>,
+      }), { expiresIn: <span class="num">3600</span> }) <span class="c">// 1h para completar</span>
+    )
+  );
+
+  <span class="k">return</span> { uploadId: UploadId, key, partUrls };
+}
+
+<span class="c">// POST /api/videos/upload/complete</span>
+<span class="k">export async function</span> <span class="n">completeMultipartUpload</span>(
+  key: <span class="t">string</span>,
+  uploadId: <span class="t">string</span>,
+  parts: <span class="t">Array</span>&lt;{ <span class="v">PartNumber</span>: <span class="t">number</span>; <span class="v">ETag</span>: <span class="t">string</span> }&gt;
+) {
+  <span class="k">await</span> r2.<span class="n">send</span>(<span class="k">new</span> <span class="n">CompleteMultipartUploadCommand</span>({
+    Bucket:          <span class="s">'fakelive-videos'</span>,
+    Key:             key,
+    UploadId:        uploadId,
+    MultipartUpload: { Parts: parts },
+  }));
+
+  <span class="c">// Enfileirar job de transcodificação</span>
+  <span class="k">await</span> <span class="n">transcodeQueue</span>.<span class="n">add</span>(<span class="s">'transcode'</span>, { key });
+}</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> Frontend — upload com progress tracking</div>
+        <div class="code-content"><span class="k">const</span> CHUNK_SIZE = <span class="num">10</span> * <span class="num">1024</span> * <span class="num">1024</span>; <span class="c">// 10 MB</span>
+<span class="k">const</span> PARALLEL_CHUNKS = <span class="num">4</span>; <span class="c">// uploads simultâneos</span>
+
+<span class="k">async function</span> <span class="n">uploadVideo</span>(
+  file: <span class="t">File</span>,
+  projectId: <span class="t">string</span>,
+  onProgress: (pct: <span class="t">number</span>) => <span class="t">void</span>
+) {
+  <span class="k">const</span> totalParts = <span class="n">Math</span>.<span class="n">ceil</span>(file.size / CHUNK_SIZE);
+
+  <span class="c">// 1. Iniciar upload na API</span>
+  <span class="k">const</span> { uploadId, key, partUrls } = <span class="k">await</span> <span class="n">api</span>.<span class="n">post</span>(<span class="s">'/videos/upload/init'</span>, {
+    projectId, filename: file.name, totalParts
+  });
+
+  <span class="k">const</span> completedParts: <span class="t">Array</span>&lt;{ <span class="v">PartNumber</span>: <span class="t">number</span>; <span class="v">ETag</span>: <span class="t">string</span> }&gt; = [];
+  <span class="k">let</span> uploadedChunks = <span class="num">0</span>;
+
+  <span class="c">// 2. Processar chunks em paralelo (lote de PARALLEL_CHUNKS)</span>
+  <span class="k">for</span> (<span class="k">let</span> i = <span class="num">0</span>; i &lt; totalParts; i += PARALLEL_CHUNKS) {
+    <span class="k">const</span> batch = partUrls.<span class="n">slice</span>(i, i + PARALLEL_CHUNKS);
+    <span class="k">const</span> results = <span class="k">await</span> <span class="n">Promise</span>.<span class="n">all</span>(
+      batch.<span class="n">map</span>(async (url, idx) => {
+        <span class="k">const</span> partNum = i + idx + <span class="num">1</span>;
+        <span class="k">const</span> start  = (partNum - <span class="num">1</span>) * CHUNK_SIZE;
+        <span class="k">const</span> chunk  = file.<span class="n">slice</span>(start, start + CHUNK_SIZE);
+
+        <span class="k">const</span> res = <span class="k">await</span> <span class="n">fetch</span>(url, {
+          method: <span class="s">'PUT'</span>,
+          body:   chunk,
+          headers: { <span class="s">'Content-Type'</span>: <span class="s">'application/octet-stream'</span> },
+        });
+
+        uploadedChunks++;
+        <span class="n">onProgress</span>(<span class="n">Math</span>.<span class="n">round</span>(uploadedChunks / totalParts * <span class="num">100</span>));
+
+        <span class="k">return</span> { PartNumber: partNum, ETag: res.headers.<span class="n">get</span>(<span class="s">'ETag'</span>)! };
+      })
+    );
+    completedParts.<span class="n">push</span>(...results);
+  }
+
+  <span class="c">// 3. Finalizar</span>
+  <span class="k">await</span> <span class="n">api</span>.<span class="n">post</span>(<span class="s">'/videos/upload/complete'</span>, { uploadId, key, parts: completedParts });
+}</div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <p><strong>Validação de duração:</strong> Use <code class="inline-code">ffprobe</code> no worker após o upload para checar a duração real do vídeo. Antes do upload, o browser pode usar <code class="inline-code">HTMLVideoElement.duration</code> com <code class="inline-code">URL.createObjectURL(file)</code> para uma validação rápida no client side (sem precisar fazer upload antes de validar).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 6. PROCESSAMENTO DE VÍDEO (HLS) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="transcoding">
+      <div class="section-header">
+        <span class="section-icon">🎞️</span>
+        <h2 class="section-title">Processamento de Vídeo — HLS</h2>
+        <span class="section-num">06</span>
+      </div>
+
+      <p>Após o upload, o vídeo original (mp4) precisa ser transcodificado para <strong>HLS (HTTP Live Streaming)</strong>: múltiplas qualidades em segmentos de ~6 segundos (<code class="inline-code">.ts</code>) com playlists <code class="inline-code">.m3u8</code>. Isso permite adaptive bitrate streaming — o player escolhe a qualidade conforme a banda do usuário.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Opção</th>
+              <th>Custo de Transcodificação</th>
+              <th>Controle</th>
+              <th>Velocidade</th>
+              <th>Recomendação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>FFmpeg self-hosted</strong></td>
+              <td class="td-green">$0 (só servidor)</td>
+              <td class="td-green">Total</td>
+              <td class="td-yellow">Depende do CPU</td>
+              <td class="td-green">✅ Melhor custo</td>
+            </tr>
+            <tr>
+              <td><strong>AWS MediaConvert</strong></td>
+              <td class="td-red">$0.015/min HD · $0.0075/min SD</td>
+              <td class="td-cyan">Via API</td>
+              <td class="td-green">Muito rápido</td>
+              <td class="td-yellow">Alta escala</td>
+            </tr>
+            <tr>
+              <td><strong>Cloudflare Stream</strong></td>
+              <td class="td-yellow">Grátis (incluso no storage)</td>
+              <td class="td-red">Mínimo</td>
+              <td class="td-red">Lento p/ vídeos longos</td>
+              <td class="td-red">❌ Evitar</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Para um vídeo de <strong>5 horas em 1080p</strong> com AWS MediaConvert: 300 min × $0.015 = <strong>$4.50 por vídeo</strong>. Com FFmpeg self-hosted num VPS com 4 CPUs dedicados, o mesmo job leva ~45 minutos e custa ~$0.05 em compute.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> Worker de transcodificação (BullMQ + FFmpeg)</div>
+        <div class="code-content"><span class="c">// workers/transcode.worker.ts</span>
+<span class="k">import</span> { <span class="n">Worker</span>, <span class="n">Job</span> } <span class="k">from</span> <span class="s">'bullmq'</span>;
+<span class="k">import</span> <span class="n">ffmpeg</span> <span class="k">from</span> <span class="s">'fluent-ffmpeg'</span>;
+<span class="k">import</span> { <span class="n">S3Client</span>, <span class="n">PutObjectCommand</span> } <span class="k">from</span> <span class="s">'@aws-sdk/client-s3'</span>;
+<span class="k">import</span> { <span class="n">createReadStream</span>, <span class="n">mkdirSync</span>, <span class="n">readdirSync</span> } <span class="k">from</span> <span class="s">'fs'</span>;
+<span class="k">import path</span> <span class="k">from</span> <span class="s">'path'</span>;
+
+<span class="k">interface</span> <span class="t">TranscodeJob</span> {
+  <span class="v">tenantId</span>:  <span class="t">string</span>;
+  <span class="v">projectId</span>: <span class="t">string</span>;
+  <span class="v">s3Key</span>:     <span class="t">string</span>; <span class="c">// chave do original no R2</span>
+}
+
+<span class="k">const</span> QUALITIES = [
+  { label: <span class="s">'360p'</span>,  height: <span class="num">360</span>,  bitrate: <span class="s">'500k'</span>  },
+  { label: <span class="s">'720p'</span>,  height: <span class="num">720</span>,  bitrate: <span class="s">'2500k'</span> },
+  { label: <span class="s">'1080p'</span>, height: <span class="num">1080</span>, bitrate: <span class="s">'5000k'</span> },
+];
+
+<span class="k">new</span> <span class="n">Worker</span>&lt;<span class="t">TranscodeJob</span>&gt;(<span class="s">'transcode'</span>, <span class="k">async</span> (job: <span class="t">Job</span>&lt;<span class="t">TranscodeJob</span>&gt;) => {
+  <span class="k">const</span> { tenantId, projectId, s3Key } = job.data;
+  <span class="k">const</span> tmpDir = <span class="s">`/tmp/transcode/${projectId}`</span>;
+  <span class="n">mkdirSync</span>(tmpDir, { recursive: <span class="k">true</span> });
+
+  <span class="c">// 1. Download do original do R2 p/ disco local</span>
+  <span class="k">const</span> localInput = <span class="s">`${tmpDir}/original.mp4`</span>;
+  <span class="k">await</span> <span class="n">downloadFromR2</span>(s3Key, localInput);
+  <span class="k">await</span> job.<span class="n">updateProgress</span>(<span class="num">10</span>);
+
+  <span class="c">// 2. Transcodar cada qualidade</span>
+  <span class="k">const</span> segmentPaths: <span class="t">string</span>[] = [];
+  <span class="k">for</span> (<span class="k">const</span> [i, q] <span class="k">of</span> QUALITIES.<span class="n">entries</span>()) {
+    <span class="k">const</span> outDir = <span class="s">`${tmpDir}/${q.label}`</span>;
+    <span class="n">mkdirSync</span>(outDir, { recursive: <span class="k">true</span> });
+
+    <span class="k">await new</span> <span class="n">Promise</span>((resolve, reject) =>
+      <span class="n">ffmpeg</span>(localInput)
+        .<span class="n">outputOptions</span>([
+          <span class="s">`-vf scale=-2:${q.height}`</span>,
+          <span class="s">`-b:v ${q.bitrate}`</span>,
+          <span class="s">'-c:v libx264'</span>,
+          <span class="s">'-preset fast'</span>,
+          <span class="s">'-c:a aac'</span>,
+          <span class="s">'-b:a 128k'</span>,
+          <span class="s">'-hls_time 6'</span>,           <span class="c">// segmentos de 6s</span>
+          <span class="s">'-hls_list_size 0'</span>,       <span class="c">// playlist completa (VOD)</span>
+          <span class="s">'-hls_segment_type mpegts'</span>,
+          <span class="s">`-hls_segment_filename ${outDir}/seg%05d.ts`</span>,
+        ])
+        .<span class="n">output</span>(<span class="s">`${outDir}/playlist.m3u8`</span>)
+        .<span class="n">on</span>(<span class="s">'end'</span>, resolve)
+        .<span class="n">on</span>(<span class="s">'error'</span>, reject)
+        .<span class="n">run</span>()
+    );
+
+    segmentPaths.<span class="n">push</span>(outDir);
+    <span class="k">await</span> job.<span class="n">updateProgress</span>(<span class="num">10</span> + (i + <span class="num">1</span>) * <span class="num">25</span>);
+  }
+
+  <span class="c">// 3. Gerar master playlist</span>
+  <span class="k">const</span> masterM3u8 = [
+    <span class="s">'#EXTM3U'</span>,
+    <span class="s">'#EXT-X-VERSION:3'</span>,
+    <span class="s">`#EXT-X-STREAM-INF:BANDWIDTH=500000,RESOLUTION=640x360\n360p/playlist.m3u8`</span>,
+    <span class="s">`#EXT-X-STREAM-INF:BANDWIDTH=2500000,RESOLUTION=1280x720\n720p/playlist.m3u8`</span>,
+    <span class="s">`#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080\n1080p/playlist.m3u8`</span>,
+  ].<span class="n">join</span>(<span class="s">'\n'</span>);
+
+  <span class="c">// 4. Upload de todos os arquivos para R2</span>
+  <span class="k">const</span> prefix = <span class="s">`tenants/${tenantId}/projects/${projectId}/hls`</span>;
+  <span class="k">await</span> <span class="n">uploadDirToR2</span>(tmpDir, prefix); <span class="c">// paralelo, 10 arquivos por vez</span>
+
+  <span class="c">// 5. Atualizar DB: status = 'ready', video_hls = URL master.m3u8</span>
+  <span class="k">await</span> <span class="n">db</span>.<span class="n">update</span>(<span class="n">projects</span>)
+    .<span class="n">set</span>({ status: <span class="s">'ready'</span>, videoHls: <span class="s">`${CDN_BASE}/${prefix}/master.m3u8`</span> })
+    .<span class="n">where</span>(<span class="n">eq</span>(<span class="n">projects</span>.<span class="n">id</span>, projectId));
+
+  <span class="k">await</span> job.<span class="n">updateProgress</span>(<span class="num">100</span>);
+}, { connection: redisConnection, concurrency: <span class="num">2</span> });</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 7. STREAMING / PLAYER -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="streaming">
+      <div class="section-header">
+        <span class="section-icon">📡</span>
+        <h2 class="section-title">Streaming — Player com Seek Bloqueado</h2>
+        <span class="section-num">07</span>
+      </div>
+
+      <p>O player usa <strong>HLS.js</strong> para reproduzir o stream HLS. O segredo do "fake live" está em:</p>
+      <ol style="padding-left: 20px; color: var(--muted); font-size: 0.9rem; margin-bottom: 16px;">
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Iniciar no segundo correto:</strong> O servidor informa <code class="inline-code">currentSecond = (now - liveStartedAt) / 1000</code></li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Bloquear seek:</strong> Interceptar o evento <code class="inline-code">seeking</code> e retornar o player ao ponto correto</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">Sincronização periódica:</strong> A cada 30s, o player consulta a API para re-sincronizar (evitar drift)</li>
+        <li style="margin-bottom: 8px;"><strong style="color: var(--text);">UI de live:</strong> Ocultar a barra de progresso nativa, mostrar "🔴 AO VIVO" com tempo decorrido</li>
+      </ol>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> Player — HLS.js com seek bloqueado</div>
+        <div class="code-content"><span class="c">// components/LivePlayer.tsx</span>
+<span class="k">import</span> <span class="n">Hls</span> <span class="k">from</span> <span class="s">'hls.js'</span>;
+<span class="k">import</span> { <span class="n">useEffect</span>, <span class="n">useRef</span>, <span class="n">useState</span> } <span class="k">from</span> <span class="s">'react'</span>;
+
+<span class="k">interface</span> <span class="t">LivePlayerProps</span> {
+  <span class="v">hlsUrl</span>:        <span class="t">string</span>;
+  <span class="v">currentSecond</span>: <span class="t">number</span>; <span class="c">// segundo atual recebido da API</span>
+  <span class="v">duration</span>:      <span class="t">number</span>; <span class="c">// duração total do vídeo em segundos</span>
+}
+
+<span class="k">export function</span> <span class="n">LivePlayer</span>({ hlsUrl, currentSecond, duration }: <span class="t">LivePlayerProps</span>) {
+  <span class="k">const</span> videoRef = <span class="n">useRef</span>&lt;<span class="t">HTMLVideoElement</span>&gt;(<span class="k">null</span>);
+  <span class="k">const</span> hlsRef   = <span class="n">useRef</span>&lt;<span class="t">Hls</span>&gt;(<span class="k">null</span>);
+  <span class="k">const</span> [isSeeking, setIsSeeking] = <span class="n">useState</span>(<span class="k">false</span>);
+
+  <span class="n">useEffect</span>(() => {
+    <span class="k">if</span> (!videoRef.current || !<span class="n">Hls</span>.<span class="n">isSupported</span>()) <span class="k">return</span>;
+
+    <span class="k">const</span> hls = <span class="k">new</span> <span class="n">Hls</span>({
+      startPosition:   currentSecond,    <span class="c">// 🔑 iniciar no segundo correto</span>
+      maxBufferLength: <span class="num">60</span>,              <span class="c">// buffer de 60s</span>
+      liveSyncDuration: <span class="num">0</span>,             <span class="c">// não tentar sincronizar com "live edge"</span>
+    });
+
+    hls.<span class="n">loadSource</span>(hlsUrl);
+    hls.<span class="n">attachMedia</span>(videoRef.current);
+
+    hls.<span class="n">on</span>(<span class="n">Hls</span>.<span class="n">Events</span>.<span class="n">MANIFEST_PARSED</span>, () => {
+      videoRef.current!.<span class="n">currentTime</span> = currentSecond;
+      videoRef.current!.<span class="n">play</span>();
+    });
+
+    hlsRef.current = hls;
+
+    <span class="c">// 🔒 BLOQUEIO DE SEEK — interceptar qualquer tentativa</span>
+    <span class="k">const</span> video = videoRef.current;
+    <span class="k">let</span> expectedTime = currentSecond;
+
+    <span class="k">const</span> <span class="n">onSeeking</span> = () => {
+      <span class="c">// Calcula o segundo correto agora</span>
+      <span class="k">const</span> drift = (Date.<span class="n">now</span>() - liveStartedAtMs) / <span class="num">1000</span>;
+      expectedTime = drift % duration;
+
+      <span class="c">// Forçar volta ao segundo correto</span>
+      <span class="k">if</span> (<span class="n">Math</span>.<span class="n">abs</span>(video.currentTime - expectedTime) > <span class="num">2</span>) {
+        video.currentTime = expectedTime;
+      }
+    };
+
+    <span class="k">const</span> <span class="n">onTimeUpdate</span> = () => {
+      expectedTime = (Date.<span class="n">now</span>() - liveStartedAtMs) / <span class="num">1000</span>;
+    };
+
+    video.<span class="n">addEventListener</span>(<span class="s">'seeking'</span>, <span class="n">onSeeking</span>);
+    video.<span class="n">addEventListener</span>(<span class="s">'timeupdate'</span>, <span class="n">onTimeUpdate</span>);
+
+    <span class="k">return</span> () => {
+      video.<span class="n">removeEventListener</span>(<span class="s">'seeking'</span>, <span class="n">onSeeking</span>);
+      video.<span class="n">removeEventListener</span>(<span class="s">'timeupdate'</span>, <span class="n">onTimeUpdate</span>);
+      hls.<span class="n">destroy</span>();
+    };
+  }, [hlsUrl]);
+
+  <span class="k">return</span> (
+    <span class="o">&lt;</span><span class="n">div</span> className=<span class="s">"player-wrap"</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="c">{"/* Ocultar controles nativos via CSS */"}</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">video</span>
+        ref={videoRef}
+        <span class="c">{"/* sem controls — UI customizada */"}  </span>
+        playsInline
+        style={{ width: <span class="s">'100%'</span>, display: <span class="s">'block'</span> }}
+      /<span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">LiveControls</span> videoRef={videoRef} duration={duration} /<span class="o">&gt;</span>
+    <span class="o">&lt;</span>/<span class="n">div</span><span class="o">&gt;</span>
+  );
+}</div>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <p><strong>Cuidado com a cache do CDN para HLS:</strong> As playlists <code class="inline-code">.m3u8</code> são VOD (estáticas) — o CDN deve ter cache longo (ex: 1 ano). Mas no primeiro acesso após transcodificação, o CDN precisa estar com a versão correta. Use <code class="inline-code">Cache-Control: public, max-age=31536000</code> nos segmentos <code class="inline-code">.ts</code> e <code class="inline-code">max-age=3600</code> nas playlists. Nunca cache o endpoint <code class="inline-code">/api/live/:id</code> (estado dinâmico).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 8. FAKE CHAT (SSE) -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="fakechat">
+      <div class="section-header">
+        <span class="section-icon">💬</span>
+        <h2 class="section-title">Fake Chat via Server-Sent Events</h2>
+        <span class="section-num">08</span>
+      </div>
+
+      <p>O chat é pré-carregado do CSV e emitido via <strong>SSE</strong> no momento certo: o servidor calcula o segundo atual da live e envia os comentários cujo <code class="inline-code">ts_seconds</code> está dentro da janela de tempo.</p>
+
+      <div class="card-grid">
+        <div class="card card-green">
+          <h3>✅ Por que SSE e não WebSocket?</h3>
+          <ul>
+            <li>Chat é unidirecional: servidor → cliente</li>
+            <li>SSE funciona nativamente no HTTP/2</li>
+            <li>Reconnect automático pelo browser</li>
+            <li>Sem overhead de WS handshake/heartbeat</li>
+            <li>Funciona atrás de proxies HTTP sem config extra</li>
+            <li>Muito mais simples de implementar e escalar</li>
+          </ul>
+        </div>
+        <div class="card card-red">
+          <h3>⚠️ Escalabilidade do SSE</h3>
+          <ul>
+            <li>Cada conexão SSE = 1 socket aberto no servidor</li>
+            <li>10.000 viewers = 10.000 conexões simultâneas</li>
+            <li>Solução: múltiplas instâncias + Redis Pub/Sub</li>
+            <li>Ou: usar Cloudflare Workers + Durable Objects</li>
+            <li>Limite do Node.js: ~50k conns por instância com tuning</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> API — SSE endpoint para o fake chat</div>
+        <div class="code-content"><span class="c">// routes/live.ts — GET /live/:projectId/chat</span>
+<span class="k">export async function</span> <span class="n">liveChatSSE</span>(
+  req: <span class="t">FastifyRequest</span>&lt;{ <span class="v">Params</span>: { <span class="v">projectId</span>: <span class="t">string</span> } }&gt;,
+  reply: <span class="t">FastifyReply</span>
+) {
+  <span class="k">const</span> { projectId } = req.params;
+
+  <span class="c">// Verificar se a live está no ar agora</span>
+  <span class="k">const</span> liveState = <span class="k">await</span> <span class="n">getLiveState</span>(projectId);
+  <span class="k">if</span> (liveState.status !== <span class="s">'live'</span>) {
+    <span class="k">return</span> reply.<span class="n">status</span>(<span class="num">403</span>).<span class="n">send</span>({ error: <span class="s">'live not active'</span> });
+  }
+
+  <span class="c">// Configurar headers SSE</span>
+  reply
+    .<span class="n">raw</span>.<span class="n">writeHead</span>(<span class="num">200</span>, {
+      <span class="s">'Content-Type'</span>:  <span class="s">'text/event-stream'</span>,
+      <span class="s">'Cache-Control'</span>: <span class="s">'no-cache, no-transform'</span>,
+      <span class="s">'Connection'</span>:    <span class="s">'keep-alive'</span>,
+      <span class="s">'X-Accel-Buffering'</span>: <span class="s">'no'</span>, <span class="c">// para nginx</span>
+    });
+
+  <span class="k">const</span> <span class="n">send</span> = (event: <span class="t">string</span>, data: <span class="t">unknown</span>) => {
+    reply.raw.<span class="n">write</span>(<span class="s">`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`</span>);
+  };
+
+  <span class="c">// Enviar estado inicial (segundo atual da live)</span>
+  <span class="n">send</span>(<span class="s">'sync'</span>, {
+    currentSecond: liveState.currentSecond,
+    status:        <span class="s">'live'</span>,
+  });
+
+  <span class="c">// Loop: a cada 1s, emitir comentários do segundo atual</span>
+  <span class="k">let</span> lastSecond = liveState.currentSecond;
+
+  <span class="k">const</span> interval = <span class="n">setInterval</span>(<span class="k">async</span> () => {
+    <span class="k">const</span> state = <span class="k">await</span> <span class="n">getLiveState</span>(projectId);
+
+    <span class="k">if</span> (state.status !== <span class="s">'live'</span>) {
+      <span class="n">send</span>(<span class="s">'end'</span>, { status: <span class="s">'ended'</span> });
+      <span class="n">clearInterval</span>(interval);
+      reply.raw.<span class="n">end</span>();
+      <span class="k">return</span>;
+    }
+
+    <span class="c">// Buscar comentários entre lastSecond e currentSecond</span>
+    <span class="k">const</span> comments = <span class="k">await</span> db
+      .<span class="n">select</span>()
+      .<span class="n">from</span>(<span class="n">commentsTable</span>)
+      .<span class="n">where</span>(<span class="n">and</span>(
+        <span class="n">eq</span>(<span class="n">commentsTable</span>.<span class="n">projectId</span>, projectId),
+        <span class="n">gte</span>(<span class="n">commentsTable</span>.<span class="n">tsSeconds</span>, lastSecond),
+        <span class="n">lt</span>(<span class="n">commentsTable</span>.<span class="n">tsSeconds</span>,  state.currentSecond),
+      ))
+      .<span class="n">limit</span>(<span class="num">10</span>);
+
+    <span class="k">for</span> (<span class="k">const</span> comment <span class="k">of</span> comments) {
+      <span class="n">send</span>(<span class="s">'comment'</span>, {
+        author: comment.author,
+        body:   comment.body,
+        ts:     comment.tsSeconds,
+      });
+    }
+
+    lastSecond = state.currentSecond;
+  }, <span class="num">1000</span>);
+
+  <span class="c">// Cleanup quando cliente desconectar</span>
+  req.raw.<span class="n">on</span>(<span class="s">'close'</span>, () => <span class="n">clearInterval</span>(interval));
+}</div>
+      </div>
+
+      <h2>CSV Format esperado</h2>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">CSV</span> comments.csv — formato de entrada</div>
+        <div class="code-content">timestamp_seconds,author,comment
+<span class="num">0</span>,João Silva,Boa noite a todos!
+<span class="num">5</span>,Maria Costa,Que bom te ver aqui!
+<span class="num">12</span>,Pedro Lopes,❤️❤️❤️
+<span class="num">30</span>,Ana Lima,Primeira vez assistindo
+<span class="num">45</span>,Carlos,que conteúdo incrível
+<span class="num">120</span>,Fernanda,Obrigada pela live
+<span class="num">3600</span>,Roberto,chegando na hora certa
+<span class="c"># Formato simples. O worker parseia com papaparse e insere em bulk no PG.</span>
+<span class="c"># Suporte a 50.000+ comentários por projeto (index em ts_seconds).</span></div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <p><strong>Otimização:</strong> Em vez de consultar o banco a cada 1s por conexão, use <strong>Redis Sorted Set</strong>: <code class="inline-code">ZADD comments:{projectId} {ts_seconds} {json}</code>. O worker SSE faz <code class="inline-code">ZRANGEBYSCORE comments:{projectId} {lastSec} {currentSec}</code> — cache em memória, latência sub-milissegundo, sem hits no Postgres por conexão.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 9. SISTEMA DE AGENDAMENTO -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="scheduling">
+      <div class="section-header">
+        <span class="section-icon">📅</span>
+        <h2 class="section-title">Sistema de Agendamento de Lives</h2>
+        <span class="section-num">09</span>
+      </div>
+
+      <p>O admin configura o horário em formato cron (ou interface gráfica que gera cron): <code class="inline-code">"0 20 * * 1,3"</code> = "toda segunda e quarta às 20h". O sistema determina o status da live com base no cron + timezone + duração do vídeo.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> liveScheduler.ts — calcular status da live</div>
+        <div class="code-content"><span class="k">import</span> { <span class="n">parseExpression</span> } <span class="k">from</span> <span class="s">'cron-parser'</span>;
+<span class="k">import</span> { <span class="n">zonedTimeToUtc</span>, <span class="n">utcToZonedTime</span> } <span class="k">from</span> <span class="s">'date-fns-tz'</span>;
+
+<span class="k">export type</span> <span class="t">LiveStatus</span> =
+  | { <span class="v">status</span>: <span class="s">'upcoming'</span>; <span class="v">nextAt</span>: <span class="t">Date</span>; <span class="v">secondsUntil</span>: <span class="t">number</span> }
+  | { <span class="v">status</span>: <span class="s">'live'</span>;     <span class="v">startedAt</span>: <span class="t">Date</span>; <span class="v">currentSecond</span>: <span class="t">number</span> }
+  | { <span class="v">status</span>: <span class="s">'ended'</span>;    <span class="v">endedAt</span>: <span class="t">Date</span>;   <span class="v">nextAt</span>: <span class="t">Date</span> | <span class="k">null</span> }
+  | { <span class="v">status</span>: <span class="s">'upcoming_soon'</span>; <span class="v">nextAt</span>: <span class="t">Date</span>; <span class="v">secondsUntil</span>: <span class="t">number</span> };
+
+<span class="k">export function</span> <span class="n">getLiveStatus</span>(
+  cronExpr:   <span class="t">string</span>,   <span class="c">// "0 20 * * 1,3"</span>
+  timezone:   <span class="t">string</span>,   <span class="c">// "America/Sao_Paulo"</span>
+  durationS:  <span class="t">number</span>,   <span class="c">// duração do vídeo em segundos (ex: 18000 = 5h)</span>
+  now = <span class="k">new</span> <span class="n">Date</span>()
+): <span class="t">LiveStatus</span> {
+  <span class="k">const</span> interval = <span class="n">parseExpression</span>(cronExpr, {
+    currentDate: now,
+    tz:          timezone,
+  });
+
+  <span class="c">// Última ocorrência do cron (pode estar no passado)</span>
+  <span class="k">const</span> prev  = interval.<span class="n">prev</span>().<span class="n">toDate</span>();
+  <span class="k">const</span> next  = interval.<span class="n">next</span>().<span class="n">toDate</span>();
+
+  <span class="k">const</span> nowMs       = now.<span class="n">getTime</span>();
+  <span class="k">const</span> prevMs      = prev.<span class="n">getTime</span>();
+  <span class="k">const</span> elapsedSec  = (nowMs - prevMs) / <span class="num">1000</span>;
+
+  <span class="c">// ✅ Live está AO VIVO se: elapsedSec entre 0 e durationS</span>
+  <span class="k">if</span> (elapsedSec >= <span class="num">0</span> && elapsedSec &lt; durationS) {
+    <span class="k">return</span> {
+      status:        <span class="s">'live'</span>,
+      startedAt:     prev,
+      currentSecond: <span class="n">Math</span>.<span class="n">floor</span>(elapsedSec),
+    };
+  }
+
+  <span class="c">// Live já encerrou nesta ocorrência</span>
+  <span class="k">const</span> secondsUntilNext = (next.<span class="n">getTime</span>() - nowMs) / <span class="num">1000</span>;
+
+  <span class="k">if</span> (secondsUntilNext &lt;= <span class="num">3600</span>) { <span class="c">// menos de 1h: "em breve"</span>
+    <span class="k">return</span> { status: <span class="s">'upcoming_soon'</span>, nextAt: next, secondsUntil: <span class="n">Math</span>.<span class="n">floor</span>(secondsUntilNext) };
+  }
+
+  <span class="k">if</span> (elapsedSec >= durationS) { <span class="c">// já encerrou</span>
+    <span class="k">return</span> { status: <span class="s">'ended'</span>, endedAt: <span class="k">new</span> <span class="n">Date</span>(prevMs + durationS * <span class="num">1000</span>), nextAt: next };
+  }
+
+  <span class="k">return</span> { status: <span class="s">'upcoming'</span>, nextAt: next, secondsUntil: <span class="n">Math</span>.<span class="n">floor</span>(secondsUntilNext) };
+}</div>
+      </div>
+
+      <h2>Estados da Hot Page</h2>
+      <div class="card-grid">
+        <div class="card card-green">
+          <h3>🔴 AO VIVO</h3>
+          <p>Player rodando. Seek bloqueado. Chat ativo via SSE. Usuário não pode pausar (ou pode? — decisão de produto). Badge "AO VIVO" piscando.</p>
+        </div>
+        <div class="card card-yellow">
+          <h3>⏳ EM BREVE</h3>
+          <p>Countdown até a próxima live. Formulário de notificação por e-mail opcional. Preview do título do conteúdo.</p>
+        </div>
+        <div class="card card-orange">
+          <h3>✅ ENCERRADA</h3>
+          <p>Mensagem de encerramento. Link para "próxima live" (se configurada). Replay bloqueado (ou liberado por configuração do admin).</p>
+        </div>
+        <div class="card card-indigo">
+          <h3>📅 PRÓXIMAS LIVES</h3>
+          <p>Lista das próximas ocorrências do cron (próximas 5). Calculadas dinamicamente com <code class="inline-code">cron-parser</code> no servidor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 10. CONTROLE DE TEMPO DA LIVE -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="timesync">
+      <div class="section-header">
+        <span class="section-icon">⏱️</span>
+        <h2 class="section-title">Controle de Tempo da Live</h2>
+        <span class="section-num">10</span>
+      </div>
+
+      <p>O <strong>segundo atual da live</strong> é uma operação de matemática pura — não há estado global que precise ser atualizado continuamente. A fórmula:</p>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">TypeScript</span> A matemática do "tempo atual da live"</div>
+        <div class="code-content"><span class="c">/**
+ * currentSecond: em qual segundo do vídeo a live está agora.
+ *
+ * Exemplo:
+ *   liveStartedAt = 2024-02-12 20:00:00
+ *   now           = 2024-02-12 20:47:23
+ *   elapsed       = 47min 23s = 2843s
+ *   videoDuration = 18000s (5h)
+ *
+ *   currentSecond = 2843 % 18000 = 2843  ✅ (está no segundo 47:23)
+ *
+ * O módulo (%) é necessário se a live for configurada para REPETIR
+ * automaticamente em loop. Se não repetir, não usar %.
+ */</span>
+
+<span class="k">function</span> <span class="n">getCurrentSecond</span>(
+  liveStartedAt: <span class="t">Date</span>,
+  videoDurationS: <span class="t">number</span>,
+  now = <span class="k">new</span> <span class="n">Date</span>()
+): <span class="t">number</span> {
+  <span class="k">const</span> elapsedMs  = now.<span class="n">getTime</span>() - liveStartedAt.<span class="n">getTime</span>();
+  <span class="k">const</span> elapsedS   = <span class="n">Math</span>.<span class="n">floor</span>(elapsedMs / <span class="num">1000</span>);
+
+  <span class="c">// Sem loop: limitar ao máximo do vídeo</span>
+  <span class="k">return</span> <span class="n">Math</span>.<span class="n">min</span>(elapsedS, videoDurationS);
+
+  <span class="c">// Com loop (se configurado):</span>
+  <span class="c">// return elapsedS % videoDurationS;</span>
+}
+
+<span class="c">// ───────────────────────────────────────────────────────────────
+// Cache no Redis: o schedule-worker atualiza a cada 10s
+// evitando cálculo e consulta ao PG em todo request da hot page
+// ───────────────────────────────────────────────────────────────</span>
+
+<span class="k">async function</span> <span class="n">getLiveStateFromCache</span>(projectId: <span class="t">string</span>): <span class="k">Promise</span>&lt;<span class="t">LiveStateCache</span>&gt; {
+  <span class="k">const</span> cached = <span class="k">await</span> redis.<span class="n">get</span>(<span class="s">`live:state:${projectId}`</span>);
+
+  <span class="k">if</span> (cached) {
+    <span class="k">const</span> state = <span class="n">JSON</span>.<span class="n">parse</span>(cached);
+    <span class="c">// Ajustar currentSecond com base no tempo passado desde o cache</span>
+    <span class="k">const</span> drift = (Date.<span class="n">now</span>() - state.cachedAt) / <span class="num">1000</span>;
+    state.currentSecond += <span class="n">Math</span>.<span class="n">floor</span>(drift);
+    <span class="k">return</span> state;
+  }
+
+  <span class="c">// Cache miss: calcular do zero (lento — só acontece 1 vez)</span>
+  <span class="k">return</span> <span class="n">computeAndCacheLiveState</span>(projectId);
+}
+
+<span class="c">// Redis key com TTL de 30s:</span>
+<span class="c">// SET live:state:{projectId} {json} EX 30</span></div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <p><strong>Sincronização cliente-servidor:</strong> Ao carregar a hot page, o Next.js busca o <code class="inline-code">currentSecond</code> via RSC (Server Component) — zero latência de fetch. O player inicia exatamente nesse segundo. A cada 30s, o player faz um GET leve para re-sincronizar, corrigindo qualquer drift de clock. O SSE channel também envia um evento <code class="inline-code">sync</code> a cada 60s.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 11. MODELO DE CUSTO -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="cost">
+      <div class="section-header">
+        <span class="section-icon">💰</span>
+        <h2 class="section-title">Modelo de Custo — Storage &amp; Streaming</h2>
+        <span class="section-num">11</span>
+      </div>
+
+      <h2>Comparação de Serviços de Storage + CDN</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Storage</th>
+              <th>Egress / Bandwidth</th>
+              <th>Transcodificação</th>
+              <th>Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cloudflare R2 + CDN</strong></td>
+              <td class="td-green">$0.015/GB/mês</td>
+              <td class="td-green">$0.00 (zero egress)</td>
+              <td class="td-green">FFmpeg self-hosted</td>
+              <td class="td-green">✅ Melhor opção</td>
+            </tr>
+            <tr>
+              <td><strong>AWS S3 + CloudFront</strong></td>
+              <td class="td-yellow">$0.023/GB/mês</td>
+              <td class="td-red">$0.085/GB (US)</td>
+              <td class="td-yellow">MediaConvert $0.015/min HD</td>
+              <td class="td-yellow">Alto egress</td>
+            </tr>
+            <tr>
+              <td><strong>Cloudflare Stream</strong></td>
+              <td class="td-yellow">$5/1000 min stored</td>
+              <td class="td-yellow">$1/1000 min delivered</td>
+              <td class="td-green">Incluso</td>
+              <td class="td-red">Caro em escala</td>
+            </tr>
+            <tr>
+              <td><strong>Bunny.net CDN + Storage</strong></td>
+              <td class="td-green">$0.01/GB/mês</td>
+              <td class="td-green">$0.01/GB egress</td>
+              <td class="td-muted">Externo</td>
+              <td class="td-cyan">Boa alternativa</td>
+            </tr>
+            <tr>
+              <td><strong>Backblaze B2 + Cloudflare</strong></td>
+              <td class="td-green">$0.006/GB/mês</td>
+              <td class="td-green">$0.00 (parceiro CF)</td>
+              <td class="td-muted">Externo</td>
+              <td class="td-cyan">Mais barato em storage</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Sizing: Custo de um Vídeo de 5 Horas</h2>
+
+      <div class="card-grid">
+        <div class="card card-green">
+          <h3>📁 Tamanho no disco (HLS)</h3>
+          <ul>
+            <li><strong>Original:</strong> ~5–10 GB (MP4 antes de transcodificar)</li>
+            <li><strong>360p HLS:</strong> ~0.8 GB (6 Mbps × 18000s / 8 / 1024)</li>
+            <li><strong>720p HLS:</strong> ~2.2 GB (~2.5 Mbps × 18000s)</li>
+            <li><strong>1080p HLS:</strong> ~4.2 GB (~5 Mbps × 18000s)</li>
+            <li><strong>Total HLS:</strong> ~7.2 GB (deletar original após transcode)</li>
+          </ul>
+        </div>
+        <div class="card card-cyan">
+          <h3>💸 Custo storage/mês (R2)</h3>
+          <ul>
+            <li>7.2 GB × $0.015 = <strong>$0.108/mês</strong> por projeto</li>
+            <li>10 projetos = <strong>$1.08/mês</strong> em storage</li>
+            <li>100 projetos = <strong>$10.80/mês</strong> em storage</li>
+            <li>Egress = $0 (Cloudflare R2)</li>
+            <li>Sem limites de bandwidth</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Calculadora de Custo por Tier de Assinatura</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Plano</th>
+              <th>Projetos</th>
+              <th>Viewers/live</th>
+              <th>Custo infra/mês</th>
+              <th>Preço sugerido</th>
+              <th>Margem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Starter</strong></td>
+              <td>3</td>
+              <td>até 100</td>
+              <td class="td-green">~$1</td>
+              <td class="td-cyan">$49/mês</td>
+              <td class="td-green">~98%</td>
+            </tr>
+            <tr>
+              <td><strong>Pro</strong></td>
+              <td>15</td>
+              <td>até 1.000</td>
+              <td class="td-green">~$5</td>
+              <td class="td-cyan">$149/mês</td>
+              <td class="td-green">~97%</td>
+            </tr>
+            <tr>
+              <td><strong>Business</strong></td>
+              <td>50</td>
+              <td>até 10.000</td>
+              <td class="td-yellow">~$35</td>
+              <td class="td-cyan">$499/mês</td>
+              <td class="td-green">~93%</td>
+            </tr>
+            <tr>
+              <td><strong>Enterprise</strong></td>
+              <td>Ilimitado</td>
+              <td>Ilimitado</td>
+              <td class="td-yellow">Variável</td>
+              <td class="td-cyan">Custom</td>
+              <td class="td-green">&gt;85%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <p><strong>A grande vantagem do Fake Live:</strong> O streaming é VOD (não é real-time). Isso significa que o CDN serve o mesmo vídeo pré-calculado para todos os viewers — sem custo de transcodificação em tempo real, sem servidor de mídia dedicado. 10.000 viewers simultâneos assistindo a mesma live = 10.000 downloads paralelos do mesmo arquivo .ts pelo CDN. Custo incremental: zero (Cloudflare R2 não cobra egress).</p>
+      </div>
+
+      <h2>Custos de Infraestrutura da Plataforma</h2>
+
+      <div class="pricing-cards">
+        <div class="pricing-card">
+          <span class="price-big">$20</span>
+          <span class="price-label">VPS API + Workers<br>(2 vCPU, 4GB RAM)</span>
+        </div>
+        <div class="pricing-card">
+          <span class="price-big">$20</span>
+          <span class="price-label">VPS Transcode Worker<br>(4 vCPU, 8GB RAM)</span>
+        </div>
+        <div class="pricing-card">
+          <span class="price-big">$7</span>
+          <span class="price-label">Upstash Redis<br>(Pay-per-use)</span>
+        </div>
+        <div class="pricing-card">
+          <span class="price-big">$20</span>
+          <span class="price-label">PostgreSQL<br>(Neon / Supabase)</span>
+        </div>
+        <div class="pricing-card">
+          <span class="price-big">$0</span>
+          <span class="price-label">Cloudflare R2<br>+ CDN (free tier)</span>
+        </div>
+        <div class="pricing-card">
+          <span class="price-big">~$67</span>
+          <span class="price-label">Total fixo/mês<br>(MVP)</span>
+        </div>
+      </div>
+
+      <p>Com <strong>10 tenants no plano Starter ($49/mês)</strong>: receita $490/mês − $67 infra − ~$10 storage = <strong>~$413/mês de margem</strong>. Breakeven em ~2 clientes.</p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 12. ROADMAP -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="section" id="roadmap">
+      <div class="section-header">
+        <span class="section-icon">🗺️</span>
+        <h2 class="section-title">Roadmap de Implementação</h2>
+        <span class="section-num">12</span>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot phase-dot-indigo">1</div>
+        <div class="phase-label text-accent">Fase 1</div>
+        <h3>MVP — Core da Plataforma</h3>
+        <div class="phase-meta">
+          <span class="phase-tag tag-time">🗓 6–8 semanas</span>
+          <span class="phase-tag tag-scope">Escopo: 1 tenant de teste</span>
+          <span class="phase-tag tag-effort">Esforço: Alto</span>
+        </div>
+        <div class="card card-indigo">
+          <ul>
+            <li>Setup monorepo (Turborepo): <code class="inline-code">apps/dashboard</code>, <code class="inline-code">apps/live-page</code>, <code class="inline-code">packages/api</code></li>
+            <li>Auth (Better-auth): login, sessões, roles básicas (admin/enduser)</li>
+            <li>Schema PostgreSQL + Drizzle ORM + RLS básico</li>
+            <li>Upload multipart para Cloudflare R2 com progress tracking</li>
+            <li>Worker de transcodificação FFmpeg → HLS (3 qualidades)</li>
+            <li>Hot page básica: player HLS.js + seek bloqueado</li>
+            <li>Upload e parse de CSV de comentários</li>
+            <li>SSE para fake chat (sem Redis, consulta direta ao PG)</li>
+            <li>Agendamento básico: campo cron + função <code class="inline-code">getLiveStatus</code></li>
+            <li>Estados da hot page: live / upcoming / ended</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot phase-dot-yellow">2</div>
+        <div class="phase-label text-yellow">Fase 2</div>
+        <h3>Multi-Tenant + Billing + Performance</h3>
+        <div class="phase-meta">
+          <span class="phase-tag tag-time">🗓 4–6 semanas</span>
+          <span class="phase-tag tag-scope">Escopo: produção</span>
+          <span class="phase-tag tag-effort">Esforço: Médio</span>
+        </div>
+        <div class="card card-yellow">
+          <ul>
+            <li>Multi-tenant completo: RLS, subdomínios, wildcard DNS</li>
+            <li>SYSTEM ADMIN dashboard: lista de tenants, planos, storage usage</li>
+            <li>Billing com Stripe: planos, metered billing por GB, webhooks</li>
+            <li>Redis para cache de live state e fila de comentários (Sorted Set)</li>
+            <li>Onboarding de novos tenants: self-service signup</li>
+            <li>Analytics básico por projeto: total de acessos, pico de viewers</li>
+            <li>Customização da hot page: logo, cor de destaque, título</li>
+            <li>Notificação de "live em breve" (e-mail via Resend)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot phase-dot-green">3</div>
+        <div class="phase-label text-green">Fase 3</div>
+        <h3>Escala + UX Premium</h3>
+        <div class="phase-meta">
+          <span class="phase-tag tag-time">🗓 4–6 semanas</span>
+          <span class="phase-tag tag-scope">Escopo: growth</span>
+          <span class="phase-tag tag-effort">Esforço: Médio</span>
+        </div>
+        <div class="card card-green">
+          <ul>
+            <li>SSE escalável: múltiplas instâncias + Redis Pub/Sub para broadcast</li>
+            <li>Replay de live: admin libera acesso ao VOD após a live encerrar</li>
+            <li>Player premium: qualidade adaptativa manual, fullscreen, pip</li>
+            <li>Integração com domínio customizado do tenant (<code class="inline-code">live.meusite.com</code>)</li>
+            <li>Moderação de chat: filtros de palavrão, velocidade de scroll</li>
+            <li>API pública para tenants (webhooks, query de status da live)</li>
+            <li>Dashboard analytics avançado: gráfico de viewers ao longo do tempo</li>
+            <li>Import de CSV melhorado: validação, preview, edição inline</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot phase-dot-pink">4</div>
+        <div class="phase-label text-pink">Fase 4</div>
+        <h3>Enterprise + Compliance</h3>
+        <div class="phase-meta">
+          <span class="phase-tag tag-time">🗓 Ongoing</span>
+          <span class="phase-tag tag-scope">Escopo: enterprise</span>
+          <span class="phase-tag tag-effort">Esforço: Baixo</span>
+        </div>
+        <div class="card card-pink">
+          <ul>
+            <li>SSO (SAML / OIDC) para tenants enterprise</li>
+            <li>Schema isolation por tenant (para clientes que exigem isolamento)</li>
+            <li>Auditoria de acessos (quem assistiu, quando, IP)</li>
+            <li>White-label completo: remover branding da plataforma</li>
+            <li>SLA contratual + suporte dedicado</li>
+            <li>Painel de uso em tempo real para tenant (viewers agora, pico histórico)</li>
+          </ul>
+        </div>
+      </div>
+
+      <hr>
+
+      <h2>Dependências Críticas de Tempo</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Risco</th>
+              <th>Mitigação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Transcodificação FFmpeg de 5h</td>
+              <td class="td-yellow">Lento (~45 min num VPS básico)</td>
+              <td>Mostrar progress bar real via BullMQ. Notificar por e-mail quando pronto.</td>
+            </tr>
+            <tr>
+              <td>Upload de 10GB via browser</td>
+              <td class="td-yellow">Conexão do usuário pode cair</td>
+              <td>Salvar estado dos chunks no localStorage. Retomar de onde parou.</td>
+            </tr>
+            <tr>
+              <td>SSE com 10k+ viewers</td>
+              <td class="td-red">Limite de file descriptors no Linux</td>
+              <td>Configurar <code class="inline-code">ulimit</code>, usar Node.js cluster ou múltiplas instâncias + Redis Pub/Sub.</td>
+            </tr>
+            <tr>
+              <td>Sync de tempo entre cliente e servidor</td>
+              <td class="td-green">Baixo — math pura</td>
+              <td>Re-sync a cada 30s. Aceitar tolerância de ±2s sem corrigir (imperceptível).</td>
+            </tr>
+            <tr>
+              <td>Timezone do tenant</td>
+              <td class="td-yellow">Daylight saving time (horário de verão)</td>
+              <td>Usar <code class="inline-code">date-fns-tz</code> + IANA timezone. Nunca offsets fixos (+3).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ── Scroll Spy ──
+  const sections = document.querySelectorAll('.section');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(item => item.classList.remove('active'));
+        const id = entry.target.id;
+        const match = document.querySelector(`.nav-item[href="#${id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  function setActive(el) {
+    navItems.forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
