@@ -293,9 +293,12 @@
     .callout-orange { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.2); }
     .callout-purple { background: rgba(163,113,247,0.08); border: 1px solid rgba(163,113,247,0.2); }
     .callout-red    { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.2); }
+    .callout-teal   { background: rgba(57,211,187,0.08); border: 1px solid rgba(57,211,187,0.2); }
     .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
     .callout-content strong { display: block; margin-bottom: 4px; color: var(--text); font-size: 0.9rem; }
     .callout-content p { color: var(--muted); margin-bottom: 0; }
+    .callout-content ul { color: var(--muted); padding-left: 20px; margin-top: 6px; }
+    .callout-content ul li { margin-bottom: 3px; }
 
     /* ══ BADGES ══ */
     .badge {
@@ -346,6 +349,13 @@
       line-height: 1.7;
       color: #c9d1d9;
     }
+    /* FIX: white-space: pre para blocos de código renderizarem corretamente */
+    .code-body pre {
+      white-space: pre;
+      margin: 0;
+      tab-size: 2;
+      overflow-x: auto;
+    }
     .code-body .kw  { color: #ff7b72; }
     .code-body .fn  { color: #d2a8ff; }
     .code-body .str { color: #a5d6ff; }
@@ -368,6 +378,9 @@
       font-size: 0.8rem;
       line-height: 1.9;
       color: var(--muted);
+      white-space: pre;
+      margin: 0;
+      overflow-x: auto;
     }
     .flow .fl-blue   { color: var(--blue); }
     .flow .fl-green  { color: var(--green); }
@@ -571,6 +584,26 @@
       gap: 14px;
     }
 
+    /* ══ SUB-SECTION ══ */
+    .sub-section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .sub-section-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
     /* ══ RESPONSIVE ══ */
     @media (max-width: 800px) {
       .container { flex-direction: column; }
@@ -624,18 +657,18 @@
         <span class="hero-tag tag-green">agent-service</span>
         <span class="hero-tag tag-orange">MCP Tools</span>
         <span class="hero-tag tag-purple">Mastra Agent SDK</span>
-        <span class="hero-tag tag-yellow">Análise Técnica</span>
+        <span class="hero-tag tag-yellow">v2 — Feedback André</span>
       </div>
       <h1>R2 — Conditional Approval Processing</h1>
       <p class="hero-sub">
-        Planejamento técnico completo para implementação do workflow de conditional approval no Zora Pantheon (HouseNumbers)
+        Planejamento técnico completo para implementação do workflow de conditional approval no Zora Pantheon (HouseNumbers) — v2 revisado
       </p>
       <div class="hero-meta">
         <span>📋 10 seções</span>
-        <span>🔧 3 novas MCP tools</span>
+        <span>🔧 2 novas MCP tools</span>
         <span>📝 3 novos prompts</span>
         <span>📁 8+ arquivos novos</span>
-        <span>⚡ Tier 1 + 🤖 Tier 2</span>
+        <span>⚡ Tier 1 (PDF check) + 🤖 Tier 2 (LLM)</span>
       </div>
     </div>
   </header>
@@ -682,11 +715,11 @@
           </div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 14px; color: var(--muted);">FLUXO END-TO-END</h3>
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 14px; color: var(--muted);">FLUXO END-TO-END (OPÇÃO B — EVENT-DRIVEN)</h3>
 
         <div class="flow">
-          <pre><span class="fl-blue">📧 Email de Conditional Approval</span>
-   └── chega no Front (inbox do loan)
+<pre><span class="fl-blue">📧 Email de Conditional Approval</span>
+   └── chega no Front (inbox do loan) <span class="fl-orange">com PDF em anexo</span>
 
 <span class="fl-teal">🔗 Front Webhook</span>
    └── POST → communication-service
@@ -696,22 +729,31 @@
    └── recebe o evento
           └── registry lookup → encontra <span class="fl-blue">R2</span>
 
-<span class="fl-yellow">⚡ Tier 1 Checks</span> (sem LLM, determinístico)
-   ├── ✅ é um conditional approval email? (heurística no subject/metadata)
-   └── ✅ não foi processado nos últimos 2h?
-          └── ambos OK → executa Tier 2
+<span class="fl-yellow">⚡ Tier 1 Check</span> (sem LLM, O(1), determinístico)
+   └── O email tem um PDF em anexo?
+          ├── <span class="fl-orange">NÃO → SKIP</span> (sem LLM, sem custo)
+          └── <span class="fl-green">SIM → executa Tier 2</span>
 
 <span class="fl-green">🤖 Tier 2 — Mastra Agent (R2)</span>  maxSteps=15
-   ├── 1. prepare_condoval_import          ← get existing tasks + dedup guide
-   ├── 2. get_conversation / get_email     ← lê o email completo
-   ├── 3. Extrai N condições do email
-   ├── 4. list_tasks                       ← checa duplicatas
-   ├── 5. create_task × N                  ← cria cada condição como task
-   ├── 6. list_documents                   ← docs já upados no loan
-   ├── 7. Cross-match docs × tasks         ← doc satisfaz a condição?
-   ├── 8. suggest_condition_destinations × K  ← quem contatar por condição?
-   ├── 9. draft_condition_outreach × K     ← drafta email por condição
-   └── 10. create_comment                  ← nota interna com resumo
+   ├── 1. get_conversation(conversationId)   ← busca conversa + PDF
+   ├── 2. LLM classifica: "É um condval?"   ← structured output
+   │       └── isConditionalApproval===false → retorna []
+   ├── 3. prepare_condoval_import            ← get existing tasks + dedup
+   ├── 4. Extrai N condições do PDF
+   ├── 5. list_tasks                         ← checa duplicatas
+   ├── 6. create_task × N                    ← loop: uma call por condição
+   ├── 7. list_documents                     ← docs já upados no loan
+   ├── 8. LLM raciocina: doc satisfaz task?  ← update_task(linkedDocuments)
+   ├── 9. suggest_condition_destinations     ← LLM + structured output
+   ├── 10. draft_condition_outreach × K      ← drafta email por condição
+   └── 11. create_comment                    ← nota interna com resumo
+
+<span class="fl-text">📤 R2 dispara TASK_CREATED × N</span>
+
+<span class="fl-green">🤖 Tier 2 — Mastra Agent (R7)</span>  maxSteps=10
+   ├── TASK_CREATED trigger → doc matching refinado
+   ├── update_task(linkedDocuments) para matches
+   └── DRAFT_EMAIL para tasks sem doc resolvido
 
 <span class="fl-text">📤 ProposedActions retornadas ao pipeline:</span>
    ├── CREATE_TASK × N           → <span class="fl-green">autoExecute (threshold=0)</span>
@@ -729,15 +771,15 @@
             <p><strong>agent-service</strong> — long-running ECS Service. Core do sistema de agentic workflows. Padrão handler puro: recebe <span class="inline-code">PipelineContext</span>, retorna <span class="inline-code">ProposedAction[]</span>.</p>
           </div>
           <div class="card">
-            <h3>📡 Trigger(s)</h3>
+            <h3>📡 Trigger</h3>
             <p>
-              <span class="badge badge-orange">WEBHOOK_SYNC_FRONT_CONVERSATION</span><br>
-              <span class="badge badge-gray" style="margin-top:6px">LOAN_APPLICATION_UPSERTED</span> (fallback)
+              <span class="badge badge-orange">WEBHOOK_SYNC_FRONT_CONVERSATION</span>
             </p>
+            <p style="margin-top:8px; font-size:0.8rem;">Único trigger. O Tier 1 filtra se há PDF em anexo.</p>
           </div>
           <div class="card">
             <h3>🤖 Model Tier</h3>
-            <p><span class="badge badge-purple">Powerful</span> GPT-4o ou Claude Sonnet — necessário para extração precisa de condições legais/financeiras do email.</p>
+            <p><span class="badge badge-purple">Powerful</span> GPT-4o ou Claude Sonnet — necessário para classificação do PDF e extração precisa de condições financeiras/legais.</p>
           </div>
           <div class="card">
             <h3>📊 Output esperado</h3>
@@ -753,18 +795,30 @@
           <h2>Como Integrar com o AI Agent</h2>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin-bottom: 12px;">🚨 O Problema do Trigger Atual</h3>
-        <p>O R2 hoje (como stub) tem apenas <span class="inline-code">LOAN_APPLICATION_UPSERTED</span> como trigger. Este evento é disparado por <em>qualquer</em> atualização do loan — mudança de status, edição de campo, qualquer coisa. Usar só ele seria catastrófico: o R2 rodaria dezenas de vezes por dia sem necessidade.</p>
+        <h3 style="font-size:0.95rem; font-weight:600; margin-bottom: 12px;">📡 Trigger: apenas WEBHOOK_SYNC_FRONT_CONVERSATION</h3>
 
-        <div class="callout callout-orange">
-          <span class="callout-icon">⚠️</span>
+        <div class="callout callout-green">
+          <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Solução: dois triggers + Tier 1 forte</strong>
-            <p>Adicionar <span class="inline-code">WEBHOOK_SYNC_FRONT_CONVERSATION</span> como trigger primário. O Tier 1 filtra se o evento realmente é um conditional approval email. <span class="inline-code">LOAN_APPLICATION_UPSERTED</span> fica como fallback para imports manuais.</p>
+            <strong>Trigger único e correto</strong>
+            <p>O R2 tem <strong>apenas</strong> <span class="inline-code">WEBHOOK_SYNC_FRONT_CONVERSATION</span> como trigger. Quando um email chega no Front, esse evento é disparado. O Tier 1 filtra os irrelevantes (sem PDF = não é condval). O <span class="inline-code">LOAN_APPLICATION_UPSERTED</span> foi removido completamente — era um fallback para import manual que não faz sentido aqui.</p>
           </div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">Antes vs. Depois</h3>
+        <!-- CALLOUT: batch e doc-task match não existem -->
+        <div class="callout callout-teal" style="margin-bottom:20px">
+          <span class="callout-icon">🔍</span>
+          <div class="callout-content">
+            <strong>Investigação: tools de batch e doc-task match não existem no MCP</strong>
+            <p>André perguntou: "Não temos uma tool de batch creation e uma de document-task match?" — A resposta é não. Veja como o workflow resolve isso:</p>
+            <ul>
+              <li><strong>Batch task creation:</strong> não existe. Só <span class="inline-code">create_task</span> (singular). O Mastra Agent cria tasks em loop — uma call por condição — usando <span class="inline-code">prepare_condoval_import</span> antes para deduplicação. Esta é a abordagem correta: o agent gerencia a iteração.</li>
+              <li><strong>Document-task matching:</strong> não existe como tool separada. O R7 implementa o matching usando <span class="inline-code">list_documents</span> + <span class="inline-code">list_tasks</span> + raciocínio LLM → <span class="inline-code">update_task</span> com <span class="inline-code">linkedDocuments</span>. Não há uma tool de "match document to task" — o LLM raciocina sobre o match.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:600; margin-bottom: 12px;">Antes vs. Depois</h3>
         <div class="two-col">
           <div class="card" style="border-color: rgba(248,81,73,0.2);">
             <h3>🔴 Antes (Manual)</h3>
@@ -780,38 +834,47 @@
           <div class="card" style="border-color: rgba(63,185,80,0.2);">
             <h3>🟢 Depois (R2 Automatizado)</h3>
             <ul>
-              <li>Email chega → webhook dispara R2</li>
+              <li>Email com PDF chega → Tier 1 passa</li>
+              <li>LLM classifica PDF (structured output)</li>
               <li>Agent extrai todas as condições</li>
-              <li>Tasks criadas automaticamente</li>
-              <li>Docs cross-matched em segundos</li>
-              <li>Emails de outreach draftados</li>
+              <li>Tasks criadas em loop automaticamente</li>
+              <li>Docs cross-matched via raciocínio LLM</li>
               <li>MLP revisa e aprova: ~10-15 min</li>
             </ul>
           </div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">⚡ Como o Tier 1 funciona</h3>
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">⚡ Tier 1: único check determinístico</h3>
+
+        <div class="callout callout-blue">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <strong>Por que só checar PDF?</strong>
+            <p>Conditional approval emails <em>sempre</em> vêm com o PDF da conditional approval em anexo. Se não tem PDF, não é um condval — ponto. Esta checagem é O(1), sem LLM, sem ambiguidade. A classificação do tipo do email acontece <strong>dentro do Tier 2</strong> (primeira ação do Mastra Agent), usando o PDF recuperado com structured output.</p>
+          </div>
+        </div>
 
         <div class="flow">
-          <pre><span class="fl-yellow">Tier 1 Checks</span> — rápidos, sem LLM, sem custo de token
+<pre><span class="fl-yellow">Tier 1 Check</span> — O(1), sem LLM, determinístico
 
-Check 1: <span class="fl-blue">has-condoval-email-signal</span>
-   Para WEBHOOK_SYNC_FRONT_CONVERSATION:
-     → subject contém "conditional approval" / "condval" / "approval letter"?
-     → sender domain é de um lender conhecido?
-     → conversation tags indicam condval?
-   Para LOAN_APPLICATION_UPSERTED:
-     → loan.status mudou para "conditional_approval"?
-     → loan.newConditionsCount > 0?
-   
-   <span class="fl-orange">→ false: SKIP (sem gastar tokens)</span>
-   <span class="fl-green">→ true: continua</span>
+Único check: <span class="fl-blue">email-has-pdf-attachment</span>
+   → payload.attachments.some(a => a.contentType === "application/pdf")
 
-Check 2: <span class="fl-blue">not-processed-recently</span>
-   → context.recentActions tem CREATE_TASK de R2 nas últimas 2h?
-   
-   <span class="fl-orange">→ sim: SKIP (idempotência)</span>
-   <span class="fl-green">→ não: continua → executa Tier 2</span></pre>
+   <span class="fl-orange">→ false: SKIP</span> (não é condval, sem gastar tokens)
+   <span class="fl-green">→ true: executa Tier 2</span>
+
+<span class="fl-yellow">Tier 2 — PRIMEIRA ação do Mastra Agent</span> (classificação LLM)
+
+   get_conversation(conversationId) → busca conversa com metadata do PDF
+   LLM classifica via structured output:
+   {
+     isConditionalApproval: boolean,
+     confidence: number,
+     signals: string[]   // evidências encontradas no PDF
+   }
+
+   <span class="fl-orange">→ isConditionalApproval===false: handler retorna []</span> (early return)
+   <span class="fl-green">→ true: continua extração de condições</span></pre>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">Arquitetura: Opção A vs. Opção B</h3>
@@ -836,7 +899,7 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
               <span class="badge badge-green">Opção B ⭐</span>
               Event-Driven
             </div>
-            <p style="font-size:0.84rem; color:var(--muted);">R2 só cria as tasks → TASK_CREATED dispara R7 → R7 faz doc matching e email drafting. Pipeline distribuído.</p>
+            <p style="font-size:0.84rem; color:var(--muted);">R2 cria as tasks → TASK_CREATED dispara R7 → R7 faz doc matching e email drafting. Pipeline distribuído.</p>
             <ul>
               <li><span class="pro">✅</span> Alinha com arquitetura existente</li>
               <li><span class="pro">✅</span> R7 reutilizável para outros triggers</li>
@@ -851,8 +914,10 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
         <div class="callout callout-green">
           <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Recomendação: Opção B (Event-Driven)</strong>
-            <p>A Opção B alinha melhor com o padrão arquitetural do agent-service e permite que o R7 (Document Task Auto-Match) seja reaproveitado quando qualquer documento chegar — não apenas após um condval. Handlers menores = mais fáceis de testar e manter.</p>
+            <strong>Decisão: Opção B (Event-Driven) — confirmada</strong>
+            <p>R2: <span class="inline-code">WEBHOOK_SYNC_FRONT_CONVERSATION</span> → detecta condval → importa condições → <span class="inline-code">CREATE_TASK × N</span> → dispara <span class="inline-code">TASK_CREATED</span><br>
+            R7: <span class="inline-code">TASK_CREATED</span> → doc matching → <span class="inline-code">UPDATE_TASK_REVIEW</span> (linked docs) → <span class="inline-code">DRAFT_EMAIL</span> para unresolved<br><br>
+            A Opção B alinha melhor com o padrão arquitetural do agent-service e permite que o R7 seja reaproveitado quando qualquer documento chegar — não apenas após um condval. Handlers menores = mais fáceis de testar e manter.</p>
           </div>
         </div>
       </section>
@@ -894,7 +959,7 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
               </tr>
               <tr>
                 <td><code>get_conversation</code></td>
-                <td>Thread completa de uma conversa no Front</td>
+                <td>Thread completa de uma conversa no Front (inclui attachments)</td>
                 <td><span class="badge badge-blue">emails:read</span></td>
                 <td><span class="badge badge-gray">Query</span></td>
                 <td>R2</td>
@@ -915,14 +980,21 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
               </tr>
               <tr>
                 <td><code>create_task</code></td>
-                <td>Cria task com <code>conditionDetails</code> (conditionId, timingCode, topic, lenderCondition)</td>
+                <td>Cria task com <code>conditionDetails</code>. <strong>Singular</strong> — agent faz N calls em loop.</td>
                 <td><span class="badge badge-orange">tasks:write</span></td>
                 <td><span class="badge badge-red">Mutation</span></td>
                 <td>R2</td>
               </tr>
               <tr>
+                <td><code>update_task</code></td>
+                <td>Atualiza task — usado com <code>linkedDocuments</code> para doc matching (R7)</td>
+                <td><span class="badge badge-orange">tasks:write</span></td>
+                <td><span class="badge badge-red">Mutation</span></td>
+                <td>R7</td>
+              </tr>
+              <tr>
                 <td><code>list_documents</code></td>
-                <td>Lista documentos já upados no loan para cross-match</td>
+                <td>Lista documentos já upados no loan — base do raciocínio de matching</td>
                 <td><span class="badge badge-purple">docs:read</span></td>
                 <td><span class="badge badge-gray">Query</span></td>
                 <td>R2, R7</td>
@@ -973,6 +1045,20 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
             <p><code>draft_email</code> gerencia <em>uma única</em> draft de title order email por loan. O R2 precisa de N drafts independentes, um por condição/destinatário. Por isso precisamos criar <code>draft_condition_outreach</code> como nova tool.</p>
           </div>
         </div>
+
+        <div class="callout callout-teal">
+          <span class="callout-icon">🔍</span>
+          <div class="callout-content">
+            <strong>Document-task matching: sem tool dedicada — raciocínio LLM + update_task</strong>
+            <p>Não existe uma tool de "match document to task" no MCP. O R7 implementa o matching assim:</p>
+            <ul>
+              <li><code>list_documents</code> — lista documentos do loan</li>
+              <li><code>list_tasks</code> — lista tasks abertas</li>
+              <li>LLM raciocina: "qual documento satisfaz qual condição?"</li>
+              <li><code>update_task</code> com campo <code>linkedDocuments</code> — linka o doc à task</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <!-- ══ SECTION 4 · NEW TOOLS ══ -->
@@ -982,58 +1068,119 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
           <h2>Novas MCP Tools a Criar</h2>
         </div>
 
-        <p>Três novas tools precisam ser criadas no <strong>mcp-gateway-service</strong>.</p>
+        <p><strong>2 novas tools</strong> precisam ser criadas no <strong>mcp-gateway-service</strong>. A classificação de email (<code>classify_email_type</code>) foi removida: a classificação agora acontece <strong>dentro do handler R2</strong> (Tier 2), como primeira ação do Mastra Agent usando structured output — sem round-trip extra ao MCP gateway.</p>
 
         <!-- Tool 1 -->
         <div class="card" style="border-color: rgba(88,166,255,0.25); margin-bottom: 24px;">
           <h3>🎯 Tool 1 — <code style="color:var(--blue)">suggest_condition_destinations</code> <span class="badge badge-blue">Query</span> <span class="badge badge-teal">tasks:read + entities:read</span></h3>
-          <p style="margin-bottom:12px;">Para cada condição, sugere 2-3 destinatários prováveis com base no topic da condição e nas entidades vinculadas ao loan. <strong>Sem LLM</strong> — lógica rule-based.</p>
+          <p style="margin-bottom:12px;">Para cada condição, sugere destinatários com base no topic, no texto verbatim da condição e nas entidades vinculadas ao loan. <strong>Usa LLM com Structured Outputs</strong> — as regras de "quem contatar" são contextuais e o LLM raciocina melhor que regras fixas.</p>
+
+          <div class="callout callout-purple" style="margin-bottom:12px">
+            <span class="callout-icon">💡</span>
+            <div class="callout-content">
+              <strong>Por que LLM e não rule-based?</strong>
+              <p>Uma condição de "Income" pode requerer contato com o borrower, o employer, ou o CPA dependendo do texto exato. Exemplo: "Provide 2 years W-2s" → borrower. "Verify self-employment income" → borrower + CPA accountant. Regras fixas não conseguem capturar essa nuança — o LLM raciocina sobre o texto verbatim.</p>
+            </div>
+          </div>
 
           <div class="code-block">
             <div class="code-header">
-              <span>Input / Output schema</span>
+              <span>Input schema</span>
               <span class="lang">TypeScript</span>
             </div>
-            <div class="code-body">
-<span class="cmt">// Input</span>
+            <div class="code-body"><pre><span class="cmt">// Input</span>
 {
   <span class="prop">applicationId</span>: <span class="tp">string</span>,
-  <span class="prop">conditionTopic</span>: <span class="str">"Income"</span> | <span class="str">"Assets"</span> | <span class="str">"Credit"</span> | <span class="str">"Property"</span>
-                 | <span class="str">"Title"</span> | <span class="str">"Insurance"</span> | <span class="str">"Legal"</span> | <span class="str">"Compliance"</span> | <span class="str">"Other"</span>,
-  <span class="prop">timingCode</span>: <span class="str">"PTD"</span> | <span class="str">"PTF"</span> | <span class="str">"PTC"</span> | <span class="str">"UW"</span>,
-  <span class="prop">conditionText</span>: <span class="tp">string</span>  <span class="cmt">// verbatim condition text</span>
-}
+  <span class="prop">conditions</span>: <span class="tp">Array</span>&lt;{
+    <span class="prop">taskId</span>: <span class="tp">string</span>,
+    <span class="prop">conditionText</span>: <span class="tp">string</span>,
+    <span class="prop">timingCode</span>: <span class="str">"PTD"</span> | <span class="str">"PTF"</span> | <span class="str">"PTC"</span> | <span class="str">"UW"</span>,
+    <span class="prop">topic</span>: <span class="str">"Income"</span> | <span class="str">"Assets"</span> | <span class="str">"Credit"</span> | <span class="str">"Property"</span>
+         | <span class="str">"Title"</span> | <span class="str">"Insurance"</span> | <span class="str">"Legal"</span> | <span class="str">"Compliance"</span> | <span class="str">"Other"</span>
+  }&gt;,
+  <span class="prop">loanContext</span>: {
+    <span class="prop">borrowerName</span>: <span class="tp">string</span>,
+    <span class="prop">propertyAddress</span>: <span class="tp">string</span>,
+    <span class="prop">titleCompany</span>?: { <span class="prop">name</span>: <span class="tp">string</span>, <span class="prop">email</span>: <span class="tp">string</span> },
+    <span class="prop">lender</span>?: { <span class="prop">name</span>: <span class="tp">string</span>, <span class="prop">email</span>: <span class="tp">string</span> },
+    <span class="prop">loanOriginator</span>?: { <span class="prop">name</span>: <span class="tp">string</span>, <span class="prop">email</span>: <span class="tp">string</span> }
+  }
+}</pre></div>
+          </div>
 
-<span class="cmt">// Output</span>
-{
-  <span class="prop">suggestions</span>: [{
-    <span class="prop">recipient</span>: {
-      <span class="prop">name</span>: <span class="tp">string</span>,
-      <span class="prop">email</span>: <span class="tp">string</span>,
-      <span class="prop">role</span>: <span class="str">"borrower"</span> | <span class="str">"employer"</span> | <span class="str">"title-company"</span>
-           | <span class="str">"lender"</span> | <span class="str">"insurance-provider"</span> | <span class="str">"appraiser"</span>
-    },
-    <span class="prop">confidence</span>: <span class="tp">number</span>,   <span class="cmt">// 0-1</span>
-    <span class="prop">rationale</span>: <span class="tp">string</span>
-  }]
-}</div>
+          <div class="code-block">
+            <div class="code-header">
+              <span>Output schema (Structured Output)</span>
+              <span class="lang">TypeScript</span>
+            </div>
+            <div class="code-body"><pre><span class="cmt">// Enum de tipos de destinatário — permite agrupamento</span>
+<span class="kw">type</span> <span class="tp">RecipientType</span> =
+  | <span class="str">"borrower"</span>
+  | <span class="str">"employer"</span>
+  | <span class="str">"title_company"</span>
+  | <span class="str">"lender"</span>
+  | <span class="str">"insurance_provider"</span>
+  | <span class="str">"appraiser"</span>
+  | <span class="str">"cpa_accountant"</span>
+  | <span class="str">"attorney"</span>
+  | <span class="str">"underwriter"</span>;
+
+<span class="kw">type</span> <span class="tp">ConditionDestination</span> = {
+  <span class="prop">taskId</span>: <span class="tp">string</span>;
+  <span class="prop">suggestions</span>: <span class="tp">Array</span>&lt;{
+    <span class="prop">recipientType</span>: <span class="tp">RecipientType</span>;   <span class="cmt">// enum — permite agrupamento</span>
+    <span class="prop">recipientName</span>: <span class="tp">string</span>;
+    <span class="prop">recipientEmail</span>?: <span class="tp">string</span>;
+    <span class="prop">confidence</span>: <span class="tp">number</span>;             <span class="cmt">// 0-1</span>
+    <span class="prop">rationale</span>: <span class="tp">string</span>;
+  }&gt;;
+};
+
+<span class="kw">type</span> <span class="tp">SuggestDestinationsOutput</span> = {
+  <span class="prop">destinations</span>: <span class="tp">ConditionDestination</span>[];
+};</pre></div>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <span>Implementação interna da tool</span>
+              <span class="lang">TypeScript</span>
+            </div>
+            <div class="code-body"><pre><span class="cmt">// suggest-condition-destinations.ts</span>
+<span class="cmt">// Internamente a tool:</span>
+<span class="cmt">// 1. Busca dados do loan via API (title company, lender, borrower, MLO)</span>
+<span class="cmt">// 2. Monta prompt com contexto (condições + entidades disponíveis)</span>
+<span class="cmt">// 3. Chama LLM com structured output (JSON schema enforcement)</span>
+<span class="cmt">// 4. Retorna lista estruturada de destinatários por condição</span>
+
+<span class="kw">async function</span> <span class="fn">suggestConditionDestinations</span>(
+  input: <span class="tp">SuggestDestinationsInput</span>
+): <span class="tp">Promise</span>&lt;<span class="tp">SuggestDestinationsOutput</span>&gt; {
+  <span class="cmt">// 1. Buscar entidades do loan</span>
+  <span class="kw">const</span> loanData = <span class="kw">await</span> <span class="fn">getLoan</span>(input.applicationId);
+
+  <span class="cmt">// 2. Montar prompt</span>
+  <span class="kw">const</span> prompt = <span class="fn">buildDestinationPrompt</span>(input.conditions, loanData);
+
+  <span class="cmt">// 3. LLM com structured output (JSON schema enforced)</span>
+  <span class="kw">const</span> result = <span class="kw">await</span> llm.<span class="fn">generateObject</span>({
+    schema: destinationsOutputSchema, <span class="cmt">// zod schema</span>
+    prompt,
+  });
+
+  <span class="kw">return</span> result.object;
+}</pre></div>
           </div>
 
           <div class="card-grid" style="margin-top:12px">
             <div class="card" style="background:var(--bg3)">
-              <h3 style="font-size:0.82rem;">📋 Topic → Destinatários</h3>
-              <ul style="font-size:0.78rem">
-                <li><strong>Title</strong> → title company</li>
-                <li><strong>Insurance</strong> → insurance provider, borrower</li>
-                <li><strong>Income / Assets / Credit</strong> → borrower, employer</li>
-                <li><strong>Property</strong> → appraiser, title company</li>
-                <li><strong>Legal / Compliance</strong> → title company, lender</li>
-              </ul>
-            </div>
-            <div class="card" style="background:var(--bg3)">
               <h3 style="font-size:0.82rem;">📁 Arquivo</h3>
               <p style="font-size:0.8rem; color: var(--green); font-family: monospace;">src/tools/tasks/query/<br>suggest-condition-destinations.ts</p>
               <p style="font-size:0.78rem; margin-top:8px;">Registrar em: <span style="color:var(--orange); font-family:monospace">src/tools/tasks/index.ts</span></p>
+            </div>
+            <div class="card" style="background:var(--bg3)">
+              <h3 style="font-size:0.82rem;">🔑 RecipientType enum</h3>
+              <p style="font-size:0.78rem;">O enum permite agrupamento de outreach: todas as condições que requerem contato com o mesmo <code>recipientType</code> podem ser agrupadas em um único email de outreach — reduz spam para destinatários.</p>
             </div>
           </div>
         </div>
@@ -1041,25 +1188,22 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
         <!-- Tool 2 -->
         <div class="card" style="border-color: rgba(249,115,22,0.25); margin-bottom: 24px;">
           <h3>✉️ Tool 2 — <code style="color:var(--orange)">draft_condition_outreach</code> <span class="badge badge-red">Mutation</span> <span class="badge badge-orange">emails:write</span></h3>
-          <p style="margin-bottom:12px;">Cria um draft de email de outreach para uma condição específica. Diferente de <code>draft_email</code>: suporta <strong>N drafts por loan</strong>, um por condição/destinatário. Armazena em coleção separada.</p>
+          <p style="margin-bottom:12px;">Cria um draft de email de outreach para uma condição específica. Diferente de <code>draft_email</code>: suporta <strong>N drafts por loan</strong>, um por condição/destinatário. Armazena em coleção separada no communication-service.</p>
 
           <div class="code-block">
             <div class="code-header">
               <span>Input / Output schema</span>
               <span class="lang">TypeScript</span>
             </div>
-            <div class="code-body">
-<span class="cmt">// Input</span>
+            <div class="code-body"><pre><span class="cmt">// Input</span>
 {
   <span class="prop">applicationId</span>: <span class="tp">string</span>,
   <span class="prop">taskId</span>: <span class="tp">string</span>,
   <span class="prop">conditionText</span>: <span class="tp">string</span>,
-  <span class="prop">destination</span>: {
-    <span class="prop">name</span>: <span class="tp">string</span>,
-    <span class="prop">email</span>: <span class="tp">string</span>,
-    <span class="prop">role</span>: <span class="tp">string</span>
-  },
-  <span class="prop">context</span>?: <span class="tp">string</span>  <span class="cmt">// extra context para geração do draft</span>
+  <span class="prop">recipientType</span>: <span class="tp">RecipientType</span>,   <span class="cmt">// enum</span>
+  <span class="prop">recipientName</span>: <span class="tp">string</span>,
+  <span class="prop">recipientEmail</span>: <span class="tp">string</span>,
+  <span class="prop">confidenceScore</span>: <span class="tp">number</span>           <span class="cmt">// 0-1 do suggest_condition_destinations</span>
 }
 
 <span class="cmt">// Output</span>
@@ -1067,8 +1211,12 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
   <span class="prop">draftId</span>: <span class="tp">string</span>,
   <span class="prop">subject</span>: <span class="tp">string</span>,
   <span class="prop">body</span>: <span class="tp">string</span>,
-  <span class="prop">to</span>: <span class="tp">string</span>
-}</div>
+  <span class="prop">recipientEmail</span>: <span class="tp">string</span>,
+  <span class="prop">status</span>: <span class="str">"draft"</span>
+}
+
+<span class="cmt">// Internamente: POST /communication/v1/condition-outreach-drafts</span>
+<span class="cmt">// NÃO é idempotente — checar findByTaskId antes de criar</span></pre></div>
           </div>
 
           <div class="card-grid" style="margin-top:12px">
@@ -1077,8 +1225,9 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
               <ul style="font-size:0.78rem">
                 <li>Gera subject e body via LLM (inline)</li>
                 <li>Inclui verbatim condition text no draft</li>
-                <li>Salva em coleção <code>condition_outreach_drafts</code></li>
+                <li>Salva em coleção <code>conditionOutreachDrafts</code></li>
                 <li>Linkado ao taskId para rastreabilidade</li>
+                <li>Checa findByTaskId antes — evita duplicatas</li>
               </ul>
             </div>
             <div class="card" style="background:var(--bg3)">
@@ -1089,37 +1238,12 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
           </div>
         </div>
 
-        <!-- Tool 3 -->
-        <div class="card" style="border-color: rgba(163,113,247,0.25); margin-bottom: 24px;">
-          <h3>🔍 Tool 3 — <code style="color:var(--purple)">classify_email_type</code> <span class="badge badge-gray">Query</span> <span class="badge badge-blue">emails:read</span></h3>
-          <p style="margin-bottom:12px;">Classifica o tipo de um email — se é um conditional approval, email geral ou outro tipo. Pode ser usado no Tier 1 para evitar gastos de tokens desnecessários.</p>
-
-          <div class="code-block">
-            <div class="code-header">
-              <span>Input / Output schema</span>
-              <span class="lang">TypeScript</span>
-            </div>
-            <div class="code-body">
-<span class="cmt">// Input</span>
-{
-  <span class="prop">applicationId</span>: <span class="tp">string</span>,
-  <span class="prop">conversationId</span>: <span class="tp">string</span>
-}
-
-<span class="cmt">// Output</span>
-{
-  <span class="prop">type</span>: <span class="str">"conditional_approval"</span> | <span class="str">"general"</span> | <span class="str">"other"</span>,
-  <span class="prop">confidence</span>: <span class="tp">number</span>,
-  <span class="prop">signals</span>: <span class="tp">string</span>[]  <span class="cmt">// ex: ["subject contains 'conditional approval'", ...]</span>
-}</div>
-          </div>
-
-          <div class="callout callout-purple" style="margin-top:12px">
-            <span class="callout-icon">💡</span>
-            <div class="callout-content">
-              <strong>Alternativa mais simples</strong>
-              <p>A classificação pode ser feita diretamente no Tier 1 check do agent-service (regex/heurística no payload do evento), sem criar esta tool. Isso evita uma nova dependência e latência de rede. Criar a tool só se precisar de classificação mais sofisticada em outros workflows também.</p>
-            </div>
+        <!-- Nota sobre classify_email_type -->
+        <div class="callout callout-orange">
+          <span class="callout-icon">🗑️</span>
+          <div class="callout-content">
+            <strong>classify_email_type — removida do plano</strong>
+            <p>Com o novo Tier 1 (só checa PDF), <code>classify_email_type</code> deixa de ser necessária como MCP tool. A classificação agora acontece <strong>dentro do handler R2</strong> (Tier 2), como primeira ação do Mastra Agent. O handler usa o LLM diretamente via Mastra (não como tool MCP), passando o conteúdo/metadata do PDF e recebendo uma classificação com structured output. Isso é mais eficiente — sem round-trip extra ao MCP gateway.</p>
           </div>
         </div>
       </section>
@@ -1143,15 +1267,25 @@ Check 2: <span class="fl-blue">not-processed-recently</span>
 
 You are processing a conditional approval email for a mortgage loan.
 Your job is to:
-<span style="color:var(--green)">1.</span> Identify and extract all conditions from the email
-<span style="color:var(--green)">2.</span> Check which conditions are already satisfied by uploaded documents
-<span style="color:var(--green)">3.</span> For unsatisfied conditions, suggest who to contact and draft outreach emails
-<span style="color:var(--green)">4.</span> Return a confidence score for each action
+<span style="color:var(--green)">1.</span> Classify the PDF attachment: is this a conditional approval? (structured output)
+<span style="color:var(--green)">2.</span> If yes, extract all conditions from the PDF
+<span style="color:var(--green)">3.</span> Check which conditions are already satisfied by uploaded documents
+<span style="color:var(--green)">4.</span> For unsatisfied conditions, suggest recipients and draft outreach emails
+<span style="color:var(--green)">5.</span> Return a confidence score for each action
+
+<span style="color:var(--blue); font-weight:700">## First Step: PDF Classification</span>
+<span style="color:var(--orange)">ALWAYS start by calling get_conversation to retrieve the PDF metadata.</span>
+Then classify using structured output:
+  isConditionalApproval: boolean
+  confidence: number
+  signals: string[]
+<span style="color:var(--red)">If isConditionalApproval === false → return [] immediately. Do not proceed.</span>
 
 <span style="color:var(--blue); font-weight:700">## Key Rules</span>
-<span style="color:var(--orange)">- ALWAYS call `prepare_condoval_import` first</span> to get existing tasks and dedup instructions
-- NEVER create duplicate tasks — the dedup guide tells you exactly how to match
-- `conditionDetails` MUST be populated on every CREATE_TASK action
+<span style="color:var(--orange)">- ALWAYS call prepare_condoval_import</span> (after classification) for dedup guide
+- NEVER create duplicate tasks — the dedup guide tells you how to match
+- conditionDetails MUST be populated on every CREATE_TASK action
+- create_task is SINGULAR — call it once per condition in a loop
 - Confidence scoring:
   - <span style="color:var(--green)">1.0: exact match / clear action</span>
   - <span style="color:var(--green)">0.8-0.99: high confidence, proceed</span>
@@ -1159,22 +1293,19 @@ Your job is to:
   - <span style="color:var(--red)">&lt;0.6: skip, don't propose action</span>
 
 <span style="color:var(--blue); font-weight:700">## Document Matching</span>
-For each new task/condition, call `list_documents` to find documents that might satisfy it.
-A document satisfies a condition if its type and content plausibly address the condition text.
-Link matched documents via `linkedDocuments` in the task creation.
-Set confidence based on how clearly the document addresses the condition.
+Use list_documents + list_tasks to reason about which docs satisfy which conditions.
+There is no dedicated "match" tool — you reason over the lists yourself.
+Link matched documents via linkedDocuments in the task creation.
 
 <span style="color:var(--blue); font-weight:700">## Destination Suggestion</span>
-For unmatched conditions, call `suggest_condition_destinations`.
-Draft one outreach email per destination × condition pair using `draft_condition_outreach`.
+For unmatched conditions, call suggest_condition_destinations (uses LLM internally).
+Draft one outreach email per destination × condition pair using draft_condition_outreach.
 Always include the condition text verbatim in the draft.
 
 <span style="color:var(--blue); font-weight:700">## Final Step</span>
-Always call `create_comment` at the end with a summary of:
-- How many conditions were extracted
-- How many tasks were created vs. already existed
-- How many docs matched
-- How many outreach drafts were created</div>
+Always call create_comment at the end with a summary:
+- Conditions extracted, tasks created vs. existed, docs matched, outreach drafts created
+          </div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 OUTPUT_INSTRUCTIONS (TypeScript, no handler)</h3>
@@ -1184,7 +1315,7 @@ Always call `create_comment` at the end with a summary of:
             <span>OUTPUT_INSTRUCTIONS — JSON Schema para ProposedActions</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><span class="kw">const</span> <span class="prop">OUTPUT_INSTRUCTIONS</span> = <span class="str">`
+          <div class="code-body"><pre><span class="kw">const</span> <span class="prop">OUTPUT_INSTRUCTIONS</span> = <span class="str">`
 ## Response Format
 Return a JSON array of proposed actions. Each action must follow this schema:
 {
@@ -1197,18 +1328,21 @@ Return a JSON array of proposed actions. Each action must follow this schema:
     "type": "document" | "task",
     "milestone": "condition",
     "conditionDetails": {
-      "conditionId": "string",         // lender's condition code
+      "conditionId": "string",
       "timingCode": "PTD"|"PTF"|"PTC"|"UW",
       "topic": "Income"|"Assets"|"Credit"|"Property"|"Title"|"Insurance"|"Legal"|"Compliance"|"Other",
-      "lenderCondition": "string"      // verbatim text from the approval letter
+      "lenderCondition": "string"
     },
-    "linkedDocuments": ["docId1", ...],  // if doc already satisfies the condition
+    "linkedDocuments": ["docId1", ...],
 
     // --- For DRAFT_EMAIL ---
     "applicationId": "...",
     "taskId": "...",
     "conditionText": "...",
-    "destination": { "name": "...", "email": "...", "role": "..." }
+    "recipientType": "borrower"|"employer"|"title_company"|...,
+    "recipientName": "...",
+    "recipientEmail": "...",
+    "confidenceScore": 0-1
   },
   "reasoning": "...",
   "urgency": "critical" | "high" | "medium" | "low",
@@ -1217,7 +1351,7 @@ Return a JSON array of proposed actions. Each action must follow this schema:
 }
 
 Return ONLY the JSON array. No markdown, no explanation outside the array.
-`</span>;</div>
+`</span>;</pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 domain/prompts/workflows/r7.md</h3>
@@ -1234,6 +1368,13 @@ You are matching newly received documents to existing open condition tasks.
 When a document arrives, check if it satisfies any open tasks for this loan.
 If a match is found, update the task status and link the document.
 
+<span style="color:var(--blue); font-weight:700">## How to Match</span>
+There is no dedicated matching tool. You reason over the data yourself:
+1. Call list_documents to get all documents for this loan
+2. Call list_tasks to get all open condition tasks
+3. Reason: does document X semantically satisfy condition Y?
+4. Call update_task with linkedDocuments to link a match
+
 <span style="color:var(--blue); font-weight:700">## Confidence Scoring for Matches</span>
 - <span style="color:var(--green)">1.0: Document type exactly matches the condition requirement</span>
 - <span style="color:var(--green)">0.85+: Strong semantic match (content clearly addresses the condition)</span>
@@ -1244,7 +1385,8 @@ If a match is found, update the task status and link the document.
 - Check ALL open condition tasks, not just the most recent
 - One document can satisfy multiple conditions
 - Prefer UPDATE_TASK_REVIEW over UPDATE_TASK_COMPLETE when uncertain
-- Always include reasoning in your response</div>
+- Always include reasoning in your response
+          </div>
         </div>
       </section>
 
@@ -1262,7 +1404,7 @@ If a match is found, update the task status and link the document.
             <span>r2.ts — Handler principal do R2</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><span class="kw">import</span> { <span class="tp">WorkflowHandler</span>, <span class="tp">PipelineContext</span> } <span class="kw">from</span> <span class="str">"../types"</span>;
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="tp">WorkflowHandler</span>, <span class="tp">PipelineContext</span> } <span class="kw">from</span> <span class="str">"../types"</span>;
 <span class="kw">import</span> { buildSoulPrompt, OUTPUT_INSTRUCTIONS } <span class="kw">from</span> <span class="str">"../../domain/prompts"</span>;
 <span class="kw">import</span> { pickTools, toMastraTools, toMastraModel } <span class="kw">from</span> <span class="str">"../utils"</span>;
 <span class="kw">import</span> { parseProposedActions } <span class="kw">from</span> <span class="str">"../parsers"</span>;
@@ -1270,29 +1412,19 @@ If a match is found, update the task status and link the document.
 <span class="kw">import</span> { Agent } <span class="kw">from</span> <span class="str">"@mastra/core"</span>;
 
 <span class="kw">const</span> <span class="prop">R2_TOOLS</span> = [
-  <span class="cmt">// Read — email data</span>
+  <span class="cmt">// Read — email data + conversation (inclui PDF metadata)</span>
   <span class="str">"list_loan_emails"</span>, <span class="str">"get_email"</span>, <span class="str">"get_conversation"</span>,
-  <span class="cmt">// Read — task dedup guide (MUST call first)</span>
+  <span class="cmt">// Read — task dedup guide (MUST call after PDF classification)</span>
   <span class="str">"prepare_condoval_import"</span>,
-  <span class="cmt">// Read — existing tasks + docs</span>
+  <span class="cmt">// Read — existing tasks + docs (para raciocínio de matching)</span>
   <span class="str">"list_tasks"</span>, <span class="str">"list_documents"</span>, <span class="str">"get_document"</span>,
   <span class="cmt">// Read — loan data + conditions</span>
   <span class="str">"get_loan"</span>, <span class="str">"get_loan_conditions"</span>,
-  <span class="cmt">// Write — tasks + comments</span>
-  <span class="str">"create_task"</span>, <span class="str">"create_comment"</span>,
-  <span class="cmt">// 🆕 New tools</span>
+  <span class="cmt">// Write — tasks + comments (create_task é SINGULAR, agent faz loop)</span>
+  <span class="str">"create_task"</span>, <span class="str">"update_task"</span>, <span class="str">"create_comment"</span>,
+  <span class="cmt">// 🆕 2 novas tools</span>
   <span class="str">"suggest_condition_destinations"</span>, <span class="str">"draft_condition_outreach"</span>,
 ] <span class="kw">as const</span>;
-
-<span class="kw">function</span> <span class="fn">buildR2Prompt</span>(loanId: <span class="tp">string</span>, emailId?: <span class="tp">string</span>): <span class="tp">string</span> {
-  <span class="kw">return</span> <span class="str">`
-Process the conditional approval for loan: <span class="kw">${</span>loanId<span class="kw">}</span>
-<span class="kw">${</span>emailId ? <span class="str">`Focus on conversation/email: <span class="kw">${</span>emailId<span class="kw">}</span>`</span> : <span class="str">'Find the most recent conditional approval email.'</span><span class="kw">}</span>
-
-Start by calling prepare_condoval_import to understand existing tasks.
-Then extract all conditions, create tasks, match docs, and draft outreach emails.
-  `</span>;
-}
 
 <span class="kw">export const</span> <span class="prop">r2Handler</span>: <span class="tp">WorkflowHandler</span> = {
   <span class="kw">async</span> <span class="fn">execute</span>(context: <span class="tp">PipelineContext</span>) {
@@ -1309,61 +1441,80 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
       memory: <span class="fn">getOrCreateMemory</span>(),
     });
 
-    <span class="kw">const</span> emailId = context.event.payload.<span class="prop">emailId</span> <span class="kw">as</span> <span class="tp">string</span> | <span class="tp">undefined</span>;
-    <span class="kw">const</span> prompt = <span class="fn">buildR2Prompt</span>(context.loanId, emailId);
+    <span class="kw">const</span> conversationId = context.event.payload.<span class="prop">conversationId</span> <span class="kw">as</span> <span class="tp">string</span>;
+    <span class="kw">const</span> prompt = <span class="str">`Process the conditional approval for loan: <span class="kw">${</span>context.loanId<span class="kw">}</span>
+Conversation ID: <span class="kw">${</span>conversationId<span class="kw">}</span>
+
+Start by calling get_conversation to retrieve the PDF.
+Then classify the PDF (structured output: isConditionalApproval).
+If not a condval → return [].
+If condval → call prepare_condoval_import, extract conditions, create tasks, match docs, draft outreach.`</span>;
 
     <span class="kw">const</span> result = <span class="kw">await</span> agent.<span class="fn">generate</span>(prompt, { maxSteps: <span class="num">15</span> });
     <span class="kw">return</span> <span class="fn">parseProposedActions</span>(result.text);
   }
-};</div>
+};</pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 src/workflows/handlers/r2.tier1.ts</h3>
 
+        <div class="callout callout-green" style="margin-bottom:12px">
+          <span class="callout-icon">✅</span>
+          <div class="callout-content">
+            <strong>Tier 1 reformulado: único check determinístico</strong>
+            <p>Antes o Tier 1 tinha múltiplos checks heurísticos (subject regex, tags, lender domain, recency check). Agora tem <strong>exatamente 1 check</strong>: "O email tem PDF em anexo?" — O(1), sem LLM, sem ambiguidade.</p>
+          </div>
+        </div>
+
         <div class="code-block">
           <div class="code-header">
-            <span>r2.tier1.ts — Tier 1 checks do R2</span>
+            <span>r2.tier1.ts — Tier 1 do R2 (único check)</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><span class="kw">import</span> { <span class="tp">Tier1CheckDef</span> } <span class="kw">from</span> <span class="str">"../tier1"</span>;
-
-<span class="kw">const</span> <span class="prop">CONDVAL_SIGNALS</span> = [
-  <span class="str">/conditional\s*approval/i</span>, <span class="str">/condval/i</span>, <span class="str">/approval\s*letter/i</span>,
-  <span class="str">/loan\s*approval.*conditions/i</span>, <span class="str">/approved.*subject\s*to/i</span>,
-];
-
-<span class="kw">function</span> <span class="fn">hasConditionalApprovalSignal</span>(payload: <span class="tp">Record</span>&lt;<span class="tp">string</span>, <span class="tp">unknown</span>&gt;): <span class="tp">boolean</span> {
-  <span class="kw">const</span> subject = <span class="tp">String</span>(payload.<span class="prop">subject</span> ?? <span class="str">""</span>);
-  <span class="kw">const</span> tags = <span class="tp">Array</span>.<span class="fn">isArray</span>(payload.<span class="prop">tags</span>) ? payload.<span class="prop">tags</span> : [];
-  <span class="cmt">// Check subject heuristics</span>
-  <span class="kw">if</span> (CONDVAL_SIGNALS.<span class="fn">some</span>(r => r.<span class="fn">test</span>(subject))) <span class="kw">return true</span>;
-  <span class="cmt">// Check Front conversation tags</span>
-  <span class="kw">if</span> (tags.<span class="fn">some</span>(t => <span class="str">/condval|conditional/i</span>.<span class="fn">test</span>(<span class="tp">String</span>(t)))) <span class="kw">return true</span>;
-  <span class="cmt">// For LOAN_APPLICATION_UPSERTED: check loan status change</span>
-  <span class="kw">if</span> (payload.<span class="prop">loanStatus</span> === <span class="str">"conditional_approval"</span>) <span class="kw">return true</span>;
-  <span class="kw">return false</span>;
-}
+          <div class="code-body"><pre><span class="kw">import</span> { <span class="tp">Tier1CheckDef</span>, <span class="tp">PipelineContext</span> } <span class="kw">from</span> <span class="str">"../tier1"</span>;
 
 <span class="kw">export const</span> <span class="prop">r2Tier1Checks</span>: <span class="tp">Tier1CheckDef</span>[] = [
   {
-    name: <span class="str">"has-condoval-email-signal"</span>,
-    description: <span class="str">"Check if event payload has signals of a conditional approval"</span>,
-    check: <span class="kw">async</span> (context) => {
-      <span class="kw">return</span> <span class="fn">hasConditionalApprovalSignal</span>(context.event.payload);
-    },
-  },
-  {
-    name: <span class="str">"not-processed-recently"</span>,
-    description: <span class="str">"Skip if R2 ran for this loan in the last 2h"</span>,
-    check: <span class="kw">async</span> (context) => {
-      <span class="kw">if</span> (!context.loanId) <span class="kw">return false</span>;
-      <span class="kw">const</span> recent = context.recentActions.<span class="fn">filter</span>(
-        a => a.workflowId === <span class="str">"R2"</span> && a.actionType === <span class="str">"CREATE_TASK"</span>
-      );
-      <span class="kw">return</span> recent.length === <span class="num">0</span>;
-    },
-  },
-];</div>
+    name: <span class="str">"email-has-pdf-attachment"</span>,
+    description: <span class="str">"Conditional approval emails always come with a PDF. No PDF = not a condval."</span>,
+    check: <span class="kw">async</span> (context: <span class="tp">PipelineContext</span>): <span class="tp">Promise</span>&lt;<span class="tp">boolean</span>&gt; =&gt; {
+      <span class="kw">const</span> payload = context.event.payload;
+      <span class="cmt">// O payload do WEBHOOK_SYNC_FRONT_CONVERSATION inclui metadata da conversa</span>
+      <span class="cmt">// incluindo lista de attachments</span>
+      <span class="kw">const</span> attachments = (payload.attachments <span class="kw">as</span> <span class="tp">Array</span>&lt;{ contentType: <span class="tp">string</span> }&gt;) ?? [];
+      <span class="kw">const</span> hasPdf = attachments.<span class="fn">some</span>(a =&gt; a.contentType === <span class="str">"application/pdf"</span>);
+      <span class="kw">return</span> hasPdf;  <span class="cmt">// true → Tier 2 | false → SKIP</span>
+    }
+  }
+];
+
+<span class="cmt">// Nota: a classificação LLM ("é um condval?") acontece no Tier 2</span>
+<span class="cmt">// como PRIMEIRA ação do Mastra Agent via structured output.</span>
+<span class="cmt">// Tier 1 só faz o check O(1) de existência de PDF.</span></pre></div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 Classificação LLM no Tier 2 (early return)</h3>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span>Structured output de classificação do PDF (dentro do handler)</span>
+            <span class="lang">TypeScript</span>
+          </div>
+          <div class="code-body"><pre><span class="cmt">// Dentro do r2 handler, PRIMEIRA coisa que o Mastra Agent faz:</span>
+<span class="cmt">// 1. get_conversation(conversationId) → busca conversa com o PDF</span>
+<span class="cmt">// 2. LLM via structured output classifica: "É um condval?"</span>
+
+<span class="cmt">// Structured output schema:</span>
+<span class="kw">type</span> <span class="tp">CondvalClassification</span> = {
+  <span class="prop">isConditionalApproval</span>: <span class="tp">boolean</span>;
+  <span class="prop">confidence</span>: <span class="tp">number</span>;         <span class="cmt">// 0-1</span>
+  <span class="prop">signals</span>: <span class="tp">string</span>[];           <span class="cmt">// evidências encontradas no PDF</span>
+}
+
+<span class="cmt">// Se isConditionalApproval === false → handler retorna []</span>
+<span class="cmt">// Se true → continua com prepare_condoval_import e extração de condições</span>
+
+<span class="cmt">// O prompt instrui o agent a fazer isso como step 1 (ver r2.md)</span></pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 definitions.ts — Diff (antes → depois)</h3>
@@ -1373,23 +1524,21 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
             definitions.ts — mudanças no registro do R2
           </div>
           <div class="diff-line diff-rem">  triggers: ["LOAN_APPLICATION_UPSERTED"],</div>
-          <div class="diff-line diff-add">  triggers: ["WEBHOOK_SYNC_FRONT_CONVERSATION", "LOAN_APPLICATION_UPSERTED"],</div>
+          <div class="diff-line diff-add">  triggers: ["WEBHOOK_SYNC_FRONT_CONVERSATION"],</div>
           <div class="diff-line diff-rem">  enabled: false, // stub</div>
           <div class="diff-line diff-add">  enabled: true,</div>
           <div class="diff-line diff-rem">  modelTier: "standard",</div>
           <div class="diff-line diff-add">  modelTier: "powerful", // GPT-4o / Claude Sonnet</div>
           <div class="diff-line diff-rem">  tier1: [],</div>
-          <div class="diff-line diff-add">  tier1: r2Tier1Checks,</div>
+          <div class="diff-line diff-add">  tier1: r2Tier1Checks, // único check: email-has-pdf-attachment</div>
           <div class="diff-line diff-rem">  handler: undefined, // TODO</div>
           <div class="diff-line diff-add">  handler: r2Handler,</div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 confidence.ts — Novos action types</h3>
-
         <div class="callout callout-blue">
           <span class="callout-icon">ℹ️</span>
           <div class="callout-content">
-            <strong>Pode não precisar de alteração</strong>
+            <strong>confidence.ts — pode não precisar de alteração</strong>
             <p>Se o R2 retornar <code>DRAFT_EMAIL</code> (threshold=0, autoExecute=true) e a <code>draft_condition_outreach</code> for chamada pelo próprio agent (não como ProposedAction), o confidence.ts não precisa de mudanças. Revisar após implementação da tool.</p>
           </div>
         </div>
@@ -1415,21 +1564,21 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
           <h3 style="margin-bottom:16px">📊 Scores por Etapa</h3>
 
           <div style="margin-bottom:16px">
-            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">1. Classificação do Email (Tier 1)</div>
+            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">1. Classificação do PDF (Tier 2 — LLM structured output)</div>
             <div class="score-item">
-              <div class="score-label">subject exato "conditional approval"</div>
+              <div class="score-label">PDF com header "Conditional Approval"</div>
               <div class="score-bar-bg"><div class="score-bar bar-green" style="width:100%"></div></div>
               <div class="score-val" style="color:var(--green)">1.0</div>
             </div>
             <div class="score-item">
-              <div class="score-label">subject partial match + tags</div>
+              <div class="score-label">sinais fortes no texto + estrutura de condições</div>
               <div class="score-bar-bg"><div class="score-bar bar-green" style="width:85%"></div></div>
               <div class="score-val" style="color:var(--green)">0.85</div>
             </div>
             <div class="score-item">
-              <div class="score-label">heurística fraca (sender domain)</div>
-              <div class="score-bar-bg"><div class="score-bar bar-orange" style="width:65%"></div></div>
-              <div class="score-val" style="color:var(--yellow)">0.65</div>
+              <div class="score-label">PDF ambíguo (possível condval)</div>
+              <div class="score-bar-bg"><div class="score-bar bar-orange" style="width:55%"></div></div>
+              <div class="score-val" style="color:var(--yellow)">0.55</div>
             </div>
           </div>
 
@@ -1453,7 +1602,7 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
           </div>
 
           <div style="margin-bottom:16px">
-            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">3. Document Matching</div>
+            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">3. Document Matching (raciocínio LLM via list_documents + list_tasks)</div>
             <div class="score-item">
               <div class="score-label">doc type exato para condição</div>
               <div class="score-bar-bg"><div class="score-bar bar-green" style="width:100%"></div></div>
@@ -1472,9 +1621,9 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
           </div>
 
           <div>
-            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">4. Destination Suggestion</div>
+            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">4. Destination Suggestion (LLM + structured output)</div>
             <div class="score-item">
-              <div class="score-label">topic → destinatário único óbvio</div>
+              <div class="score-label">destinatário único óbvio + entidade vinculada</div>
               <div class="score-bar-bg"><div class="score-bar bar-purple" style="width:90%"></div></div>
               <div class="score-val" style="color:var(--purple)">0.90</div>
             </div>
@@ -1554,19 +1703,188 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
 
         <p>O que precisa ser construído antes ou durante a implementação do R2.</p>
 
-        <div class="gap-item" style="border-color: rgba(248,81,73,0.3)">
-          <div class="gap-icon">🔴</div>
-          <div class="gap-content">
-            <h4>Infraestrutura de condition outreach drafts <span class="badge badge-red">Blocker</span></h4>
-            <p>A coleção MongoDB <code>condition_outreach_drafts</code> não existe ainda. Precisa de schema, modelo Mongoose/TypeBox, e CRUD básico antes de implementar a tool <code>draft_condition_outreach</code>. Considerar se vai no task-service ou em um novo microserviço de drafts.</p>
+        <!-- GAP 1: condition_outreach_drafts — EXPANDIDO -->
+        <div class="gap-item" style="border-color: rgba(248,81,73,0.3); flex-direction: column;">
+          <div style="display:flex; gap:14px; align-items:flex-start">
+            <div class="gap-icon">🔴</div>
+            <div class="gap-content">
+              <h4>Infraestrutura de condition outreach drafts <span class="badge badge-red">Blocker</span></h4>
+              <p>A coleção MongoDB <code>conditionOutreachDrafts</code> não existe ainda. Vai no <strong>communication-service</strong> — que já gerencia toda comunicação (Front, emails, vetores) e tem o padrão de DB pronto. Plano completo abaixo.</p>
+            </div>
+          </div>
+
+          <!-- Plano detalhado -->
+          <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passo 1 — Nova entrada em AVAILABLE_CONNECTION</div>
+              <div class="code-block" style="margin-bottom:0">
+                <div class="code-header"><span>apps/communication-service/src/lib/mongoose/connection.ts</span><span class="lang">TypeScript</span></div>
+                <div class="code-body"><pre><span class="cmt">// Adicionar:</span>
+<span class="kw">const</span> <span class="prop">AVAILABLE_CONNECTION</span> = {
+  frontMessages: <span class="str">"FRONT_MESSAGES"</span>,
+  frontConversations: <span class="str">"FRONT_CONVERSATIONS"</span>,
+  triageOperations: <span class="str">"TRIAGE_OPERATIONS"</span>,
+  comments: <span class="str">"COMMENTS"</span>,
+  <span class="prop" style="color:var(--green)">conditionOutreachDrafts</span>: <span class="str">"CONDITION_OUTREACH_DRAFTS"</span>,   <span class="cmt">// 🆕</span>
+} <span class="kw">as const</span>;
+
+<span class="cmt">// Em getDbSettings():</span>
+[AVAILABLE_CONNECTION.conditionOutreachDrafts]: {
+  url: env.MONGO_CONDITION_OUTREACH_DRAFTS_DB_URL,
+  dbName: env.MONGO_CONDITION_OUTREACH_DRAFTS_DB_NAME,
+  keyAltNames: env.HN_MONGO_CRYPT_KEY_ALT_NAMES.<span class="fn">split</span>(<span class="str">","</span>),
+},</pre></div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passo 2 — Interface TypeScript</div>
+              <div class="code-block" style="margin-bottom:0">
+                <div class="code-header"><span>src/interfaces/models/i-condition-outreach-draft.ts</span><span class="lang">TypeScript</span></div>
+                <div class="code-body"><pre><span class="kw">export interface</span> <span class="tp">IConditionOutreachDraftAttributes</span> {
+  <span class="prop">loanApplicationId</span>: <span class="tp">string</span>;
+  <span class="prop">taskId</span>: <span class="tp">string</span>;                    <span class="cmt">// link à task/condition</span>
+  <span class="prop">conditionText</span>: <span class="tp">string</span>;             <span class="cmt">// verbatim condition text</span>
+  <span class="prop">recipientType</span>: <span class="tp">RecipientType</span>;      <span class="cmt">// enum</span>
+  <span class="prop">recipientName</span>: <span class="tp">string</span>;
+  <span class="prop">recipientEmail</span>: <span class="tp">string</span>;
+  <span class="prop">subject</span>: <span class="tp">string</span>;
+  <span class="prop">body</span>: <span class="tp">string</span>;                       <span class="cmt">// HTML</span>
+  <span class="prop">status</span>: <span class="str">"draft"</span> | <span class="str">"sent"</span> | <span class="str">"dismissed"</span>;
+  <span class="prop">confidenceScore</span>: <span class="tp">number</span>;           <span class="cmt">// 0-1 do suggest_condition_destinations</span>
+  <span class="prop">tenantId</span>: <span class="tp">string</span>;
+  <span class="prop">createdByAgentWorkflow</span>: <span class="tp">string</span>;    <span class="cmt">// ex: "R2", "R7"</span>
+  <span class="prop">sentAt</span>?: <span class="tp">Date</span>;
+  <span class="prop">dismissedAt</span>?: <span class="tp">Date</span>;
+}
+
+<span class="kw">export interface</span> <span class="tp">IConditionOutreachDraft</span> {
+  <span class="prop">draftId</span>: <span class="tp">string</span>;                   <span class="cmt">// UUID, business ID</span>
+  <span class="prop">attributes</span>: <span class="tp">IConditionOutreachDraftAttributes</span>;
+  <span class="prop">deletedAt</span>?: <span class="tp">Date</span>;
+  <span class="prop">createdAt</span>: <span class="tp">Date</span>;
+  <span class="prop">updatedAt</span>: <span class="tp">Date</span>;
+}</pre></div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passo 3 — Mongoose Model</div>
+              <div class="code-block" style="margin-bottom:0">
+                <div class="code-header"><span>src/db/condition-outreach-draft/model.ts</span><span class="lang">TypeScript</span></div>
+                <div class="code-body"><pre><span class="kw">import</span> { db } <span class="kw">from</span> <span class="str">"@lib/mongoose"</span>;
+<span class="kw">import</span> { AVAILABLE_CONNECTION } <span class="kw">from</span> <span class="str">"@lib/mongoose/connection"</span>;
+
+<span class="kw">const</span> COLLECTION_NAME = <span class="str">"conditionOutreachDrafts"</span>;
+
+<span class="kw">const</span> schema = <span class="kw">new</span> <span class="fn">Schema</span>&lt;<span class="tp">IConditionOutreachDraft</span>&gt;(
+  {
+    draftId: { type: <span class="tp">String</span>, unique: <span class="kw">true</span>, required: <span class="kw">true</span>, default: () =&gt; <span class="fn">uuidv4</span>() },
+    attributes: { type: <span class="tp">Schema.Types.Mixed</span>, default: {} },
+    deletedAt: { type: <span class="tp">Date</span> },
+  },
+  { timestamps: <span class="kw">true</span>, minimize: <span class="kw">false</span>, strict: <span class="kw">false</span> }
+);
+
+<span class="cmt">// Indexes para queries frequentes</span>
+schema.<span class="fn">index</span>({ <span class="str">"attributes.loanApplicationId"</span>: <span class="num">1</span> });
+schema.<span class="fn">index</span>({ <span class="str">"attributes.taskId"</span>: <span class="num">1</span> });
+schema.<span class="fn">index</span>({ <span class="str">"attributes.tenantId"</span>: <span class="num">1</span>, createdAt: <span class="num">-1</span> });
+schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</span>: <span class="num">1</span> });
+
+<span class="kw">async function</span> <span class="fn">getModel</span>() {
+  <span class="kw">return await</span> db.<span class="fn">getModel</span>&lt;<span class="tp">IConditionOutreachDraft</span>&gt;(
+    AVAILABLE_CONNECTION.conditionOutreachDrafts,
+    COLLECTION_NAME,
+    schema
+  );
+}
+
+<span class="kw">export</span> { getModel };</pre></div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passo 4 — Repository Interface</div>
+              <div class="code-block" style="margin-bottom:0">
+                <div class="code-header"><span>src/interfaces/repositories/i-condition-outreach-draft-repository.ts</span><span class="lang">TypeScript</span></div>
+                <div class="code-body"><pre><span class="kw">export interface</span> <span class="tp">IConditionOutreachDraftRepository</span> {
+  <span class="fn">create</span>(data: <span class="tp">ICreateConditionOutreachDraft</span>): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span>&gt;;
+  <span class="fn">findById</span>(draftId: <span class="tp">string</span>): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span> | <span class="kw">null</span>&gt;;
+  <span class="fn">findByLoanApplicationId</span>(loanApplicationId: <span class="tp">string</span>, tenantId: <span class="tp">string</span>): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span>[]&gt;;
+  <span class="fn">findByTaskId</span>(taskId: <span class="tp">string</span>): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span>[]&gt;;
+  <span class="fn">update</span>(draftId: <span class="tp">string</span>, data: <span class="tp">Partial</span>&lt;<span class="tp">IConditionOutreachDraftAttributes</span>&gt;): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span>&gt;;
+  <span class="fn">updateStatus</span>(draftId: <span class="tp">string</span>, status: <span class="str">"draft"</span> | <span class="str">"sent"</span> | <span class="str">"dismissed"</span>, at?: <span class="tp">Date</span>): <span class="tp">Promise</span>&lt;<span class="kw">void</span>&gt;;
+  <span class="fn">softDelete</span>(draftId: <span class="tp">string</span>): <span class="tp">Promise</span>&lt;<span class="kw">void</span>&gt;;
+}</pre></div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passo 5 — Repository Implementation</div>
+              <div class="code-block" style="margin-bottom:0">
+                <div class="code-header"><span>src/repositories/condition-outreach-draft-repository.ts</span><span class="lang">TypeScript</span></div>
+                <div class="code-body"><pre><span class="cmt">// Segue exatamente o padrão de TriageOperationRepository:</span>
+<span class="cmt">// - constructor(deps: { currentDate: Date; logger: Logger })</span>
+<span class="cmt">// - getModel() → retorna model com AVAILABLE_CONNECTION.conditionOutreachDrafts</span>
+<span class="cmt">// - Cada método: try { ... } catch { logger.error(...); throw error; }</span>
+<span class="cmt">// - Usar .lean() em queries</span>
+<span class="cmt">// - Não expor _id — usar draftId como business ID</span>
+
+<span class="kw">export class</span> <span class="tp">ConditionOutreachDraftRepository</span>
+  <span class="kw">implements</span> <span class="tp">IConditionOutreachDraftRepository</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> deps: { currentDate: <span class="tp">Date</span>; logger: <span class="tp">Logger</span> }) {}
+
+  <span class="kw">async</span> <span class="fn">create</span>(data: <span class="tp">ICreateConditionOutreachDraft</span>): <span class="tp">Promise</span>&lt;<span class="tp">IConditionOutreachDraft</span>&gt; {
+    <span class="kw">const</span> model = <span class="kw">await</span> <span class="fn">getModel</span>();
+    <span class="kw">const</span> doc = <span class="kw">await</span> model.<span class="fn">create</span>({
+      attributes: data,
+    });
+    <span class="kw">return</span> doc.<span class="fn">toObject</span>();
+  }
+
+  <span class="cmt">// ... outros métodos seguem o mesmo padrão</span>
+}</pre></div>
+              </div>
+            </div>
+
+            <div class="sub-section">
+              <div class="sub-section-title">Passos 6-8 — REST Endpoints, API Gateway e MCP Tool</div>
+              <div class="card-grid">
+                <div class="card" style="background:var(--bg3); margin-bottom:0">
+                  <h3 style="font-size:0.82rem;">🌐 Passo 6 — REST Endpoints</h3>
+                  <ul style="font-size:0.78rem">
+                    <li><code>POST /v1/condition-outreach-drafts</code></li>
+                    <li><code>GET /v1/condition-outreach-drafts?loanApplicationId=xxx</code></li>
+                    <li><code>PATCH /v1/condition-outreach-drafts/:draftId</code></li>
+                    <li><code>DELETE /v1/condition-outreach-drafts/:draftId</code></li>
+                  </ul>
+                </div>
+                <div class="card" style="background:var(--bg3); margin-bottom:0">
+                  <h3 style="font-size:0.82rem;">🔀 Passo 7 — API Gateway routing</h3>
+                  <p style="font-size:0.78rem;">Adicionar rota no api-gateway-service:</p>
+                  <p style="font-size:0.78rem; font-family:monospace; color:var(--orange)">/communication/v1/condition-outreach-drafts → communication-service</p>
+                </div>
+                <div class="card" style="background:var(--bg3); margin-bottom:0">
+                  <h3 style="font-size:0.82rem;">🔧 Passo 8 — MCP tool draft_condition_outreach</h3>
+                  <p style="font-size:0.78rem;">Chama <code>POST /communication/v1/condition-outreach-drafts</code>. Não é idempotente — checa <code>findByTaskId</code> antes de criar.</p>
+                </div>
+                <div class="card" style="background:var(--bg3); margin-bottom:0">
+                  <h3 style="font-size:0.82rem;">🔑 Novas env vars</h3>
+                  <p style="font-size:0.78rem; font-family:monospace; color:var(--green)">MONGO_CONDITION_OUTREACH_DRAFTS_DB_URL<br>MONGO_CONDITION_OUTREACH_DRAFTS_DB_NAME</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
         <div class="gap-item" style="border-color: rgba(249,115,22,0.3)">
           <div class="gap-icon">🟠</div>
           <div class="gap-content">
-            <h4>Novas MCP tools (3) <span class="badge badge-orange">Alto esforço</span></h4>
-            <p><code>suggest_condition_destinations</code>, <code>draft_condition_outreach</code> e opcionalmente <code>classify_email_type</code>. Cada uma precisa de implementação, registro no index.ts e testes.</p>
+            <h4>Novas MCP tools (2) <span class="badge badge-orange">Alto esforço</span></h4>
+            <p><code>suggest_condition_destinations</code> (LLM + structured output) e <code>draft_condition_outreach</code>. Cada uma precisa de implementação, registro no index.ts e testes. <code>classify_email_type</code> foi removida do plano — lógica vira interna do handler R2.</p>
           </div>
         </div>
 
@@ -1574,15 +1892,15 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
           <div class="gap-icon">🟠</div>
           <div class="gap-content">
             <h4>Novos prompts (r2.md, r7.md) <span class="badge badge-orange">Médio esforço</span></h4>
-            <p>Os arquivos de soul prompt precisam ser criados em <code>domain/prompts/workflows/</code>. Precisam de iteração com o time para ajustar tom, regras de extração e output format.</p>
+            <p>Os arquivos de soul prompt precisam ser criados em <code>domain/prompts/workflows/</code>. Precisam de iteração com o time para ajustar tom, regras de extração e output format. O r2.md agora inclui instrução de classificação PDF como step 1.</p>
           </div>
         </div>
 
         <div class="gap-item" style="border-color: rgba(227,179,65,0.3)">
           <div class="gap-icon">🟡</div>
           <div class="gap-content">
-            <h4>R7 — Document Task Auto-Match (se Opção B) <span class="badge badge-yellow">Opcional agora</span></h4>
-            <p>Se escolher a Opção B (event-driven), o R7 também precisa ser implementado além do R2. O R7 recebe <code>TASK_CREATED</code> e faz o doc matching + email drafting. Se escolher Opção A, R7 fica pra depois.</p>
+            <h4>R7 — Document Task Auto-Match (Opção B) <span class="badge badge-yellow">Depende do R2</span></h4>
+            <p>A Opção B (event-driven) foi confirmada. O R7 recebe <code>TASK_CREATED</code>, faz matching via <code>list_documents</code> + <code>list_tasks</code> + raciocínio LLM, e drafta emails para tasks sem doc. Implementar em paralelo ou logo após o R2.</p>
           </div>
         </div>
 
@@ -1606,7 +1924,7 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
           <div class="gap-icon">🔵</div>
           <div class="gap-content">
             <h4>Teste com condval email real <span class="badge badge-blue">Validação</span></h4>
-            <p>Antes do deploy, testar o handler R2 com um email de conditional approval real (anonimizado) para validar que a extração de condições funciona corretamente com o modelo "powerful". Ajustar prompts conforme necessário.</p>
+            <p>Antes do deploy, testar o handler R2 com um email de conditional approval real (anonimizado) para validar que a classificação LLM e extração de condições funcionam corretamente com o modelo "powerful". Ajustar prompts conforme necessário.</p>
           </div>
         </div>
       </section>
@@ -1625,18 +1943,45 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
             <span>r2.spec.ts — Vitest, handler puro</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><span class="cmt">// Handler é função pura: PipelineContext → ProposedAction[]</span>
+          <div class="code-body"><pre><span class="cmt">// Handler é função pura: PipelineContext → ProposedAction[]</span>
 <span class="cmt">// Mockar apenas context — não mockar repos ou services</span>
 
 <span class="fn">describe</span>(<span class="str">"r2Handler"</span>, () => {
-  <span class="fn">it</span>(<span class="str">"retorna CREATE_TASK actions para condições extraídas"</span>, <span class="kw">async</span> () => {
+  <span class="fn">it</span>(<span class="str">"retorna [] se email não tem PDF em anexo (Tier 1)"</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
+      event: {
+        type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
+        payload: { attachments: [] },  <span class="cmt">// sem PDF → Tier 1 bloqueia</span>
+      }
+    });
+    <span class="cmt">// Tier 1 deveria bloquear antes do handler ser chamado</span>
+    <span class="kw">const</span> passes = <span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(context);
+    expect(passes).<span class="fn">toBe</span>(<span class="kw">false</span>);
+  });
+
+  <span class="fn">it</span>(<span class="str">"retorna [] se LLM classifica PDF como não-condval (early return Tier 2)"</span>, <span class="kw">async</span> () => {
     <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
       event: {
         type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
         payload: {
-          subject: <span class="str">"Conditional Approval - Jones Loan #12345"</span>,
-          conversationId: <span class="str">"conv_abc123"</span>,
-          emailId: <span class="str">"email_xyz"</span>,
+          attachments: [{ contentType: <span class="str">"application/pdf"</span> }],
+          conversationId: <span class="str">"conv_general_doc"</span>
+        },
+      },
+      loanId: <span class="str">"loan_test_001"</span>,
+    });
+    <span class="cmt">// LLM deve retornar isConditionalApproval: false → handler retorna []</span>
+    <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
+    expect(actions).toHaveLength(<span class="num">0</span>);
+  });
+
+  <span class="fn">it</span>(<span class="str">"retorna CREATE_TASK actions para condições extraídas do PDF condval"</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
+      event: {
+        type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
+        payload: {
+          attachments: [{ contentType: <span class="str">"application/pdf"</span> }],
+          conversationId: <span class="str">"conv_condval_123"</span>,
         },
       },
       loanId: <span class="str">"loan_test_001"</span>,
@@ -1650,16 +1995,6 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
     tasks.<span class="fn">forEach</span>(t => expect(t.payload.conditionDetails).<span class="fn">toBeDefined</span>());
   });
 
-  <span class="fn">it</span>(<span class="str">"retorna [] se não é email de conditional approval"</span>, <span class="kw">async</span> () => {
-    <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
-      event: { type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>, payload: { subject: <span class="str">"Hello!"</span> } }
-    });
-    <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
-    expect(actions).toHaveLength(<span class="num">0</span>);
-  });
-
-  <span class="fn">it</span>(<span class="str">"não cria tasks duplicatas quando condição já existe"</span>, <span class="kw">async</span> () => {
-    <span class="kw">const</span> context = <span class="fn">buildMockContextWithExistingTasks</span>();
     <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
     <span class="kw">const</span> tasks = actions.<span class="fn">filter</span>(a => a.action === <span class="str">"CREATE_TASK"</span>);
     <span class="cmt">// Deve criar apenas tasks novas, não duplicar as existentes</span>
@@ -1671,7 +2006,7 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
     <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
     expect(actions.<span class="fn">some</span>(a => a.action === <span class="str">"DRAFT_EMAIL"</span>)).<span class="fn">toBe</span>(<span class="kw">true</span>);
   });
-});</div>
+});</pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">⚡ Testes do Tier 1 (r2.tier1.spec.ts)</h3>
@@ -1681,33 +2016,49 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
             <span>r2.tier1.spec.ts — lógica pura, sem mocks pesados</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><span class="fn">describe</span>(<span class="str">"r2Tier1Checks"</span>, () => {
-  <span class="fn">describe</span>(<span class="str">"has-condoval-email-signal"</span>, () => {
-    <span class="fn">it</span>(<span class="str">"retorna true para subject com 'conditional approval'"</span>, <span class="kw">async</span> () => {
-      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: { subject: <span class="str">"Conditional Approval - Loan 123"</span> } });
-      expect(<span class="kw">await</span> <span class="fn">check</span>(<span class="str">"has-condoval-email-signal"</span>, ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
-    });
-
-    <span class="fn">it</span>(<span class="str">"retorna false para email geral"</span>, <span class="kw">async</span> () => {
-      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: { subject: <span class="str">"Hello, how are you?"</span> } });
-      expect(<span class="kw">await</span> <span class="fn">check</span>(<span class="str">"has-condoval-email-signal"</span>, ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
-    });
-  });
-
-  <span class="fn">describe</span>(<span class="str">"not-processed-recently"</span>, () => {
-    <span class="fn">it</span>(<span class="str">"retorna false quando R2 executou nas últimas 2h"</span>, <span class="kw">async</span> () => {
+          <div class="code-body"><pre><span class="fn">describe</span>(<span class="str">"r2Tier1Checks"</span>, () => {
+  <span class="fn">describe</span>(<span class="str">"email-has-pdf-attachment"</span>, () => {
+    <span class="fn">it</span>(<span class="str">"retorna true quando há PDF em anexo"</span>, <span class="kw">async</span> () => {
       <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
-        recentActions: [{ workflowId: <span class="str">"R2"</span>, actionType: <span class="str">"CREATE_TASK"</span>, ts: <span class="fn">Date</span>.<span class="fn">now</span>() - <span class="num">60000</span> }]
+        payload: {
+          attachments: [{ contentType: <span class="str">"application/pdf"</span> }]
+        }
       });
-      expect(<span class="kw">await</span> <span class="fn">check</span>(<span class="str">"not-processed-recently"</span>, ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
     });
 
-    <span class="fn">it</span>(<span class="str">"retorna true quando não foi processado recentemente"</span>, <span class="kw">async</span> () => {
-      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ recentActions: [] });
-      expect(<span class="kw">await</span> <span class="fn">check</span>(<span class="str">"not-processed-recently"</span>, ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
+    <span class="fn">it</span>(<span class="str">"retorna false quando não há PDF (só imagens)"</span>, <span class="kw">async</span> () => {
+      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
+        payload: {
+          attachments: [{ contentType: <span class="str">"image/jpeg"</span> }]
+        }
+      });
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
+    });
+
+    <span class="fn">it</span>(<span class="str">"retorna false quando não há attachments"</span>, <span class="kw">async</span> () => {
+      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: { attachments: [] } });
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
+    });
+
+    <span class="fn">it</span>(<span class="str">"retorna false quando attachments está undefined"</span>, <span class="kw">async</span> () => {
+      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: {} });
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
+    });
+
+    <span class="fn">it</span>(<span class="str">"retorna true com múltiplos attachments onde um é PDF"</span>, <span class="kw">async</span> () => {
+      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
+        payload: {
+          attachments: [
+            { contentType: <span class="str">"image/jpeg"</span> },
+            { contentType: <span class="str">"application/pdf"</span> },
+          ]
+        }
+      });
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
     });
   });
-});</div>
+});</pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">🌐 Trigger API (teste manual end-to-end)</h3>
@@ -1717,21 +2068,21 @@ Then extract all conditions, create tasks, match docs, and draft outreach emails
             <span>POST /v1/trigger — invocar R2 diretamente</span>
             <span class="lang">bash</span>
           </div>
-          <div class="code-body"><span class="cmt"># Invocar R2 com evento de conversation</span>
+          <div class="code-body"><pre><span class="cmt"># Invocar R2 com evento de conversation com PDF simulado</span>
 curl -X POST http://localhost:3000/v1/trigger \
   -H <span class="str">"Content-Type: application/json"</span> \
   -d <span class="str">'{
     "workflowId": "R2",
     "payload": {
       "loanApplicationId": "LOAN_ID_AQUI",
-      "emailId": "EMAIL_ID_AQUI",
-      "subject": "Conditional Approval - Test Loan",
+      "conversationId": "CONV_ID_AQUI",
+      "attachments": [{"contentType": "application/pdf", "name": "conditional_approval.pdf"}],
       "eventType": "WEBHOOK_SYNC_FRONT_CONVERSATION"
     }
   }'</span>
 
 <span class="cmt"># Verificar inbox do MLP após execução</span>
-curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
+curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">🔄 Teste E2E (Front sandbox)</h3>
@@ -1747,22 +2098,29 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
-              <h4>Enviar email de condval no Front sandbox</h4>
-              <p>Usar uma template de conditional approval real (anonimizada) para inbox do loan no Front. Subject deve conter "Conditional Approval".</p>
+              <h4>Enviar email de condval com PDF no Front sandbox</h4>
+              <p>Usar uma template de conditional approval real (anonimizada) para inbox do loan no Front. O email DEVE ter o PDF da conditional approval como attachment.</p>
             </div>
           </li>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
-              <h4>Monitorar agent-service</h4>
-              <p>Verificar logs: evento WEBHOOK_SYNC_FRONT_CONVERSATION recebido → Tier 1 pass → R2 executor → Mastra Agent steps.</p>
+              <h4>Verificar Tier 1</h4>
+              <p>Logs devem mostrar: <code>WEBHOOK_SYNC_FRONT_CONVERSATION</code> recebido → Tier 1 check <code>email-has-pdf-attachment</code> → <code>true</code> → executa Tier 2.</p>
+            </div>
+          </li>
+          <li>
+            <div class="step-num"></div>
+            <div class="step-content">
+              <h4>Verificar classificação LLM (Tier 2 step 1)</h4>
+              <p>Mastra Agent deve chamar <code>get_conversation</code>, classificar o PDF via structured output (<code>isConditionalApproval: true</code>), e continuar com <code>prepare_condoval_import</code>.</p>
             </div>
           </li>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
               <h4>Verificar resultados</h4>
-              <p>Tasks criadas com conditionDetails corretos, docs linkados onde existem, drafts de outreach gerados, inbox com confidence scores, comment interno com resumo.</p>
+              <p>Tasks criadas com conditionDetails corretos, docs linkados onde existem, drafts de outreach gerados, inbox com confidence scores, comment interno com resumo. R7 dispara via TASK_CREATED.</p>
             </div>
           </li>
         </ol>
@@ -1783,26 +2141,26 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
 <span class="ft-dir">src/</span>
 ├── <span class="ft-dir">workflows/</span>
 │   ├── <span class="ft-mod">definitions.ts</span><span class="ft-badge ft-badge-mod">MODIFICAR</span>
-│   │   <span style="color:var(--muted2); font-size:0.78rem">└── habilitar R2, adicionar triggers, registrar handler</span>
+│   │   <span style="color:var(--muted2); font-size:0.78rem">└── habilitar R2, trigger: WEBHOOK_SYNC_FRONT_CONVERSATION (único), registrar handler</span>
 │   ├── <span class="ft-ex">registry.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
 │   ├── <span class="ft-ex">orchestrator.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
 │   ├── <span class="ft-ex">confidence-gate.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
 │   └── <span class="ft-dir">handlers/</span>
 │       ├── <span class="ft-new">r2.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── handler principal — Mastra Agent, maxSteps=15</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── handler principal — Mastra Agent, maxSteps=15, classificação LLM como step 1</span>
 │       ├── <span class="ft-new">r2.tier1.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── has-condoval-signal + not-processed-recently</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── único check: email-has-pdf-attachment (O(1), sem LLM)</span>
 │       ├── <span class="ft-new">r2.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
 │       │   <span style="color:var(--muted2); font-size:0.78rem">└── testes unitários do handler (Vitest)</span>
 │       ├── <span class="ft-new">r2.tier1.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── testes das heurísticas do Tier 1</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── testes do Tier 1 (4 casos: sem PDF, com PDF, undefined, misto)</span>
 │       ├── <span class="ft-ex">p5.ts</span><span class="ft-badge ft-badge-ex">REFERÊNCIA</span>
 │       └── <span class="ft-ex">p5.tier1.ts</span><span class="ft-badge ft-badge-ex">REFERÊNCIA</span>
 └── <span class="ft-dir">domain/</span>
     └── <span class="ft-dir">prompts/</span>
         └── <span class="ft-dir">workflows/</span>
             ├── <span class="ft-new">r2.md</span><span class="ft-badge ft-badge-new">CRIAR</span>
-            │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R2 Conditional Approval Processor</span>
+            │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R2 — inclui instrução de classificação PDF como step 1</span>
             ├── <span class="ft-new">r7.md</span><span class="ft-badge ft-badge-new">CRIAR</span>
             │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R7 Document-Task Matcher</span>
             └── <span class="ft-ex">p5.md</span><span class="ft-badge ft-badge-ex">REFERÊNCIA</span>
@@ -1819,27 +2177,47 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
 │   │   <span style="color:var(--muted2); font-size:0.78rem">└── registrar suggest-condition-destinations</span>
 │   └── <span class="ft-dir">query/</span>
 │       ├── <span class="ft-new">suggest-condition-destinations.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── rule-based, sem LLM, busca entidades vinculadas ao loan</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── LLM + structured output, RecipientType enum, busca entidades do loan</span>
 │       ├── <span class="ft-ex">prepare-condoval-import.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 │       ├── <span class="ft-ex">list-tasks.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 │       └── <span class="ft-ex">get-task.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 ├── <span class="ft-dir">emails/</span>
 │   ├── <span class="ft-mod">index.ts</span><span class="ft-badge ft-badge-mod">MODIFICAR</span>
-│   │   <span style="color:var(--muted2); font-size:0.78rem">└── registrar draft-condition-outreach (+ classify-email-type se necessário)</span>
+│   │   <span style="color:var(--muted2); font-size:0.78rem">└── registrar draft-condition-outreach</span>
 │   ├── <span class="ft-dir">query/</span>
-│   │   ├── <span class="ft-new">classify-email-type.ts</span><span class="ft-badge ft-badge-new">CRIAR (opcional)</span>
 │   │   ├── <span class="ft-ex">list-loan-emails.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 │   │   ├── <span class="ft-ex">get-email.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 │   │   └── <span class="ft-ex">get-conversation.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 │   └── <span class="ft-dir">mutation/</span>
 │       ├── <span class="ft-new">draft-condition-outreach.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── N drafts por loan, coleção separada, linked to taskId</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── N drafts por loan, POST /communication/v1/condition-outreach-drafts</span>
 │       ├── <span class="ft-ex">draft-email.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE (title order apenas)</span>
 │       └── <span class="ft-ex">send-email.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE ✅</span>
 └── <span class="ft-dir">__tests__/</span>
     ├── <span class="ft-new">suggest-condition-destinations.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-    ├── <span class="ft-new">draft-condition-outreach.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-    └── <span class="ft-new">classify-email-type.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR (opcional)</span>
+    └── <span class="ft-new">draft-condition-outreach.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 14px;">📦 communication-service</h3>
+
+        <div class="file-tree">
+<span class="ft-dir">apps/communication-service/src/</span>
+├── <span class="ft-mod">lib/mongoose/connection.ts</span><span class="ft-badge ft-badge-mod">MODIFICAR</span>
+│   <span style="color:var(--muted2); font-size:0.78rem">└── adicionar conditionOutreachDrafts em AVAILABLE_CONNECTION</span>
+├── <span class="ft-dir">interfaces/</span>
+│   ├── <span class="ft-dir">models/</span>
+│   │   └── <span class="ft-new">i-condition-outreach-draft.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+│   └── <span class="ft-dir">repositories/</span>
+│       └── <span class="ft-new">i-condition-outreach-draft-repository.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+├── <span class="ft-dir">db/</span>
+│   └── <span class="ft-dir">condition-outreach-draft/</span>
+│       └── <span class="ft-new">model.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+├── <span class="ft-dir">repositories/</span>
+│   └── <span class="ft-new">condition-outreach-draft-repository.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+└── <span class="ft-dir">routes/</span>
+    └── <span class="ft-new">condition-outreach-drafts/</span>
+        └── <span class="ft-new">index.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
+            <span style="color:var(--muted2); font-size:0.78rem">└── POST, GET, PATCH, DELETE /v1/condition-outreach-drafts</span>
         </div>
 
         <hr style="margin: 32px 0">
@@ -1852,12 +2230,12 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
           </div>
           <div class="card" style="border-color: rgba(88,166,255,0.2)">
             <h3>🆕 Total: Criar</h3>
-            <p style="font-size:2rem; font-weight:800; color:var(--blue); margin:8px 0">10</p>
-            <p>Arquivos novos (handlers, prompts, tools, testes)</p>
+            <p style="font-size:2rem; font-weight:800; color:var(--blue); margin:8px 0">14</p>
+            <p>Arquivos novos (handlers, prompts, tools, testes, communication-service)</p>
           </div>
           <div class="card" style="border-color: rgba(249,115,22,0.2)">
             <h3>✏️ Total: Modificar</h3>
-            <p style="font-size:2rem; font-weight:800; color:var(--orange); margin:8px 0">4</p>
+            <p style="font-size:2rem; font-weight:800; color:var(--orange); margin:8px 0">5</p>
             <p>Arquivos existentes com mudanças necessárias</p>
           </div>
         </div>
@@ -1867,13 +2245,14 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
           <div class="callout-content">
             <strong>Ordem de implementação sugerida</strong>
             <p>
-              1. Criar schema/coleção <code>condition_outreach_drafts</code> →
-              2. Implementar as 3 novas MCP tools com testes →
+              1. Criar schema/coleção <code>conditionOutreachDrafts</code> no communication-service (8 passos na seção Gaps) →
+              2. Implementar as 2 novas MCP tools com testes →
               3. Escrever os prompts r2.md e r7.md →
-              4. Implementar r2.tier1.ts + r2.ts →
-              5. Atualizar definitions.ts para habilitar R2 →
+              4. Implementar r2.tier1.ts (único check: PDF?) + r2.ts →
+              5. Atualizar definitions.ts para habilitar R2 (trigger único: WEBHOOK_SYNC_FRONT_CONVERSATION) →
               6. Testar com Trigger API →
-              7. Teste E2E com email real no sandbox
+              7. Implementar R7 (event-driven: TASK_CREATED → doc matching) →
+              8. Teste E2E com email real + PDF no sandbox
             </p>
           </div>
         </div>
@@ -1884,7 +2263,7 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</div>
 
   <!-- FOOTER -->
   <footer class="page-footer">
-    Análise técnica por Johnny Juvenil 🫡 •
+    Análise técnica por Johnny Juvenil 🫡 · v2 — feedback André •
     <a href="../">← Playground</a> •
     <a href="https://github.com/andreclawdbot/andreclawdbot-playground" target="_blank">GitHub</a>
   </footer>
