@@ -657,18 +657,18 @@
         <span class="hero-tag tag-green">agent-service</span>
         <span class="hero-tag tag-orange">MCP Tools</span>
         <span class="hero-tag tag-purple">Mastra Agent SDK</span>
-        <span class="hero-tag tag-yellow">v2 — Feedback André</span>
+        <span class="hero-tag tag-yellow">v3 — Feedback André</span>
       </div>
       <h1>R2 — Conditional Approval Processing</h1>
       <p class="hero-sub">
-        Planejamento técnico completo para implementação do workflow de conditional approval no Zora Pantheon (HouseNumbers) — v2 revisado
+        Planejamento técnico completo para implementação do workflow de conditional approval no Zora Pantheon (HouseNumbers) — v3 · novo trigger DOCUMENT_UPSERT + Tier 1 Ocrolus
       </p>
       <div class="hero-meta">
         <span>📋 10 seções</span>
         <span>🔧 2 novas MCP tools</span>
         <span>📝 3 novos prompts</span>
         <span>📁 8+ arquivos novos</span>
-        <span>⚡ Tier 1 (PDF check) + 🤖 Tier 2 (LLM)</span>
+        <span>⚡ Tier 1 (Ocrolus classification) + 🤖 Tier 2 (LLM)</span>
       </div>
     </div>
   </header>
@@ -704,7 +704,7 @@
         </div>
 
         <p>
-          O workflow <strong>R2 — Conditional Approval Processing</strong> automatiza um dos processos mais críticos e trabalhosos da plataforma HouseNumbers: receber um email de conditional approval do lender, extrair as condições exigidas, criar as tasks correspondentes no sistema, cruzar com documentos já disponíveis no loan e draftar emails de outreach para coletar os docs faltantes — tudo isso sem intervenção manual do MLP.
+          O workflow <strong>R2 — Conditional Approval Processing</strong> automatiza um dos processos mais críticos e trabalhosos da plataforma HouseNumbers: quando um PDF de conditional approval é upado no Zora e o Ocrolus o classifica como <code>"Conditional Approval"</code>, o sistema automaticamente extrai as condições exigidas, cria as tasks correspondentes no sistema, cruza com documentos já disponíveis no loan e drafta emails de outreach para coletar os docs faltantes — tudo isso sem intervenção manual do MLP.
         </p>
 
         <div class="callout callout-blue">
@@ -718,35 +718,42 @@
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 14px; color: var(--muted);">FLUXO END-TO-END (OPÇÃO B — EVENT-DRIVEN)</h3>
 
         <div class="flow">
-<pre><span class="fl-blue">📧 Email de Conditional Approval</span>
-   └── chega no Front (inbox do loan) <span class="fl-orange">com PDF em anexo</span>
+<pre><span class="fl-blue">📄 PDF de Conditional Approval</span>
+   └── MLP faz upload no Zora Web App
 
-<span class="fl-teal">🔗 Front Webhook</span>
-   └── POST → communication-service
-          └── publica <span class="fl-orange">WEBHOOK_SYNC_FRONT_CONVERSATION</span> no SNS
+<span class="fl-teal">loan-document-service</span>
+   └── upload S3 → publica <span class="fl-orange">FILE_UPSERT</span>
 
-<span class="fl-purple">⚡ agent-service</span> (consumer do SQS)
-   └── recebe o evento
-          └── registry lookup → encontra <span class="fl-blue">R2</span>
+<span class="fl-teal">document-data-extractor-service</span>
+   └── envia para Ocrolus (async)
+          ↓ (webhook Ocrolus retorna)
+   classification: <span class="fl-green">"Conditional Approval" ✓</span>
 
-<span class="fl-yellow">⚡ Tier 1 Check</span> (sem LLM, O(1), determinístico)
-   └── O email tem um PDF em anexo?
+<span class="fl-teal">loan-document-service</span>
+   └── cria LoanDocument → publica <span class="fl-orange">DOCUMENT_UPSERT</span>
+       { documentId, loanApplicationId, classification: <span class="fl-green">"Conditional Approval"</span> }
+
+<span class="fl-purple">⚡ agent-service</span> (consumer: loan-documents-channel)
+   ├── R3: Document Receipt Matching (tier1: outro check)
+   ├── R6: Auto-Advance Tasks on Evidence (tier1: outro check)
+   └── <span class="fl-blue">R2: Conditional Approval Processing ← NOVO</span>
+
+<span class="fl-yellow">⚡ Tier 1 Check</span> (O(1), sem LLM, determinístico)
+   └── classification === <span class="fl-green">"Conditional Approval"</span>?
           ├── <span class="fl-orange">NÃO → SKIP</span> (sem LLM, sem custo)
           └── <span class="fl-green">SIM → executa Tier 2</span>
 
 <span class="fl-green">🤖 Tier 2 — Mastra Agent (R2)</span>  maxSteps=15
-   ├── 1. get_conversation(conversationId)   ← busca conversa + PDF
-   ├── 2. LLM classifica: "É um condval?"   ← structured output
-   │       └── isConditionalApproval===false → retorna []
+   ├── 1. get_document(documentId)           ← busca doc com dados do Ocrolus
+   ├── 2. [LLM] extrai condições do documento
    ├── 3. prepare_condoval_import            ← get existing tasks + dedup
-   ├── 4. Extrai N condições do PDF
-   ├── 5. list_tasks                         ← checa duplicatas
-   ├── 6. create_task × N                    ← loop: uma call por condição
-   ├── 7. list_documents                     ← docs já upados no loan
-   ├── 8. LLM raciocina: doc satisfaz task?  ← update_task(linkedDocuments)
-   ├── 9. suggest_condition_destinations     ← LLM + structured output
-   ├── 10. draft_condition_outreach × K      ← drafta email por condição
-   └── 11. create_comment                    ← nota interna com resumo
+   ├── 4. list_tasks                         ← checa duplicatas
+   ├── 5. create_task × N                    ← loop: uma call por condição
+   ├── 6. list_documents                     ← docs já upados no loan
+   ├── 7. LLM raciocina: doc satisfaz task?  ← update_task(linkedDocuments)
+   ├── 8. suggest_condition_destinations     ← LLM + structured output
+   ├── 9. draft_condition_outreach × K       ← drafta email por condição
+   └── 10. create_comment                    ← nota interna com resumo
 
 <span class="fl-text">📤 R2 dispara TASK_CREATED × N</span>
 
@@ -773,9 +780,9 @@
           <div class="card">
             <h3>📡 Trigger</h3>
             <p>
-              <span class="badge badge-orange">WEBHOOK_SYNC_FRONT_CONVERSATION</span>
+              <span class="badge badge-orange">DOCUMENT_UPSERT</span>
             </p>
-            <p style="margin-top:8px; font-size:0.8rem;">Único trigger. O Tier 1 filtra se há PDF em anexo.</p>
+            <p style="margin-top:8px; font-size:0.8rem;">Mesmo canal que R3 e R6 (1:N routing). Tier 1 filtra via <code>classification === "Conditional Approval"</code> — O(1), sem LLM.</p>
           </div>
           <div class="card">
             <h3>🤖 Model Tier</h3>
@@ -795,14 +802,71 @@
           <h2>Como Integrar com o AI Agent</h2>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin-bottom: 12px;">📡 Trigger: apenas WEBHOOK_SYNC_FRONT_CONVERSATION</h3>
+        <h3 style="font-size:0.95rem; font-weight:600; margin-bottom: 12px;">📡 Trigger: DOCUMENT_UPSERT (mesmo canal que R3 e R6)</h3>
 
         <div class="callout callout-green">
           <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Trigger único e correto</strong>
-            <p>O R2 tem <strong>apenas</strong> <span class="inline-code">WEBHOOK_SYNC_FRONT_CONVERSATION</span> como trigger. Quando um email chega no Front, esse evento é disparado. O Tier 1 filtra os irrelevantes (sem PDF = não é condval). O <span class="inline-code">LOAN_APPLICATION_UPSERTED</span> foi removido completamente — era um fallback para import manual que não faz sentido aqui.</p>
+            <strong>Trigger v3: DOCUMENT_UPSERT — nenhum novo consumer necessário</strong>
+            <p>O R2 usa <span class="inline-code">DOCUMENT_UPSERT</span> como trigger — o mesmo evento já consumido por R3 e R6. O consumer <span class="inline-code">on-document-upserted.ts</span> já existe no agent-service e já chama <span class="inline-code">processEvent("DOCUMENT_UPSERT", event.payload, deps)</span>. O R2 entra no <strong>routing 1:N</strong> junto com R3 e R6 — sem criar nenhum novo consumer.</p>
+            <p style="margin-top:6px">O pipeline de classificação é feito pelo <strong>Ocrolus</strong> (ML especializado em documentos de mortgage). Quando o documento chega como <span class="inline-code">DOCUMENT_UPSERT</span>, o campo <span class="inline-code">classification</span> já está preenchido com o resultado do Ocrolus — o R2 só precisa checar se é <span class="inline-code">"Conditional Approval"</span>.</p>
           </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 20px 0 12px;">📊 v2 vs. v3 — O que mudou no trigger</h3>
+
+        <div class="table-wrap" style="margin-bottom:20px">
+          <table>
+            <thead>
+              <tr>
+                <th>Aspecto</th>
+                <th>v2 (Front webhook)</th>
+                <th>v3 (DOCUMENT_UPSERT)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Trigger</td>
+                <td><code>WEBHOOK_SYNC_FRONT_CONVERSATION</code></td>
+                <td><code>DOCUMENT_UPSERT</code></td>
+              </tr>
+              <tr>
+                <td>Tier 1</td>
+                <td>Checar PDF em anexo no email</td>
+                <td>String equality: <code>classification === "Conditional Approval"</code></td>
+              </tr>
+              <tr>
+                <td>Tier 2 Step 1</td>
+                <td>LLM classifica o PDF <code>(isConditionalApproval)</code></td>
+                <td>Pulado — Ocrolus já classificou</td>
+              </tr>
+              <tr>
+                <td>Dependência</td>
+                <td>Front (plataforma de email)</td>
+                <td>Apenas Ocrolus (já no pipeline)</td>
+              </tr>
+              <tr>
+                <td>Falsos positivos</td>
+                <td>Emails com PDF que não são condval</td>
+                <td>Quase zero — Ocrolus é especializado</td>
+              </tr>
+              <tr>
+                <td>Precisão</td>
+                <td>Média</td>
+                <td><span class="badge badge-green">Alta — ML especializado em mortgage docs</span></td>
+              </tr>
+              <tr>
+                <td>Custo LLM</td>
+                <td>Maior (1 LLM call a mais para classificar)</td>
+                <td><span class="badge badge-green">Menor — começa já na extração</span></td>
+              </tr>
+              <tr>
+                <td>Consumer</td>
+                <td>Novo consumer dedicado</td>
+                <td><span class="badge badge-green">on-document-upserted.ts já existe</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <!-- CALLOUT: batch e doc-task match não existem -->
@@ -832,11 +896,12 @@
             </ul>
           </div>
           <div class="card" style="border-color: rgba(63,185,80,0.2);">
-            <h3>🟢 Depois (R2 Automatizado)</h3>
+            <h3>🟢 Depois (R2 Automatizado — v3)</h3>
             <ul>
-              <li>Email com PDF chega → Tier 1 passa</li>
-              <li>LLM classifica PDF (structured output)</li>
-              <li>Agent extrai todas as condições</li>
+              <li>MLP faz upload do PDF → Ocrolus classifica</li>
+              <li>DOCUMENT_UPSERT chega com <code>classification: "Conditional Approval"</code></li>
+              <li>Tier 1: string equality O(1) → passa</li>
+              <li>Agent busca doc via <code>get_document</code> e extrai condições</li>
               <li>Tasks criadas em loop automaticamente</li>
               <li>Docs cross-matched via raciocínio LLM</li>
               <li>MLP revisa e aprova: ~10-15 min</li>
@@ -844,37 +909,33 @@
           </div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">⚡ Tier 1: único check determinístico</h3>
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">⚡ Tier 1: único check determinístico — string equality O(1)</h3>
 
         <div class="callout callout-blue">
           <span class="callout-icon">💡</span>
           <div class="callout-content">
-            <strong>Por que só checar PDF?</strong>
-            <p>Conditional approval emails <em>sempre</em> vêm com o PDF da conditional approval em anexo. Se não tem PDF, não é um condval — ponto. Esta checagem é O(1), sem LLM, sem ambiguidade. A classificação do tipo do email acontece <strong>dentro do Tier 2</strong> (primeira ação do Mastra Agent), usando o PDF recuperado com structured output.</p>
+            <strong>Por que Tier 1 agora é melhor: Ocrolus já classificou</strong>
+            <p>Com o trigger <span class="inline-code">DOCUMENT_UPSERT</span>, o campo <span class="inline-code">classification</span> já está preenchido no payload — resultado direto do Ocrolus (ML especializado em mortgage documents). Não há heurística de subject, regex de subject ou checar tipo de anexo. É literalmente <strong>string equality</strong>: O(1), sem LLM, sem ambiguidade. A etapa de classificação LLM que existia no Tier 2 da v2 é eliminada completamente.</p>
           </div>
         </div>
 
         <div class="flow">
 <pre><span class="fl-yellow">Tier 1 Check</span> — O(1), sem LLM, determinístico
 
-Único check: <span class="fl-blue">email-has-pdf-attachment</span>
-   → payload.attachments.some(a => a.contentType === "application/pdf")
+Único check: <span class="fl-blue">document-classified-as-conditional-approval</span>
+   → context.event.payload.classification === "Conditional Approval"
 
    <span class="fl-orange">→ false: SKIP</span> (não é condval, sem gastar tokens)
    <span class="fl-green">→ true: executa Tier 2</span>
 
-<span class="fl-yellow">Tier 2 — PRIMEIRA ação do Mastra Agent</span> (classificação LLM)
+<span class="fl-yellow">Tier 2 — PRIMEIRA ação do Mastra Agent</span> (sem classificação LLM — Ocrolus já fez)
 
-   get_conversation(conversationId) → busca conversa com metadata do PDF
-   LLM classifica via structured output:
-   {
-     isConditionalApproval: boolean,
-     confidence: number,
-     signals: string[]   // evidências encontradas no PDF
-   }
+   get_document(documentId) → busca dados do documento extraídos pelo Ocrolus
+   [LLM] extrai condições do documento
+   prepare_condoval_import(loanId) → dedup check
+   create_task × N (uma por condição, com conditionDetails)
 
-   <span class="fl-orange">→ isConditionalApproval===false: handler retorna []</span> (early return)
-   <span class="fl-green">→ true: continua extração de condições</span></pre>
+   <span class="fl-green">→ Começa direto na extração — zero round-trip de classificação</span></pre>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">Arquitetura: Opção A vs. Opção B</h3>
@@ -914,10 +975,10 @@
         <div class="callout callout-green">
           <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Decisão: Opção B (Event-Driven) — confirmada</strong>
-            <p>R2: <span class="inline-code">WEBHOOK_SYNC_FRONT_CONVERSATION</span> → detecta condval → importa condições → <span class="inline-code">CREATE_TASK × N</span> → dispara <span class="inline-code">TASK_CREATED</span><br>
+            <strong>Decisão: Opção B (Event-Driven) — confirmada · v3</strong>
+            <p>R2: <span class="inline-code">DOCUMENT_UPSERT</span> → Tier 1 checa <span class="inline-code">classification === "Conditional Approval"</span> → importa condições → <span class="inline-code">CREATE_TASK × N</span> → dispara <span class="inline-code">TASK_CREATED</span><br>
             R7: <span class="inline-code">TASK_CREATED</span> → doc matching → <span class="inline-code">UPDATE_TASK_REVIEW</span> (linked docs) → <span class="inline-code">DRAFT_EMAIL</span> para unresolved<br><br>
-            A Opção B alinha melhor com o padrão arquitetural do agent-service e permite que o R7 seja reaproveitado quando qualquer documento chegar — não apenas após um condval. Handlers menores = mais fáceis de testar e manter.</p>
+            A Opção B alinha melhor com o padrão arquitetural do agent-service e permite que o R7 seja reaproveitado quando qualquer documento chegar — não apenas após um condval. Handlers menores = mais fáceis de testar e manter. O consumer <span class="inline-code">on-document-upserted.ts</span> já existe — nenhum novo consumer é necessário.</p>
           </div>
         </div>
       </section>
@@ -948,21 +1009,21 @@
                 <td>Lista todas as conversas/emails do loan no Front</td>
                 <td><span class="badge badge-blue">emails:read</span></td>
                 <td><span class="badge badge-gray">Query</span></td>
-                <td>R2</td>
+                <td><span style="color:var(--muted2)">— (v3: não usado pelo R2)</span></td>
               </tr>
               <tr>
                 <td><code>get_email</code></td>
                 <td>Detalhe de um email específico (subject, body, sender)</td>
                 <td><span class="badge badge-blue">emails:read</span></td>
                 <td><span class="badge badge-gray">Query</span></td>
-                <td>R2</td>
+                <td><span style="color:var(--muted2)">— (v3: não usado pelo R2)</span></td>
               </tr>
               <tr>
                 <td><code>get_conversation</code></td>
                 <td>Thread completa de uma conversa no Front (inclui attachments)</td>
                 <td><span class="badge badge-blue">emails:read</span></td>
                 <td><span class="badge badge-gray">Query</span></td>
-                <td>R2</td>
+                <td><span style="color:var(--muted2)">— (v3: não usado pelo R2)</span></td>
               </tr>
               <tr>
                 <td><code>prepare_condoval_import</code></td>
@@ -1243,7 +1304,7 @@
           <span class="callout-icon">🗑️</span>
           <div class="callout-content">
             <strong>classify_email_type — removida do plano</strong>
-            <p>Com o novo Tier 1 (só checa PDF), <code>classify_email_type</code> deixa de ser necessária como MCP tool. A classificação agora acontece <strong>dentro do handler R2</strong> (Tier 2), como primeira ação do Mastra Agent. O handler usa o LLM diretamente via Mastra (não como tool MCP), passando o conteúdo/metadata do PDF e recebendo uma classificação com structured output. Isso é mais eficiente — sem round-trip extra ao MCP gateway.</p>
+            <p>Com o trigger <code>DOCUMENT_UPSERT</code> e o Tier 1 baseado em <code>classification === "Conditional Approval"</code>, <code>classify_email_type</code> deixa de ser necessária como MCP tool. O Ocrolus já classifica o documento antes do evento chegar — o R2 recebe a classificação pronta no payload. Não há round-trip de LLM para classificar. O Tier 2 começa diretamente com <code>get_document(documentId)</code> para extração das condições.</p>
           </div>
         </div>
       </section>
@@ -1265,24 +1326,22 @@
           <div class="code-body" style="color: var(--text)">
 <span style="color:var(--blue); font-weight:700"># Zora — Conditional Approval Processor</span>
 
-You are processing a conditional approval email for a mortgage loan.
+You are processing a conditional approval document for a mortgage loan.
+The document has already been classified as "Conditional Approval" by Ocrolus.
 Your job is to:
-<span style="color:var(--green)">1.</span> Classify the PDF attachment: is this a conditional approval? (structured output)
-<span style="color:var(--green)">2.</span> If yes, extract all conditions from the PDF
+<span style="color:var(--green)">1.</span> Retrieve the document data extracted by Ocrolus
+<span style="color:var(--green)">2.</span> Extract all conditions from the document
 <span style="color:var(--green)">3.</span> Check which conditions are already satisfied by uploaded documents
 <span style="color:var(--green)">4.</span> For unsatisfied conditions, suggest recipients and draft outreach emails
 <span style="color:var(--green)">5.</span> Return a confidence score for each action
 
-<span style="color:var(--blue); font-weight:700">## First Step: PDF Classification</span>
-<span style="color:var(--orange)">ALWAYS start by calling get_conversation to retrieve the PDF metadata.</span>
-Then classify using structured output:
-  isConditionalApproval: boolean
-  confidence: number
-  signals: string[]
-<span style="color:var(--red)">If isConditionalApproval === false → return [] immediately. Do not proceed.</span>
+<span style="color:var(--blue); font-weight:700">## First Step: Retrieve Document</span>
+<span style="color:var(--orange)">ALWAYS start by calling get_document(documentId) to retrieve the document data extracted by Ocrolus.</span>
+The document has already been classified — do NOT attempt to re-classify it.
+Proceed directly to extracting conditions from the document content.
 
 <span style="color:var(--blue); font-weight:700">## Key Rules</span>
-<span style="color:var(--orange)">- ALWAYS call prepare_condoval_import</span> (after classification) for dedup guide
+<span style="color:var(--orange)">- ALWAYS call prepare_condoval_import</span> (after get_document) for dedup guide
 - NEVER create duplicate tasks — the dedup guide tells you how to match
 - conditionDetails MUST be populated on every CREATE_TASK action
 - create_task is SINGULAR — call it once per condition in a loop
@@ -1412,12 +1471,12 @@ There is no dedicated matching tool. You reason over the data yourself:
 <span class="kw">import</span> { Agent } <span class="kw">from</span> <span class="str">"@mastra/core"</span>;
 
 <span class="kw">const</span> <span class="prop">R2_TOOLS</span> = [
-  <span class="cmt">// Read — email data + conversation (inclui PDF metadata)</span>
-  <span class="str">"list_loan_emails"</span>, <span class="str">"get_email"</span>, <span class="str">"get_conversation"</span>,
-  <span class="cmt">// Read — task dedup guide (MUST call after PDF classification)</span>
+  <span class="cmt">// Read — document data (extraído pelo Ocrolus via DOCUMENT_UPSERT)</span>
+  <span class="str">"get_document"</span>, <span class="str">"list_documents"</span>,
+  <span class="cmt">// Read — task dedup guide (MUST call after get_document)</span>
   <span class="str">"prepare_condoval_import"</span>,
-  <span class="cmt">// Read — existing tasks + docs (para raciocínio de matching)</span>
-  <span class="str">"list_tasks"</span>, <span class="str">"list_documents"</span>, <span class="str">"get_document"</span>,
+  <span class="cmt">// Read — existing tasks (para raciocínio de matching + dedup)</span>
+  <span class="str">"list_tasks"</span>,
   <span class="cmt">// Read — loan data + conditions</span>
   <span class="str">"get_loan"</span>, <span class="str">"get_loan_conditions"</span>,
   <span class="cmt">// Write — tasks + comments (create_task é SINGULAR, agent faz loop)</span>
@@ -1441,14 +1500,16 @@ There is no dedicated matching tool. You reason over the data yourself:
       memory: <span class="fn">getOrCreateMemory</span>(),
     });
 
-    <span class="kw">const</span> conversationId = context.event.payload.<span class="prop">conversationId</span> <span class="kw">as</span> <span class="tp">string</span>;
-    <span class="kw">const</span> prompt = <span class="str">`Process the conditional approval for loan: <span class="kw">${</span>context.loanId<span class="kw">}</span>
-Conversation ID: <span class="kw">${</span>conversationId<span class="kw">}</span>
+    <span class="cmt">// DOCUMENT_UPSERT payload: documentId já disponível</span>
+    <span class="kw">const</span> documentId = context.event.payload.<span class="prop">documentId</span> <span class="kw">as</span> <span class="tp">string</span>;
+    <span class="kw">const</span> loanApplicationId = context.event.payload.<span class="prop">loanApplicationId</span> <span class="kw">as</span> <span class="tp">string</span>;
+    <span class="kw">const</span> prompt = <span class="str">`Process the conditional approval for loan: <span class="kw">${</span>loanApplicationId<span class="kw">}</span>
+Document ID: <span class="kw">${</span>documentId<span class="kw">}</span>
 
-Start by calling get_conversation to retrieve the PDF.
-Then classify the PDF (structured output: isConditionalApproval).
-If not a condval → return [].
-If condval → call prepare_condoval_import, extract conditions, create tasks, match docs, draft outreach.`</span>;
+The document has already been classified as "Conditional Approval" by Ocrolus.
+Start by calling get_document(documentId) to retrieve the document data.
+Then call prepare_condoval_import, extract conditions, create tasks, match docs, draft outreach.
+Do NOT attempt to re-classify the document — Ocrolus already did this.`</span>;
 
     <span class="kw">const</span> result = <span class="kw">await</span> agent.<span class="fn">generate</span>(prompt, { maxSteps: <span class="num">15</span> });
     <span class="kw">return</span> <span class="fn">parseProposedActions</span>(result.text);
@@ -1461,78 +1522,77 @@ If condval → call prepare_condoval_import, extract conditions, create tasks, m
         <div class="callout callout-green" style="margin-bottom:12px">
           <span class="callout-icon">✅</span>
           <div class="callout-content">
-            <strong>Tier 1 reformulado: único check determinístico</strong>
-            <p>Antes o Tier 1 tinha múltiplos checks heurísticos (subject regex, tags, lender domain, recency check). Agora tem <strong>exatamente 1 check</strong>: "O email tem PDF em anexo?" — O(1), sem LLM, sem ambiguidade.</p>
+            <strong>Tier 1 v3: string equality — O(1), sem LLM, sem heurística</strong>
+            <p>O Ocrolus já classificou o documento. O Tier 1 só precisa checar se <span class="inline-code">classification === "Conditional Approval"</span>. É literalmente uma comparação de string — mais preciso, mais simples, zero custo de LLM. A etapa de classificação LLM que existia no Tier 2 da v2 é eliminada.</p>
           </div>
         </div>
 
         <div class="code-block">
           <div class="code-header">
-            <span>r2.tier1.ts — Tier 1 do R2 (único check)</span>
+            <span>r2.tier1.ts — Tier 1 do R2 (único check: Ocrolus classification)</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><pre><span class="kw">import</span> { <span class="tp">Tier1CheckDef</span>, <span class="tp">PipelineContext</span> } <span class="kw">from</span> <span class="str">"../tier1"</span>;
+          <div class="code-body"><pre><span class="kw">import</span> <span class="kw">type</span> { <span class="tp">Tier1CheckDef</span>, <span class="tp">PipelineContext</span> } <span class="kw">from</span> <span class="str">"@workflows/tier1"</span>;
 
 <span class="kw">export const</span> <span class="prop">r2Tier1Checks</span>: <span class="tp">Tier1CheckDef</span>[] = [
   {
-    name: <span class="str">"email-has-pdf-attachment"</span>,
-    description: <span class="str">"Conditional approval emails always come with a PDF. No PDF = not a condval."</span>,
+    name: <span class="str">"document-classified-as-conditional-approval"</span>,
+    description: <span class="str">"Ocrolus already classified this document. Check if classification === 'Conditional Approval'."</span>,
     check: <span class="kw">async</span> (context: <span class="tp">PipelineContext</span>): <span class="tp">Promise</span>&lt;<span class="tp">boolean</span>&gt; =&gt; {
-      <span class="kw">const</span> payload = context.event.payload;
-      <span class="cmt">// O payload do WEBHOOK_SYNC_FRONT_CONVERSATION inclui metadata da conversa</span>
-      <span class="cmt">// incluindo lista de attachments</span>
-      <span class="kw">const</span> attachments = (payload.attachments <span class="kw">as</span> <span class="tp">Array</span>&lt;{ contentType: <span class="tp">string</span> }&gt;) ?? [];
-      <span class="kw">const</span> hasPdf = attachments.<span class="fn">some</span>(a =&gt; a.contentType === <span class="str">"application/pdf"</span>);
-      <span class="kw">return</span> hasPdf;  <span class="cmt">// true → Tier 2 | false → SKIP</span>
+      <span class="kw">const</span> classification = context.event.payload.classification <span class="kw">as</span> <span class="tp">string</span> | <span class="kw">undefined</span>;
+      <span class="kw">return</span> classification === <span class="str">"Conditional Approval"</span>;  <span class="cmt">// O(1), sem LLM, sem ambiguidade</span>
     }
   }
 ];
 
-<span class="cmt">// Nota: a classificação LLM ("é um condval?") acontece no Tier 2</span>
-<span class="cmt">// como PRIMEIRA ação do Mastra Agent via structured output.</span>
-<span class="cmt">// Tier 1 só faz o check O(1) de existência de PDF.</span></pre></div>
+<span class="cmt">// Por que este Tier 1 é melhor que checar PDF em anexo (v2):</span>
+<span class="cmt">// 1. Mais preciso: Ocrolus (ML especializado) vs heurística de contentType</span>
+<span class="cmt">// 2. Mais simples: string equality — literalmente O(1)</span>
+<span class="cmt">// 3. Já disponível no payload: sem query extra</span>
+<span class="cmt">// 4. Sem dependência de email: funciona com upload direto no Zora</span></pre></div>
         </div>
 
-        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 Classificação LLM no Tier 2 (early return)</h3>
+        <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 Event schema: DOCUMENT_UPSERT (já existe no agent-service)</h3>
 
         <div class="code-block">
           <div class="code-header">
-            <span>Structured output de classificação do PDF (dentro do handler)</span>
+            <span>apps/agent-service/src/domain/events.ts — schema existente</span>
             <span class="lang">TypeScript</span>
           </div>
-          <div class="code-body"><pre><span class="cmt">// Dentro do r2 handler, PRIMEIRA coisa que o Mastra Agent faz:</span>
-<span class="cmt">// 1. get_conversation(conversationId) → busca conversa com o PDF</span>
-<span class="cmt">// 2. LLM via structured output classifica: "É um condval?"</span>
+          <div class="code-body"><pre><span class="cmt">// Já existe no agent-service — nenhuma mudança necessária</span>
+<span class="kw">export const</span> <span class="prop">DocumentUpsertEventSchema</span> = z.<span class="fn">object</span>({
+  type: z.<span class="fn">literal</span>(<span class="str">"DOCUMENT_UPSERT"</span>),
+  payload: z.<span class="fn">object</span>({
+    documentId: z.<span class="fn">string</span>(),
+    loanApplicationId: z.<span class="fn">string</span>(),
+    tenantId: z.<span class="fn">string</span>(),
+    documentType: z.<span class="fn">string</span>().<span class="fn">optional</span>(),
+    classification: z.<span class="fn">string</span>().<span class="fn">optional</span>(),   <span class="cmt">// ← "Conditional Approval" aqui!</span>
+    status: z.<span class="fn">string</span>().<span class="fn">optional</span>(),
+  }),
+});
 
-<span class="cmt">// Structured output schema:</span>
-<span class="kw">type</span> <span class="tp">CondvalClassification</span> = {
-  <span class="prop">isConditionalApproval</span>: <span class="tp">boolean</span>;
-  <span class="prop">confidence</span>: <span class="tp">number</span>;         <span class="cmt">// 0-1</span>
-  <span class="prop">signals</span>: <span class="tp">string</span>[];           <span class="cmt">// evidências encontradas no PDF</span>
-}
-
-<span class="cmt">// Se isConditionalApproval === false → handler retorna []</span>
-<span class="cmt">// Se true → continua com prepare_condoval_import e extração de condições</span>
-
-<span class="cmt">// O prompt instrui o agent a fazer isso como step 1 (ver r2.md)</span></pre></div>
+<span class="cmt">// Consumer já existe: apps/agent-service/src/consumers/</span>
+<span class="cmt">// └── loan-documents-channel/</span>
+<span class="cmt">//     └── on-document-upserted.ts   ← já chama processEvent("DOCUMENT_UPSERT", ...)</span>
+<span class="cmt">// R2 entra no 1:N routing junto com R3 e R6 — sem criar nenhum novo consumer.</span></pre></div>
         </div>
 
         <h3 style="font-size:0.95rem; font-weight:600; margin: 24px 0 12px;">📄 definitions.ts — Diff (antes → depois)</h3>
 
         <div class="diff-block">
           <div class="code-header" style="background:var(--bg3); border-bottom:1px solid var(--border); padding:10px 16px; font-size:0.78rem; color:var(--muted)">
-            definitions.ts — mudanças no registro do R2
+            definitions.ts — mudanças no registro do R2 (v2 → v3)
           </div>
-          <div class="diff-line diff-rem">  triggers: ["LOAN_APPLICATION_UPSERTED"],</div>
-          <div class="diff-line diff-add">  triggers: ["WEBHOOK_SYNC_FRONT_CONVERSATION"],</div>
-          <div class="diff-line diff-rem">  enabled: false, // stub</div>
-          <div class="diff-line diff-add">  enabled: true,</div>
-          <div class="diff-line diff-rem">  modelTier: "standard",</div>
-          <div class="diff-line diff-add">  modelTier: "powerful", // GPT-4o / Claude Sonnet</div>
-          <div class="diff-line diff-rem">  tier1: [],</div>
-          <div class="diff-line diff-add">  tier1: r2Tier1Checks, // único check: email-has-pdf-attachment</div>
-          <div class="diff-line diff-rem">  handler: undefined, // TODO</div>
-          <div class="diff-line diff-add">  handler: r2Handler,</div>
+          <div class="diff-line diff-rem">  triggers: ["WEBHOOK_SYNC_FRONT_CONVERSATION"],</div>
+          <div class="diff-line diff-add">  triggers: ["DOCUMENT_UPSERT"], // mesmo canal que R3 e R6 (1:N routing)</div>
+          <div class="diff-line diff-ctx">  name: "Conditional Approval Processing",</div>
+          <div class="diff-line diff-ctx">  type: "reactive",</div>
+          <div class="diff-line diff-ctx">  enabled: true,</div>
+          <div class="diff-line diff-ctx">  modelTier: "powerful", // GPT-4o / Claude Sonnet</div>
+          <div class="diff-line diff-rem">  tier1: r2Tier1Checks, // email-has-pdf-attachment</div>
+          <div class="diff-line diff-add">  tier1: r2Tier1Checks, // document-classified-as-conditional-approval (O(1))</div>
+          <div class="diff-line diff-ctx">  handler: r2Handler,</div>
         </div>
 
         <div class="callout callout-blue">
@@ -1564,26 +1624,22 @@ If condval → call prepare_condoval_import, extract conditions, create tasks, m
           <h3 style="margin-bottom:16px">📊 Scores por Etapa</h3>
 
           <div style="margin-bottom:16px">
-            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">1. Classificação do PDF (Tier 2 — LLM structured output)</div>
+            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">1. Tier 1: Classificação pelo Ocrolus (O(1), sem LLM — resultado do Ocrolus)</div>
             <div class="score-item">
-              <div class="score-label">PDF com header "Conditional Approval"</div>
+              <div class="score-label">classification === "Conditional Approval"</div>
               <div class="score-bar-bg"><div class="score-bar bar-green" style="width:100%"></div></div>
-              <div class="score-val" style="color:var(--green)">1.0</div>
+              <div class="score-val" style="color:var(--green)">PASS</div>
             </div>
             <div class="score-item">
-              <div class="score-label">sinais fortes no texto + estrutura de condições</div>
-              <div class="score-bar-bg"><div class="score-bar bar-green" style="width:85%"></div></div>
-              <div class="score-val" style="color:var(--green)">0.85</div>
+              <div class="score-label">classification !== "Conditional Approval"</div>
+              <div class="score-bar-bg"><div class="score-bar bar-orange" style="width:0%"></div></div>
+              <div class="score-val" style="color:var(--red)">SKIP</div>
             </div>
-            <div class="score-item">
-              <div class="score-label">PDF ambíguo (possível condval)</div>
-              <div class="score-bar-bg"><div class="score-bar bar-orange" style="width:55%"></div></div>
-              <div class="score-val" style="color:var(--yellow)">0.55</div>
-            </div>
+            <p style="font-size:0.78rem; color:var(--muted); margin-top:6px;">Sem score de 0-1: é binário. O Ocrolus já tomou a decisão — o Tier 1 apenas verifica o resultado.</p>
           </div>
 
           <div style="margin-bottom:16px">
-            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">2. Extração de Condição</div>
+            <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.06em">2. Extração de Condição (LLM)</div>
             <div class="score-item">
               <div class="score-label">condição clara, numbered list</div>
               <div class="score-bar-bg"><div class="score-bar bar-blue" style="width:95%"></div></div>
@@ -1892,7 +1948,7 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
           <div class="gap-icon">🟠</div>
           <div class="gap-content">
             <h4>Novos prompts (r2.md, r7.md) <span class="badge badge-orange">Médio esforço</span></h4>
-            <p>Os arquivos de soul prompt precisam ser criados em <code>domain/prompts/workflows/</code>. Precisam de iteração com o time para ajustar tom, regras de extração e output format. O r2.md agora inclui instrução de classificação PDF como step 1.</p>
+            <p>Os arquivos de soul prompt precisam ser criados em <code>domain/prompts/workflows/</code>. Precisam de iteração com o time para ajustar tom, regras de extração e output format. O r2.md v3 instrui o agent a iniciar com <code>get_document(documentId)</code> — sem etapa de classificação LLM (Ocrolus já fez).</p>
           </div>
         </div>
 
@@ -1923,8 +1979,8 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
         <div class="gap-item" style="border-color: rgba(88,166,255,0.2)">
           <div class="gap-icon">🔵</div>
           <div class="gap-content">
-            <h4>Teste com condval email real <span class="badge badge-blue">Validação</span></h4>
-            <p>Antes do deploy, testar o handler R2 com um email de conditional approval real (anonimizado) para validar que a classificação LLM e extração de condições funcionam corretamente com o modelo "powerful". Ajustar prompts conforme necessário.</p>
+            <h4>Teste com condval doc real <span class="badge badge-blue">Validação</span></h4>
+            <p>Antes do deploy, testar o handler R2 com um <code>DOCUMENT_UPSERT</code> de conditional approval real (anonimizado, <code>classification: "Conditional Approval"</code>) para validar que a extração de condições pelo LLM funciona corretamente com o modelo "powerful". Ajustar prompts conforme necessário.</p>
           </div>
         </div>
       </section>
@@ -1947,11 +2003,15 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
 <span class="cmt">// Mockar apenas context — não mockar repos ou services</span>
 
 <span class="fn">describe</span>(<span class="str">"r2Handler"</span>, () => {
-  <span class="fn">it</span>(<span class="str">"retorna [] se email não tem PDF em anexo (Tier 1)"</span>, <span class="kw">async</span> () => {
+  <span class="fn">it</span>(<span class="str">"retorna false no Tier 1 se classification !== 'Conditional Approval'"</span>, <span class="kw">async</span> () => {
     <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
       event: {
-        type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
-        payload: { attachments: [] },  <span class="cmt">// sem PDF → Tier 1 bloqueia</span>
+        type: <span class="str">"DOCUMENT_UPSERT"</span>,
+        payload: {
+          documentId: <span class="str">"doc_123"</span>,
+          loanApplicationId: <span class="str">"loan_test_001"</span>,
+          classification: <span class="str">"Paystub"</span>,  <span class="cmt">// ← não é condval</span>
+        },
       }
     });
     <span class="cmt">// Tier 1 deveria bloquear antes do handler ser chamado</span>
@@ -1959,32 +2019,31 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
     expect(passes).<span class="fn">toBe</span>(<span class="kw">false</span>);
   });
 
-  <span class="fn">it</span>(<span class="str">"retorna [] se LLM classifica PDF como não-condval (early return Tier 2)"</span>, <span class="kw">async</span> () => {
+  <span class="fn">it</span>(<span class="str">"retorna true no Tier 1 se classification === 'Conditional Approval'"</span>, <span class="kw">async</span> () => {
     <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
       event: {
-        type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
+        type: <span class="str">"DOCUMENT_UPSERT"</span>,
         payload: {
-          attachments: [{ contentType: <span class="str">"application/pdf"</span> }],
-          conversationId: <span class="str">"conv_general_doc"</span>
+          documentId: <span class="str">"doc_condval_123"</span>,
+          loanApplicationId: <span class="str">"loan_test_001"</span>,
+          classification: <span class="str">"Conditional Approval"</span>,  <span class="cmt">// ← passa!</span>
         },
-      },
-      loanId: <span class="str">"loan_test_001"</span>,
+      }
     });
-    <span class="cmt">// LLM deve retornar isConditionalApproval: false → handler retorna []</span>
-    <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
-    expect(actions).toHaveLength(<span class="num">0</span>);
+    <span class="kw">const</span> passes = <span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(context);
+    expect(passes).<span class="fn">toBe</span>(<span class="kw">true</span>);
   });
 
-  <span class="fn">it</span>(<span class="str">"retorna CREATE_TASK actions para condições extraídas do PDF condval"</span>, <span class="kw">async</span> () => {
+  <span class="fn">it</span>(<span class="str">"retorna CREATE_TASK actions para condições extraídas do documento condval"</span>, <span class="kw">async</span> () => {
     <span class="kw">const</span> context = <span class="fn">buildMockContext</span>({
       event: {
-        type: <span class="str">"WEBHOOK_SYNC_FRONT_CONVERSATION"</span>,
+        type: <span class="str">"DOCUMENT_UPSERT"</span>,
         payload: {
-          attachments: [{ contentType: <span class="str">"application/pdf"</span> }],
-          conversationId: <span class="str">"conv_condval_123"</span>,
+          documentId: <span class="str">"doc_condval_123"</span>,
+          loanApplicationId: <span class="str">"loan_test_001"</span>,
+          classification: <span class="str">"Conditional Approval"</span>,
         },
       },
-      loanId: <span class="str">"loan_test_001"</span>,
     });
     <span class="kw">const</span> actions = <span class="kw">await</span> r2Handler.<span class="fn">execute</span>(context);
 
@@ -2017,45 +2076,36 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
             <span class="lang">TypeScript</span>
           </div>
           <div class="code-body"><pre><span class="fn">describe</span>(<span class="str">"r2Tier1Checks"</span>, () => {
-  <span class="fn">describe</span>(<span class="str">"email-has-pdf-attachment"</span>, () => {
-    <span class="fn">it</span>(<span class="str">"retorna true quando há PDF em anexo"</span>, <span class="kw">async</span> () => {
+  <span class="fn">describe</span>(<span class="str">"document-classified-as-conditional-approval"</span>, () => {
+    <span class="fn">it</span>(<span class="str">"retorna true quando classification === 'Conditional Approval'"</span>, <span class="kw">async</span> () => {
       <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
-        payload: {
-          attachments: [{ contentType: <span class="str">"application/pdf"</span> }]
-        }
+        payload: { classification: <span class="str">"Conditional Approval"</span> }
       });
       expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
     });
 
-    <span class="fn">it</span>(<span class="str">"retorna false quando não há PDF (só imagens)"</span>, <span class="kw">async</span> () => {
+    <span class="fn">it</span>(<span class="str">"retorna false quando classification é outro tipo de documento"</span>, <span class="kw">async</span> () => {
       <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
-        payload: {
-          attachments: [{ contentType: <span class="str">"image/jpeg"</span> }]
-        }
+        payload: { classification: <span class="str">"Paystub"</span> }
       });
       expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
     });
 
-    <span class="fn">it</span>(<span class="str">"retorna false quando não há attachments"</span>, <span class="kw">async</span> () => {
-      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: { attachments: [] } });
-      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
-    });
-
-    <span class="fn">it</span>(<span class="str">"retorna false quando attachments está undefined"</span>, <span class="kw">async</span> () => {
+    <span class="fn">it</span>(<span class="str">"retorna false quando classification está undefined"</span>, <span class="kw">async</span> () => {
       <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: {} });
       expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
     });
 
-    <span class="fn">it</span>(<span class="str">"retorna true com múltiplos attachments onde um é PDF"</span>, <span class="kw">async</span> () => {
+    <span class="fn">it</span>(<span class="str">"retorna false quando classification é string vazia"</span>, <span class="kw">async</span> () => {
+      <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({ payload: { classification: <span class="str">""</span> } });
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
+    });
+
+    <span class="fn">it</span>(<span class="str">"retorna false para variação de case ('conditional approval' minúsculas)"</span>, <span class="kw">async</span> () => {
       <span class="kw">const</span> ctx = <span class="fn">buildCtx</span>({
-        payload: {
-          attachments: [
-            { contentType: <span class="str">"image/jpeg"</span> },
-            { contentType: <span class="str">"application/pdf"</span> },
-          ]
-        }
+        payload: { classification: <span class="str">"conditional approval"</span> }  <span class="cmt">// case-sensitive!</span>
       });
-      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">true</span>);
+      expect(<span class="kw">await</span> r2Tier1Checks[<span class="num">0</span>].check(ctx)).<span class="fn">toBe</span>(<span class="kw">false</span>);
     });
   });
 });</pre></div>
@@ -2068,16 +2118,17 @@ schema.<span class="fn">index</span>({ <span class="str">"attributes.status"</sp
             <span>POST /v1/trigger — invocar R2 diretamente</span>
             <span class="lang">bash</span>
           </div>
-          <div class="code-body"><pre><span class="cmt"># Invocar R2 com evento de conversation com PDF simulado</span>
+          <div class="code-body"><pre><span class="cmt"># Invocar R2 com evento DOCUMENT_UPSERT simulado (classification já preenchida)</span>
 curl -X POST http://localhost:3000/v1/trigger \
   -H <span class="str">"Content-Type: application/json"</span> \
   -d <span class="str">'{
     "workflowId": "R2",
     "payload": {
+      "documentId": "DOC_ID_AQUI",
       "loanApplicationId": "LOAN_ID_AQUI",
-      "conversationId": "CONV_ID_AQUI",
-      "attachments": [{"contentType": "application/pdf", "name": "conditional_approval.pdf"}],
-      "eventType": "WEBHOOK_SYNC_FRONT_CONVERSATION"
+      "tenantId": "TENANT_ID_AQUI",
+      "classification": "Conditional Approval",
+      "eventType": "DOCUMENT_UPSERT"
     }
   }'</span>
 
@@ -2098,22 +2149,22 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
-              <h4>Enviar email de condval com PDF no Front sandbox</h4>
-              <p>Usar uma template de conditional approval real (anonimizada) para inbox do loan no Front. O email DEVE ter o PDF da conditional approval como attachment.</p>
+              <h4>Fazer upload do PDF de condval no Zora Web App</h4>
+              <p>Upload de um PDF de conditional approval real (anonimizado) no Zora. O Ocrolus deve processar e classificar como <code>"Conditional Approval"</code>. O event <code>DOCUMENT_UPSERT</code> será publicado com <code>classification: "Conditional Approval"</code>.</p>
             </div>
           </li>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
               <h4>Verificar Tier 1</h4>
-              <p>Logs devem mostrar: <code>WEBHOOK_SYNC_FRONT_CONVERSATION</code> recebido → Tier 1 check <code>email-has-pdf-attachment</code> → <code>true</code> → executa Tier 2.</p>
+              <p>Logs devem mostrar: <code>DOCUMENT_UPSERT</code> recebido → Tier 1 check <code>document-classified-as-conditional-approval</code> → <code>true</code> → executa Tier 2.</p>
             </div>
           </li>
           <li>
             <div class="step-num"></div>
             <div class="step-content">
-              <h4>Verificar classificação LLM (Tier 2 step 1)</h4>
-              <p>Mastra Agent deve chamar <code>get_conversation</code>, classificar o PDF via structured output (<code>isConditionalApproval: true</code>), e continuar com <code>prepare_condoval_import</code>.</p>
+              <h4>Verificar get_document (Tier 2 step 1)</h4>
+              <p>Mastra Agent deve chamar <code>get_document(documentId)</code> para recuperar os dados extraídos pelo Ocrolus, depois <code>prepare_condoval_import</code> e iniciar a extração de condições.</p>
             </div>
           </li>
           <li>
@@ -2141,7 +2192,7 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
 <span class="ft-dir">src/</span>
 ├── <span class="ft-dir">workflows/</span>
 │   ├── <span class="ft-mod">definitions.ts</span><span class="ft-badge ft-badge-mod">MODIFICAR</span>
-│   │   <span style="color:var(--muted2); font-size:0.78rem">└── habilitar R2, trigger: WEBHOOK_SYNC_FRONT_CONVERSATION (único), registrar handler</span>
+│   │   <span style="color:var(--muted2); font-size:0.78rem">└── habilitar R2, trigger: DOCUMENT_UPSERT (1:N com R3 e R6), registrar handler</span>
 │   ├── <span class="ft-ex">registry.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
 │   ├── <span class="ft-ex">orchestrator.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
 │   ├── <span class="ft-ex">confidence-gate.ts</span><span class="ft-badge ft-badge-ex">EXISTENTE</span>
@@ -2149,7 +2200,7 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
 │       ├── <span class="ft-new">r2.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
 │       │   <span style="color:var(--muted2); font-size:0.78rem">└── handler principal — Mastra Agent, maxSteps=15, classificação LLM como step 1</span>
 │       ├── <span class="ft-new">r2.tier1.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
-│       │   <span style="color:var(--muted2); font-size:0.78rem">└── único check: email-has-pdf-attachment (O(1), sem LLM)</span>
+│       │   <span style="color:var(--muted2); font-size:0.78rem">└── único check: document-classified-as-conditional-approval (O(1), Ocrolus)</span>
 │       ├── <span class="ft-new">r2.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
 │       │   <span style="color:var(--muted2); font-size:0.78rem">└── testes unitários do handler (Vitest)</span>
 │       ├── <span class="ft-new">r2.tier1.spec.ts</span><span class="ft-badge ft-badge-new">CRIAR</span>
@@ -2160,7 +2211,7 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
     └── <span class="ft-dir">prompts/</span>
         └── <span class="ft-dir">workflows/</span>
             ├── <span class="ft-new">r2.md</span><span class="ft-badge ft-badge-new">CRIAR</span>
-            │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R2 — inclui instrução de classificação PDF como step 1</span>
+            │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R2 — step 1: get_document (Ocrolus já classificou)</span>
             ├── <span class="ft-new">r7.md</span><span class="ft-badge ft-badge-new">CRIAR</span>
             │   <span style="color:var(--muted2); font-size:0.78rem">└── soul prompt do R7 Document-Task Matcher</span>
             └── <span class="ft-ex">p5.md</span><span class="ft-badge ft-badge-ex">REFERÊNCIA</span>
@@ -2248,11 +2299,11 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
               1. Criar schema/coleção <code>conditionOutreachDrafts</code> no communication-service (8 passos na seção Gaps) →
               2. Implementar as 2 novas MCP tools com testes →
               3. Escrever os prompts r2.md e r7.md →
-              4. Implementar r2.tier1.ts (único check: PDF?) + r2.ts →
-              5. Atualizar definitions.ts para habilitar R2 (trigger único: WEBHOOK_SYNC_FRONT_CONVERSATION) →
+              4. Implementar r2.tier1.ts (único check: classification === "Conditional Approval") + r2.ts →
+              5. Atualizar definitions.ts para habilitar R2 (trigger: DOCUMENT_UPSERT, 1:N com R3 e R6) →
               6. Testar com Trigger API →
               7. Implementar R7 (event-driven: TASK_CREATED → doc matching) →
-              8. Teste E2E com email real + PDF no sandbox
+              8. Teste E2E com upload de PDF real no sandbox (Ocrolus classifica → DOCUMENT_UPSERT → R2)
             </p>
           </div>
         </div>
@@ -2263,7 +2314,7 @@ curl http://localhost:3000/v1/inbox?loanId=LOAN_ID_AQUI</pre></div>
 
   <!-- FOOTER -->
   <footer class="page-footer">
-    Análise técnica por Johnny Juvenil 🫡 · v2 — feedback André •
+    Análise técnica por Johnny Juvenil 🫡 · v3 — trigger DOCUMENT_UPSERT + Tier 1 Ocrolus •
     <a href="../">← Playground</a> •
     <a href="https://github.com/andreclawdbot/andreclawdbot-playground" target="_blank">GitHub</a>
   </footer>
